@@ -1,0 +1,1262 @@
+-- Counts Prior to Save --
+GameObject Hierarchy Counts::
+GlobalConsts:2
+GlobalConsts:PoolOfTemporaryUnsaved:773
+GlobalConsts:AllPlayers:0
+LevelManager:0
+CullingTestSphere:0
+Sky:4
+Sky:SaturnTransformHolder:2
+Sky:Sun:0
+Sky:Sunlight:0
+Sky:Skysphere:0
+Player:9
+Player:PlayerCapsule:66
+Player:UICamera:36
+Player:AutomapCanvas:5654
+Player:MinigameSpace:81
+Player:Canvas:2131
+Player:AutomapCamera:0
+Player:Inventory:0
+Player:MouseCursorHandler:0
+Player:EventSystem:0
+C.Cyberspace:8
+C.Cyberspace:C.Geometry:0
+C.Cyberspace:C.DynamicObjectsSaveableInstantiated:0
+C.Cyberspace:C.LightsStaticSaveable:0
+C.Cyberspace:C.LightsStaticImmutable:2
+C.Cyberspace:C.DoorsStaticSaveable:0
+C.Cyberspace:C.StaticObjectsSaveable:618
+C.Cyberspace:C.StaticObjectsImmutable:120
+C.Cyberspace:C.NPCsSaveableInstantiated:433
+9.Bridge:26
+9.Bridge:9.Geometry:0
+9.Bridge:9.DynamicObjectsSaveableInstantiated:0
+9.Bridge:9.LightsStaticSaveable:0
+9.Bridge:9.LightsStaticImmutable:0
+9.Bridge:9.DoorsStaticSaveable:53
+9.Bridge:9.StaticObjectsSaveable:111
+9.Bridge:9.StaticObjectsImmutable:88
+9.Bridge:9.NPCsSaveableInstantiated:2845
+9.Bridge:BridgeScreen1_Camera:0
+9.Bridge:TestWarnSuppression_lev9atriumwall1:0
+9.Bridge:TestWarnSuppression_lev9atriumwall2:0
+9.Bridge:TestWarnSuppression_lev9atriumwall3:0
+9.Bridge:TestWarnSuppression_lev9atriumwall4:0
+9.Bridge:TestWarnSuppression_lev9atriumwallfinal:0
+9.Bridge:TestWarnSuppression_lev9farbridgesovertrench1:0
+9.Bridge:TestWarnSuppression_lev9autobombtrenchbridges:0
+9.Bridge:TestWarnSuppression_lev9farbridgesovertrench2:0
+9.Bridge:TestWarnSuppression_lev9autobombtrenchbridges2:0
+9.Bridge:TestWarnSuppression_lev9forcebridgepuzzleentry:0
+9.Bridge:TestWarnSuppression_lev9forcedoor1:0
+9.Bridge:TestWarnSuppression_lev9forcedoor2:0
+9.Bridge:TestWarnSuppression_lev9forcedoor3:0
+9.Bridge:TestWarnSuppression_lev9secretwall1:0
+9.Bridge:chunk_black:0
+9.Bridge:chunk_sec1_1c:1
+9.Bridge:chunk_sec1_1c (1):1
+8.SecurityLevel:15
+8.SecurityLevel:8.Geometry:0
+8.SecurityLevel:8.DynamicObjectsSaveableInstantiated:0
+8.SecurityLevel:8.LightsStaticSaveable:36
+8.SecurityLevel:8.LightsStaticImmutable:0
+8.SecurityLevel:8.DoorsStaticSaveable:767
+8.SecurityLevel:8.StaticObjectsSaveable:278
+8.SecurityLevel:8.StaticObjectsImmutable:503
+8.SecurityLevel:8.NPCsSaveableInstantiated:3903
+8.SecurityLevel:SecScreen1_Camera (3):0
+8.SecurityLevel:SecScreen1_Camera (5):0
+8.SecurityLevel:SecScreen1_Camera (1):0
+8.SecurityLevel:SecScreen1_Camera (6):0
+8.SecurityLevel:SecScreen1_Camera (4):0
+8.SecurityLevel:SecScreen1_Camera (2):0
+8.SecurityLevel:SecScreen1_Camera:0
+7.EngineeringLevel:11
+7.EngineeringLevel:7.Geometry:0
+7.EngineeringLevel:7.DynamicObjectsSaveableInstantiated:0
+7.EngineeringLevel:7.LightsStaticSaveable:25
+7.EngineeringLevel:7.LightsStaticImmutable:0
+7.EngineeringLevel:7.DoorsStaticSaveable:301
+7.EngineeringLevel:7.StaticObjectsSaveable:295
+7.EngineeringLevel:7.StaticObjectsImmutable:396
+7.EngineeringLevel:7.NPCsSaveableInstantiated:3713
+7.EngineeringLevel:EngScreen5_Camera:0
+7.EngineeringLevel:EngScreen4_Camera:0
+7.EngineeringLevel:EngScreen3_Camera:0
+G1.AlphaGrove:136
+G1.AlphaGrove:G1.Geometry:0
+G1.AlphaGrove:G1.DynamicObjectsSaveableInstantiated:0
+G1.AlphaGrove:G1.LightsStaticSaveable:0
+G1.AlphaGrove:G1.LightsStaticImmutable:0
+G1.AlphaGrove:G1.DoorsStaticSaveable:18
+G1.AlphaGrove:G1.StaticObjectsSaveable:29
+G1.AlphaGrove:G1.StaticObjectsImmutable:172
+G1.AlphaGrove:G1.NPCsSaveableInstantiated:509
+G1.AlphaGrove:GroveScreen1_Camera:0
+G1.AlphaGrove:GroveScreen2_Camera:0
+G1.AlphaGrove:grovedome:0
+G1.AlphaGrove:ShadowHelper:0
+G1.AlphaGrove:ShadowHelper (1):0
+G1.AlphaGrove:ShadowHelper (2):0
+G1.AlphaGrove:ShadowHelper (3):0
+G1.AlphaGrove:ShadowHelper (4):0
+G1.AlphaGrove:ShadowHelper (5):0
+G1.AlphaGrove:ShadowHelper (6):0
+G1.AlphaGrove:ShadowHelper (7):0
+G1.AlphaGrove:ShadowHelper (8):0
+G1.AlphaGrove:ShadowHelper (9):0
+G1.AlphaGrove:ShadowHelper (10):0
+G1.AlphaGrove:ShadowHelper (11):0
+G1.AlphaGrove:ShadowHelper (12):0
+G1.AlphaGrove:ShadowHelper (13):0
+G1.AlphaGrove:ShadowHelper (14):0
+G1.AlphaGrove:ShadowHelper (15):0
+G1.AlphaGrove:ShadowHelper (16):0
+G1.AlphaGrove:ShadowHelper (17):0
+G1.AlphaGrove:ShadowHelper (18):0
+G1.AlphaGrove:ShadowHelper (19):0
+G1.AlphaGrove:ShadowHelper (20):0
+G1.AlphaGrove:ShadowHelper (21):0
+G1.AlphaGrove:ShadowHelper (22):0
+G1.AlphaGrove:ShadowHelper (23):0
+G1.AlphaGrove:ShadowHelper (24):0
+G1.AlphaGrove:ShadowHelper (25):0
+G1.AlphaGrove:ShadowHelper (26):0
+G1.AlphaGrove:ShadowHelper (27):0
+G1.AlphaGrove:ShadowHelper (28):0
+G1.AlphaGrove:ShadowHelper (29):0
+G1.AlphaGrove:ShadowHelper (30):0
+G1.AlphaGrove:ShadowHelper (31):0
+G1.AlphaGrove:ShadowHelper (32):0
+G1.AlphaGrove:ShadowHelper (33):0
+G1.AlphaGrove:ShadowHelper (34):0
+G1.AlphaGrove:ShadowHelper (35):0
+G1.AlphaGrove:ShadowHelper (36):0
+G1.AlphaGrove:ShadowHelper (37):0
+G1.AlphaGrove:ShadowHelper (38):0
+G1.AlphaGrove:ShadowHelper (39):0
+G1.AlphaGrove:ShadowHelper (40):0
+G1.AlphaGrove:ShadowHelper (41):0
+G1.AlphaGrove:ShadowHelper (42):0
+G1.AlphaGrove:ShadowHelper (43):0
+G1.AlphaGrove:ShadowHelper (44):0
+G1.AlphaGrove:ShadowHelper (45):0
+G1.AlphaGrove:ShadowHelper (46):0
+G1.AlphaGrove:ShadowHelper (47):0
+G1.AlphaGrove:ShadowHelper (48):0
+G1.AlphaGrove:ShadowHelper (49):0
+G1.AlphaGrove:ShadowHelper (50):0
+G1.AlphaGrove:ShadowHelper (51):0
+G1.AlphaGrove:ShadowHelper (52):0
+G1.AlphaGrove:ShadowHelper (54):0
+G1.AlphaGrove:ShadowHelper (60):0
+G1.AlphaGrove:ShadowHelper (61):0
+G1.AlphaGrove:ShadowHelper (62):0
+G1.AlphaGrove:ShadowHelper (63):0
+G1.AlphaGrove:ShadowHelper (64):0
+G1.AlphaGrove:ShadowHelper (65):0
+G1.AlphaGrove:ShadowHelper (67):0
+G1.AlphaGrove:ShadowHelper (68):0
+G1.AlphaGrove:ShadowHelper (69):0
+G1.AlphaGrove:ShadowHelper (70):0
+G1.AlphaGrove:ShadowHelper (71):0
+G1.AlphaGrove:ShadowHelper (72):0
+G1.AlphaGrove:ShadowHelper (73):0
+G1.AlphaGrove:ShadowHelper (74):0
+G1.AlphaGrove:ShadowHelper (75):0
+G1.AlphaGrove:ShadowHelper (76):0
+G1.AlphaGrove:ShadowHelper (77):0
+G1.AlphaGrove:ShadowHelper (78):0
+G1.AlphaGrove:ShadowHelper (79):0
+G1.AlphaGrove:ShadowHelper (80):0
+G1.AlphaGrove:ShadowHelper (81):0
+G1.AlphaGrove:ShadowHelper (82):0
+G1.AlphaGrove:ShadowHelper (83):0
+G1.AlphaGrove:ShadowHelper (84):0
+G1.AlphaGrove:ShadowHelper (85):0
+G1.AlphaGrove:ShadowHelper (86):0
+G1.AlphaGrove:ShadowHelper (87):0
+G1.AlphaGrove:ShadowHelper (88):0
+G1.AlphaGrove:ShadowHelper (89):0
+G1.AlphaGrove:ShadowHelper (90):0
+G1.AlphaGrove:ShadowHelper (91):0
+G1.AlphaGrove:ShadowHelper (53):0
+G1.AlphaGrove:ShadowHelper (55):0
+G1.AlphaGrove:ShadowHelper (56):0
+G1.AlphaGrove:ShadowHelper (57):0
+G1.AlphaGrove:ShadowHelper (58):0
+G1.AlphaGrove:ShadowHelper (59):0
+G1.AlphaGrove:ShadowHelper (66):0
+G1.AlphaGrove:ShadowHelper (92):0
+G1.AlphaGrove:ShadowHelper (93):0
+G1.AlphaGrove:ShadowHelper (94):0
+G1.AlphaGrove:ShadowHelper (95):0
+G1.AlphaGrove:ShadowHelper (96):0
+G1.AlphaGrove:ShadowHelper (97):0
+G1.AlphaGrove:ShadowHelper (98):0
+G1.AlphaGrove:ShadowHelper (99):0
+G1.AlphaGrove:ShadowHelper (100):0
+G1.AlphaGrove:ShadowHelper (101):0
+G1.AlphaGrove:ShadowHelper (102):0
+G1.AlphaGrove:ShadowHelper (103):0
+G1.AlphaGrove:ShadowHelper (104):0
+G1.AlphaGrove:ShadowHelper (105):0
+G1.AlphaGrove:ShadowHelper (106):0
+G1.AlphaGrove:ShadowHelper (107):0
+G1.AlphaGrove:ShadowHelper (108):0
+G1.AlphaGrove:ShadowHelper (109):0
+G1.AlphaGrove:ShadowHelper (110):0
+G1.AlphaGrove:ShadowHelper (111):0
+G1.AlphaGrove:ShadowHelper (112):0
+G1.AlphaGrove:ShadowHelper (113):0
+G1.AlphaGrove:ShadowHelper (114):0
+G1.AlphaGrove:ShadowHelper (115):0
+G1.AlphaGrove:ShadowHelper (116):0
+G1.AlphaGrove:ShadowHelper (117):0
+G1.AlphaGrove:ShadowHelper (118):0
+G1.AlphaGrove:ShadowHelper (119):0
+G1.AlphaGrove:ShadowHelper (120):0
+G1.AlphaGrove:ShadowHelper (121):0
+G1.AlphaGrove:ShadowHelper (122):0
+G1.AlphaGrove:chunk_maint2_9_slice128_top(Clone):0
+G1.AlphaGrove:chunk_maint2_9_slice128_top(Clone) (1):0
+G2.BetaGrove:9
+G2.BetaGrove:G2.Geometry:0
+G2.BetaGrove:G2.DynamicObjectsSaveableInstantiated:0
+G2.BetaGrove:G2.LightsStaticSaveable:0
+G2.BetaGrove:G2.LightsStaticImmutable:0
+G2.BetaGrove:G2.DoorsStaticSaveable:21
+G2.BetaGrove:G2.StaticObjectsSaveable:15
+G2.BetaGrove:G2.StaticObjectsImmutable:276
+G2.BetaGrove:G2.NPCsSaveableInstantiated:798
+G2.BetaGrove:grovedome (1):0
+G4.DeltaGrove:12
+G4.DeltaGrove:G4.Geometry:0
+G4.DeltaGrove:G4.DynamicObjectsSaveableInstantiated:0
+G4.DeltaGrove:G4.LightsStaticSaveable:0
+G4.DeltaGrove:G4.LightsStaticImmutable:0
+G4.DeltaGrove:G4.DoorsStaticSaveable:18
+G4.DeltaGrove:G4.StaticObjectsSaveable:31
+G4.DeltaGrove:G4.StaticObjectsImmutable:243
+G4.DeltaGrove:G4.NPCsSaveableInstantiated:377
+G4.DeltaGrove:GroveScreen3_Camera:0
+G4.DeltaGrove:GroveScreen4_Camera:0
+G4.DeltaGrove:door_elevator3 (1):2
+G4.DeltaGrove:grovedome (1):0
+6.ExecutiveLevel:43
+6.ExecutiveLevel:6.Geometry:0
+6.ExecutiveLevel:6.DynamicObjectsSaveableInstantiated:0
+6.ExecutiveLevel:6.LightsStaticSaveable:56
+6.ExecutiveLevel:6.LightsStaticImmutable:0
+6.ExecutiveLevel:6.DoorsStaticSaveable:283
+6.ExecutiveLevel:6.StaticObjectsSaveable:413
+6.ExecutiveLevel:6.StaticObjectsImmutable:852
+6.ExecutiveLevel:6.NPCsSaveableInstantiated:2705
+6.ExecutiveLevel:ExecScreen5_Camera:0
+6.ExecutiveLevel:ExecScreen6_Camera:0
+6.ExecutiveLevel:prop_chair02 (21):1
+6.ExecutiveLevel:chunk_eng2_1 (722):1
+6.ExecutiveLevel:chunk_eng2_1 (723):1
+6.ExecutiveLevel:chunk_exec1_1 (504):1
+6.ExecutiveLevel:chunk_exec1_1 (505):1
+6.ExecutiveLevel:chunk_exec1_1 (506):1
+6.ExecutiveLevel:chunk_exec1_1 (507):1
+6.ExecutiveLevel:chunk_exec1_1 (508):1
+6.ExecutiveLevel:chunk_exec1_1 (509):1
+6.ExecutiveLevel:chunk_exec1_1 (510):1
+6.ExecutiveLevel:chunk_exec3_2 (114):1
+6.ExecutiveLevel:chunk_exec3_2 (115):1
+6.ExecutiveLevel:chunk_exec3_2 (116):1
+6.ExecutiveLevel:chunk_exec3_2 (117):1
+6.ExecutiveLevel:chunk_flight2_2 (158):1
+6.ExecutiveLevel:chunk_exec3_2 (118):1
+6.ExecutiveLevel:chunk_exec3_2 (119):1
+6.ExecutiveLevel:chunk_exec3_2 (120):1
+6.ExecutiveLevel:chunk_exec3_2 (121):1
+6.ExecutiveLevel:chunk_flight2_2 (159):1
+6.ExecutiveLevel:chunk_flight2_2 (160):1
+6.ExecutiveLevel:chunk_exec1_1 (511):1
+6.ExecutiveLevel:chunk_flight2_2 (161):1
+6.ExecutiveLevel:chunk_black:0
+6.ExecutiveLevel:chunk_blocker:0
+6.ExecutiveLevel:chunk_maint2_5d_slice45:1
+6.ExecutiveLevel:chunk_maint2_5d_slice45 (2):1
+6.ExecutiveLevel:chunk_maint2_5d_slice45 (1):1
+6.ExecutiveLevel:chunk_maint2_5d_slice45 (3):1
+6.ExecutiveLevel:chunk_exec2_6 (355):1
+6.ExecutiveLevel:chunk_exec2_6 (356):1
+6.ExecutiveLevel:chunk_exec2_6 (357):1
+6.ExecutiveLevel:chunk_exec2_6 (358):1
+5.FlightDeck:15
+5.FlightDeck:5.Geometry:11938
+5.FlightDeck:5.DynamicObjectsSaveableInstantiated:265
+5.FlightDeck:5.LightsStaticSaveable:182
+5.FlightDeck:5.LightsStaticImmutable:2032
+5.FlightDeck:5.DoorsStaticSaveable:277
+5.FlightDeck:5.StaticObjectsSaveable:236
+5.FlightDeck:5.StaticObjectsImmutable:477
+5.FlightDeck:5.NPCsSaveableInstantiated:2683
+5.FlightDeck:FlightScreen1_Camera:0
+5.FlightDeck:flightpods_exterior:51
+5.FlightDeck:chunk_blockerflightbay (3):0
+5.FlightDeck:chunk_blockerflightbay (2):0
+5.FlightDeck:chunk_blockerflightbay:0
+5.FlightDeck:chunk_blockerflightbay (1):0
+5.FlightDeck:chunk_reac6_3:2
+4.StorageLevel:69
+4.StorageLevel:4.Geometry:0
+4.StorageLevel:4.DynamicObjectsSaveableInstantiated:0
+4.StorageLevel:4.LightsStaticSaveable:44
+4.StorageLevel:4.LightsStaticImmutable:0
+4.StorageLevel:4.DoorsStaticSaveable:361
+4.StorageLevel:4.StaticObjectsSaveable:237
+4.StorageLevel:4.StaticObjectsImmutable:158
+4.StorageLevel:4.NPCsSaveableInstantiated:3232
+4.StorageLevel:StorageScreen_Camera:0
+4.StorageLevel:chunk_crate_impenetrable (27):0
+4.StorageLevel:chunk_crate_impenetrable (26):0
+4.StorageLevel:chunk_crate_impenetrable (25):0
+4.StorageLevel:chunk_crate_impenetrable (10):0
+4.StorageLevel:chunk_crate_impenetrable (24):0
+4.StorageLevel:chunk_crate_impenetrable (23):0
+4.StorageLevel:chunk_crate_impenetrable (22):0
+4.StorageLevel:chunk_crate_impenetrable (21):0
+4.StorageLevel:chunk_crate_impenetrable (20):0
+4.StorageLevel:chunk_crate_impenetrable (19):0
+4.StorageLevel:chunk_crate_impenetrable (18):0
+4.StorageLevel:chunk_crate_impenetrable (17):0
+4.StorageLevel:chunk_crate_impenetrable (16):0
+4.StorageLevel:chunk_crate_impenetrable (15):0
+4.StorageLevel:chunk_crate_impenetrable (14):0
+4.StorageLevel:chunk_crate_impenetrable (13):0
+4.StorageLevel:chunk_crate_impenetrable (12):0
+4.StorageLevel:chunk_crate_impenetrable (11):0
+4.StorageLevel:chunk_crate_impenetrable (9):0
+4.StorageLevel:chunk_crate_impenetrable (8):0
+4.StorageLevel:chunk_crate_impenetrable (7):0
+4.StorageLevel:chunk_crate_impenetrable (28):0
+4.StorageLevel:chunk_crate_impenetrable (29):0
+4.StorageLevel:chunk_crate_impenetrable (30):0
+4.StorageLevel:chunk_crate_impenetrable (31):0
+4.StorageLevel:chunk_crate_impenetrable (32):0
+4.StorageLevel:chunk_crate_impenetrable (33):0
+4.StorageLevel:chunk_crate_impenetrable (34):0
+4.StorageLevel:chunk_crate_impenetrable (35):0
+4.StorageLevel:chunk_crate_impenetrable (36):0
+4.StorageLevel:chunk_crate_impenetrable (37):0
+4.StorageLevel:chunk_crate_impenetrable (38):0
+4.StorageLevel:chunk_crate_impenetrable (39):0
+4.StorageLevel:chunk_crate_impenetrable (40):0
+4.StorageLevel:chunk_crate_impenetrable (41):0
+4.StorageLevel:chunk_crate_impenetrable (42):0
+4.StorageLevel:chunk_crate_impenetrable (43):0
+4.StorageLevel:chunk_crate_impenetrable (44):0
+4.StorageLevel:chunk_crate_impenetrable (45):0
+4.StorageLevel:chunk_crate_impenetrable (46):0
+4.StorageLevel:chunk_crate_impenetrable (47):0
+4.StorageLevel:chunk_crate_impenetrable (48):0
+4.StorageLevel:chunk_crate_impenetrable (49):0
+4.StorageLevel:chunk_crate_impenetrable (50):0
+4.StorageLevel:chunk_crate_impenetrable (51):0
+4.StorageLevel:chunk_crate_impenetrable (52):0
+4.StorageLevel:chunk_crate_impenetrable (53):0
+4.StorageLevel:chunk_crate_impenetrable:0
+4.StorageLevel:chunk_crate_impenetrable (1):0
+4.StorageLevel:chunk_crate_impenetrable (2):0
+4.StorageLevel:chunk_crate_impenetrable (3):0
+4.StorageLevel:chunk_crate_impenetrable (4):0
+4.StorageLevel:chunk_crate_impenetrable (5):0
+4.StorageLevel:chunk_crate_impenetrable (6):0
+4.StorageLevel:chunk_crate_impenetrable (54):0
+4.StorageLevel:chunk_crate_impenetrable (55):0
+4.StorageLevel:chunk_crate_impenetrable (57):0
+4.StorageLevel:chunk_crate_impenetrable (56):0
+4.StorageLevel:chunks_hideblack:1
+4.StorageLevel:chunks_hideblack (1):1
+3.MaintenanceLevel:9
+3.MaintenanceLevel:3.Geometry:0
+3.MaintenanceLevel:3.DynamicObjectsSaveableInstantiated:0
+3.MaintenanceLevel:3.LightsStaticSaveable:14
+3.MaintenanceLevel:3.LightsStaticImmutable:0
+3.MaintenanceLevel:3.DoorsStaticSaveable:127
+3.MaintenanceLevel:3.StaticObjectsSaveable:534
+3.MaintenanceLevel:3.StaticObjectsImmutable:542
+3.MaintenanceLevel:3.NPCsSaveableInstantiated:1834
+3.MaintenanceLevel:MaintScreen_Camera:0
+2.ScienceLevel:64
+2.ScienceLevel:2.Geometry:0
+2.ScienceLevel:2.DynamicObjectsSaveableInstantiated:0
+2.ScienceLevel:2.LightsStaticSaveable:158
+2.ScienceLevel:2.LightsStaticImmutable:0
+2.ScienceLevel:2.DoorsStaticSaveable:306
+2.ScienceLevel:2.StaticObjectsSaveable:346
+2.ScienceLevel:2.StaticObjectsImmutable:701
+2.ScienceLevel:2.NPCsSaveableInstantiated:3491
+2.ScienceLevel:SciScreen6_Camera:0
+2.ScienceLevel:chunk_maint2_2 (113):1
+2.ScienceLevel:chunk_maint2_2 (116):1
+2.ScienceLevel:chunk_exteriorpanel1:0
+2.ScienceLevel:chunk_exteriorpanel1 (1):0
+2.ScienceLevel:chunk_exteriorpanel1 (2):0
+2.ScienceLevel:chunk_exteriorpanel1 (3):0
+2.ScienceLevel:chunk_exteriorpanel1 (4):0
+2.ScienceLevel:chunk_exteriorpanel1 (5):0
+2.ScienceLevel:chunk_exteriorpanel1 (6):0
+2.ScienceLevel:chunk_exteriorpanel1 (7):0
+2.ScienceLevel:chunk_exteriorpanel1 (8):0
+2.ScienceLevel:chunk_exteriorpanel1 (9):0
+2.ScienceLevel:chunk_exteriorpanel1 (10):0
+2.ScienceLevel:chunk_exteriorpanel1 (11):0
+2.ScienceLevel:chunk_exteriorpanel1 (12):0
+2.ScienceLevel:chunk_exteriorpanel1 (13):0
+2.ScienceLevel:chunk_exteriorpanel1 (14):0
+2.ScienceLevel:chunk_exteriorpanel1 (15):0
+2.ScienceLevel:chunk_exteriorpanel1 (17):0
+2.ScienceLevel:chunk_exteriorpanel1 (18):0
+2.ScienceLevel:chunk_exteriorpanel1 (19):0
+2.ScienceLevel:chunk_exteriorpanel1 (20):0
+2.ScienceLevel:chunk_exteriorpanel1 (21):0
+2.ScienceLevel:chunk_exteriorpanel1 (22):0
+2.ScienceLevel:chunk_exteriorpanel1 (23):0
+2.ScienceLevel:chunk_exteriorpanel1 (24):0
+2.ScienceLevel:chunk_exteriorpanel1 (25):0
+2.ScienceLevel:chunk_exteriorpanel1 (26):0
+2.ScienceLevel:chunk_exteriorpanel1 (27):0
+2.ScienceLevel:chunk_exteriorpanel1 (28):0
+2.ScienceLevel:chunk_exteriorpanel1 (29):0
+2.ScienceLevel:chunk_exteriorpanel1 (30):0
+2.ScienceLevel:chunk_exteriorpanel1 (31):0
+2.ScienceLevel:chunk_exteriorpanel1 (32):0
+2.ScienceLevel:chunk_exteriorpanel1 (33):0
+2.ScienceLevel:chunk_exteriorpanel1 (34):0
+2.ScienceLevel:chunk_exteriorpanel1 (35):0
+2.ScienceLevel:chunk_exteriorpanel1 (36):0
+2.ScienceLevel:chunk_exteriorpanel1 (37):0
+2.ScienceLevel:chunk_exteriorpanel1 (38):0
+2.ScienceLevel:chunk_exteriorpanel1 (39):0
+2.ScienceLevel:chunk_exteriorpanel1 (40):0
+2.ScienceLevel:chunk_exteriorpanel1 (41):0
+2.ScienceLevel:chunk_exteriorpanel1 (16):0
+2.ScienceLevel:chunk_exteriorpanel1 (42):0
+2.ScienceLevel:chunk_exteriorpanel1 (43):0
+2.ScienceLevel:chunk_exteriorpanel1 (44):0
+2.ScienceLevel:chunk_exteriorpanel1 (45):0
+2.ScienceLevel:chunk_exteriorpanel1 (46):0
+2.ScienceLevel:chunk_exteriorpanel1 (47):0
+2.ScienceLevel:chunk_exteriorpanel1 (48):0
+2.ScienceLevel:chunk_exteriorpanel1 (49):0
+2.ScienceLevel:chunk_exteriorpanel1 (50):0
+2.ScienceLevel:chunk_exteriorpanel1 (51):0
+2.ScienceLevel:chunk_exteriorpanel1 (52):0
+1.MedicalLevel:133
+1.MedicalLevel:1.Geometry:0
+1.MedicalLevel:1.DynamicObjectsSaveableInstantiated:0
+1.MedicalLevel:1.LightsStaticSaveable:96
+1.MedicalLevel:1.LightsStaticImmutable:0
+1.MedicalLevel:1.DoorsStaticSaveable:333
+1.MedicalLevel:1.StaticObjectsSaveable:294
+1.MedicalLevel:1.StaticObjectsImmutable:928
+1.MedicalLevel:1.NPCsSaveableInstantiated:1512
+1.MedicalLevel:MedScreen14_Camera:0
+1.MedicalLevel:MedScreen15_Camera:0
+1.MedicalLevel:pumpkin:0
+1.MedicalLevel:pumpkin (1):0
+1.MedicalLevel:pumpkin (2):4
+1.MedicalLevel:text_decal:0
+1.MedicalLevel:hide_blocker:0
+1.MedicalLevel:hide_blocker (1):0
+1.MedicalLevel:clip_npc:0
+1.MedicalLevel:ShadowHelper:0
+1.MedicalLevel:ShadowHelper (1):0
+1.MedicalLevel:ShadowHelper (2):0
+1.MedicalLevel:ShadowHelper (3):0
+1.MedicalLevel:ShadowHelper (4):0
+1.MedicalLevel:ShadowHelper (5):0
+1.MedicalLevel:ShadowHelper (6):0
+1.MedicalLevel:ShadowHelper (7):0
+1.MedicalLevel:ShadowHelper (8):0
+1.MedicalLevel:ShadowHelper (9):0
+1.MedicalLevel:ShadowHelper (10):0
+1.MedicalLevel:ShadowHelper (11):0
+1.MedicalLevel:ShadowHelper (12):0
+1.MedicalLevel:ShadowHelper (13):0
+1.MedicalLevel:ShadowHelper (14):0
+1.MedicalLevel:ShadowHelper (15):0
+1.MedicalLevel:ShadowHelper (16):0
+1.MedicalLevel:ShadowHelper (17):0
+1.MedicalLevel:ShadowHelper (18):0
+1.MedicalLevel:ShadowHelper (19):0
+1.MedicalLevel:ShadowHelper (20):0
+1.MedicalLevel:ShadowHelper (21):0
+1.MedicalLevel:ShadowHelper (22):0
+1.MedicalLevel:ShadowHelper (23):0
+1.MedicalLevel:ShadowHelper (24):0
+1.MedicalLevel:ShadowHelper (25):0
+1.MedicalLevel:ShadowHelper (26):0
+1.MedicalLevel:ShadowHelper (27):0
+1.MedicalLevel:ShadowHelper (28):0
+1.MedicalLevel:ShadowHelper (29):0
+1.MedicalLevel:ShadowHelper (30):0
+1.MedicalLevel:ShadowHelper (31):0
+1.MedicalLevel:ShadowHelper (32):0
+1.MedicalLevel:ShadowHelper (33):0
+1.MedicalLevel:ShadowHelper (34):0
+1.MedicalLevel:ShadowHelper (35):0
+1.MedicalLevel:ShadowHelper (36):0
+1.MedicalLevel:ShadowHelper (37):0
+1.MedicalLevel:ShadowHelper (38):0
+1.MedicalLevel:ShadowHelper (39):0
+1.MedicalLevel:ShadowHelper (40):0
+1.MedicalLevel:ShadowHelper (41):0
+1.MedicalLevel:ShadowHelper (42):0
+1.MedicalLevel:ShadowHelper (43):0
+1.MedicalLevel:ShadowHelper (44):0
+1.MedicalLevel:ShadowHelper (45):0
+1.MedicalLevel:ShadowHelper (46):0
+1.MedicalLevel:ShadowHelper (47):0
+1.MedicalLevel:ShadowHelper (48):0
+1.MedicalLevel:ShadowHelper (49):0
+1.MedicalLevel:ShadowHelper (50):0
+1.MedicalLevel:ShadowHelper (51):0
+1.MedicalLevel:ShadowHelper (52):0
+1.MedicalLevel:ShadowHelper (53):0
+1.MedicalLevel:ShadowHelper (54):0
+1.MedicalLevel:ShadowHelper (55):0
+1.MedicalLevel:ShadowHelper (56):0
+1.MedicalLevel:ShadowHelper (57):0
+1.MedicalLevel:ShadowHelper (58):0
+1.MedicalLevel:ShadowHelper (59):0
+1.MedicalLevel:ShadowHelper (60):0
+1.MedicalLevel:ShadowHelper (61):0
+1.MedicalLevel:ShadowHelper (62):0
+1.MedicalLevel:ShadowHelper (63):0
+1.MedicalLevel:ShadowHelper (64):0
+1.MedicalLevel:ShadowHelper (65):0
+1.MedicalLevel:ShadowHelper (66):0
+1.MedicalLevel:ShadowHelper (67):0
+1.MedicalLevel:ShadowHelper (68):0
+1.MedicalLevel:ShadowHelper (69):0
+1.MedicalLevel:ShadowHelper (70):0
+1.MedicalLevel:ShadowHelper (71):0
+1.MedicalLevel:ShadowHelper (72):0
+1.MedicalLevel:ShadowHelper (73):0
+1.MedicalLevel:ShadowHelper (74):0
+1.MedicalLevel:ShadowHelper (75):0
+1.MedicalLevel:ShadowHelper (76):0
+1.MedicalLevel:ShadowHelper (77):0
+1.MedicalLevel:ShadowHelper (78):0
+1.MedicalLevel:ShadowHelper (79):0
+1.MedicalLevel:ShadowHelper (80):0
+1.MedicalLevel:ShadowHelper (81):0
+1.MedicalLevel:ShadowHelper (82):0
+1.MedicalLevel:ShadowHelper (83):0
+1.MedicalLevel:ShadowHelper (84):0
+1.MedicalLevel:ShadowHelper (85):0
+1.MedicalLevel:ShadowHelper (86):0
+1.MedicalLevel:ShadowHelper (87):0
+1.MedicalLevel:ShadowHelper (88):0
+1.MedicalLevel:ShadowHelper (89):0
+1.MedicalLevel:ShadowHelper (90):0
+1.MedicalLevel:ShadowHelper (91):0
+1.MedicalLevel:ShadowHelper (92):0
+1.MedicalLevel:ShadowHelper (93):0
+1.MedicalLevel:ShadowHelper (94):0
+1.MedicalLevel:ShadowHelper (95):0
+1.MedicalLevel:ShadowHelper (96):0
+1.MedicalLevel:ShadowHelper (97):0
+1.MedicalLevel:ShadowHelper (98):0
+1.MedicalLevel:ShadowHelper (99):0
+1.MedicalLevel:ShadowHelper (100):0
+1.MedicalLevel:ShadowHelper (101):0
+1.MedicalLevel:ShadowHelper (102):0
+1.MedicalLevel:ShadowHelper (103):0
+1.MedicalLevel:ShadowHelper (104):0
+1.MedicalLevel:ShadowHelper (105):0
+1.MedicalLevel:ShadowHelper (106):0
+1.MedicalLevel:ShadowHelper (107):0
+1.MedicalLevel:ShadowHelper (108):0
+1.MedicalLevel:ShadowHelper (109):0
+1.MedicalLevel:ShadowHelper (110):0
+1.MedicalLevel:ShadowHelper (111):0
+1.MedicalLevel:ShadowHelper (112):0
+1.MedicalLevel:ShadowHelper (113):0
+1.MedicalLevel:ShadowHelper (114):0
+1.MedicalLevel:ShadowHelper (115):0
+CatchTrayClip:0
+R.ReactorLevel:11
+R.ReactorLevel:R.Geometry:0
+R.ReactorLevel:R.DynamicObjectsSaveableInstantiated:0
+R.ReactorLevel:R.LightsStaticSaveable:112
+R.ReactorLevel:R.LightsStaticImmutable:0
+R.ReactorLevel:R.DoorsStaticSaveable:277
+R.ReactorLevel:R.StaticObjectsSaveable:218
+R.ReactorLevel:R.StaticObjectsImmutable:625
+R.ReactorLevel:R.NPCsSaveableInstantiated:3757
+R.ReactorLevel:ReacScreen1_Camera:0
+R.ReactorLevel:ReacScreen1_Camera (1):0
+R.ReactorLevel:ReacScreen1_Camera (2):0
+CatchTrayDefault:0
+Exterior:5
+Exterior:exterior_shieldgenerator (3):0
+Exterior:exterior_shieldgenerator (2):0
+Exterior:exterior_shieldgenerator (1):0
+Exterior:exterior_shieldgenerator:0
+Exterior:exterior_shield:1
+CatchTrayInterDebris:0
+CatchTrayNPCClip:0
+item_cyber_data:2
+item_cyber_data:iceholder:1
+item_cyber_data:visualAspect:0
+item_cyber_data (1):2
+item_cyber_data (1):iceholder:1
+item_cyber_data (1):visualAspect:0
+item_cyber_data (2):2
+item_cyber_data (2):iceholder:1
+item_cyber_data (2):visualAspect:0
+item_cyber_data (3):2
+item_cyber_data (3):iceholder:1
+item_cyber_data (3):visualAspect:0
+info_ressurection_point:0
+info_ressurection_point (1):0
+info_ressurection_point:0
+info_ressurection_point:0
+info_ressurection_point:0
+info_ressurection_point:0
+info_ressurection_point (1):0
+info_ressurection_point (1):0
+info_playsound_resdest (1):0
+info_elev_destination.9.1_resdest:1
+info_elev_destination.9.1_resdest:elev_volume:0
+
+-- Counts After Load --
+GameObject Hierarchy Counts::
+GlobalConsts:2
+GlobalConsts:PoolOfTemporaryUnsaved:773
+GlobalConsts:AllPlayers:0
+LevelManager:0
+CullingTestSphere:0
+Sky:4
+Sky:SaturnTransformHolder:2
+Sky:Sun:0
+Sky:Sunlight:0
+Sky:Skysphere:0
+Player:9
+Player:PlayerCapsule:66
+Player:UICamera:36
+Player:AutomapCanvas:5654
+Player:MinigameSpace:81
+Player:Canvas:2131
+Player:AutomapCamera:0
+Player:Inventory:0
+Player:MouseCursorHandler:0
+Player:EventSystem:0
+C.Cyberspace:8
+C.Cyberspace:C.Geometry:0
+C.Cyberspace:C.DynamicObjectsSaveableInstantiated:0
+C.Cyberspace:C.LightsStaticSaveable:0
+C.Cyberspace:C.LightsStaticImmutable:2
+C.Cyberspace:C.DoorsStaticSaveable:0
+C.Cyberspace:C.StaticObjectsSaveable:618
+C.Cyberspace:C.StaticObjectsImmutable:120
+C.Cyberspace:C.NPCsSaveableInstantiated:433
+9.Bridge:26
+9.Bridge:9.Geometry:0
+9.Bridge:9.DynamicObjectsSaveableInstantiated:0
+9.Bridge:9.LightsStaticSaveable:0
+9.Bridge:9.LightsStaticImmutable:0
+9.Bridge:9.DoorsStaticSaveable:53
+9.Bridge:9.StaticObjectsSaveable:111
+9.Bridge:9.StaticObjectsImmutable:88
+9.Bridge:9.NPCsSaveableInstantiated:2845
+9.Bridge:BridgeScreen1_Camera:0
+9.Bridge:TestWarnSuppression_lev9atriumwall1:0
+9.Bridge:TestWarnSuppression_lev9atriumwall2:0
+9.Bridge:TestWarnSuppression_lev9atriumwall3:0
+9.Bridge:TestWarnSuppression_lev9atriumwall4:0
+9.Bridge:TestWarnSuppression_lev9atriumwallfinal:0
+9.Bridge:TestWarnSuppression_lev9farbridgesovertrench1:0
+9.Bridge:TestWarnSuppression_lev9autobombtrenchbridges:0
+9.Bridge:TestWarnSuppression_lev9farbridgesovertrench2:0
+9.Bridge:TestWarnSuppression_lev9autobombtrenchbridges2:0
+9.Bridge:TestWarnSuppression_lev9forcebridgepuzzleentry:0
+9.Bridge:TestWarnSuppression_lev9forcedoor1:0
+9.Bridge:TestWarnSuppression_lev9forcedoor2:0
+9.Bridge:TestWarnSuppression_lev9forcedoor3:0
+9.Bridge:TestWarnSuppression_lev9secretwall1:0
+9.Bridge:chunk_black:0
+9.Bridge:chunk_sec1_1c:1
+9.Bridge:chunk_sec1_1c (1):1
+8.SecurityLevel:15
+8.SecurityLevel:8.Geometry:0
+8.SecurityLevel:8.DynamicObjectsSaveableInstantiated:0
+8.SecurityLevel:8.LightsStaticSaveable:36
+8.SecurityLevel:8.LightsStaticImmutable:0
+8.SecurityLevel:8.DoorsStaticSaveable:767
+8.SecurityLevel:8.StaticObjectsSaveable:278
+8.SecurityLevel:8.StaticObjectsImmutable:503
+8.SecurityLevel:8.NPCsSaveableInstantiated:3903
+8.SecurityLevel:SecScreen1_Camera (3):0
+8.SecurityLevel:SecScreen1_Camera (5):0
+8.SecurityLevel:SecScreen1_Camera (1):0
+8.SecurityLevel:SecScreen1_Camera (6):0
+8.SecurityLevel:SecScreen1_Camera (4):0
+8.SecurityLevel:SecScreen1_Camera (2):0
+8.SecurityLevel:SecScreen1_Camera:0
+7.EngineeringLevel:11
+7.EngineeringLevel:7.Geometry:0
+7.EngineeringLevel:7.DynamicObjectsSaveableInstantiated:0
+7.EngineeringLevel:7.LightsStaticSaveable:25
+7.EngineeringLevel:7.LightsStaticImmutable:0
+7.EngineeringLevel:7.DoorsStaticSaveable:301
+7.EngineeringLevel:7.StaticObjectsSaveable:295
+7.EngineeringLevel:7.StaticObjectsImmutable:396
+7.EngineeringLevel:7.NPCsSaveableInstantiated:3713
+7.EngineeringLevel:EngScreen5_Camera:0
+7.EngineeringLevel:EngScreen4_Camera:0
+7.EngineeringLevel:EngScreen3_Camera:0
+G1.AlphaGrove:136
+G1.AlphaGrove:G1.Geometry:0
+G1.AlphaGrove:G1.DynamicObjectsSaveableInstantiated:0
+G1.AlphaGrove:G1.LightsStaticSaveable:0
+G1.AlphaGrove:G1.LightsStaticImmutable:0
+G1.AlphaGrove:G1.DoorsStaticSaveable:18
+G1.AlphaGrove:G1.StaticObjectsSaveable:29
+G1.AlphaGrove:G1.StaticObjectsImmutable:172
+G1.AlphaGrove:G1.NPCsSaveableInstantiated:509
+G1.AlphaGrove:GroveScreen1_Camera:0
+G1.AlphaGrove:GroveScreen2_Camera:0
+G1.AlphaGrove:grovedome:0
+G1.AlphaGrove:ShadowHelper:0
+G1.AlphaGrove:ShadowHelper (1):0
+G1.AlphaGrove:ShadowHelper (2):0
+G1.AlphaGrove:ShadowHelper (3):0
+G1.AlphaGrove:ShadowHelper (4):0
+G1.AlphaGrove:ShadowHelper (5):0
+G1.AlphaGrove:ShadowHelper (6):0
+G1.AlphaGrove:ShadowHelper (7):0
+G1.AlphaGrove:ShadowHelper (8):0
+G1.AlphaGrove:ShadowHelper (9):0
+G1.AlphaGrove:ShadowHelper (10):0
+G1.AlphaGrove:ShadowHelper (11):0
+G1.AlphaGrove:ShadowHelper (12):0
+G1.AlphaGrove:ShadowHelper (13):0
+G1.AlphaGrove:ShadowHelper (14):0
+G1.AlphaGrove:ShadowHelper (15):0
+G1.AlphaGrove:ShadowHelper (16):0
+G1.AlphaGrove:ShadowHelper (17):0
+G1.AlphaGrove:ShadowHelper (18):0
+G1.AlphaGrove:ShadowHelper (19):0
+G1.AlphaGrove:ShadowHelper (20):0
+G1.AlphaGrove:ShadowHelper (21):0
+G1.AlphaGrove:ShadowHelper (22):0
+G1.AlphaGrove:ShadowHelper (23):0
+G1.AlphaGrove:ShadowHelper (24):0
+G1.AlphaGrove:ShadowHelper (25):0
+G1.AlphaGrove:ShadowHelper (26):0
+G1.AlphaGrove:ShadowHelper (27):0
+G1.AlphaGrove:ShadowHelper (28):0
+G1.AlphaGrove:ShadowHelper (29):0
+G1.AlphaGrove:ShadowHelper (30):0
+G1.AlphaGrove:ShadowHelper (31):0
+G1.AlphaGrove:ShadowHelper (32):0
+G1.AlphaGrove:ShadowHelper (33):0
+G1.AlphaGrove:ShadowHelper (34):0
+G1.AlphaGrove:ShadowHelper (35):0
+G1.AlphaGrove:ShadowHelper (36):0
+G1.AlphaGrove:ShadowHelper (37):0
+G1.AlphaGrove:ShadowHelper (38):0
+G1.AlphaGrove:ShadowHelper (39):0
+G1.AlphaGrove:ShadowHelper (40):0
+G1.AlphaGrove:ShadowHelper (41):0
+G1.AlphaGrove:ShadowHelper (42):0
+G1.AlphaGrove:ShadowHelper (43):0
+G1.AlphaGrove:ShadowHelper (44):0
+G1.AlphaGrove:ShadowHelper (45):0
+G1.AlphaGrove:ShadowHelper (46):0
+G1.AlphaGrove:ShadowHelper (47):0
+G1.AlphaGrove:ShadowHelper (48):0
+G1.AlphaGrove:ShadowHelper (49):0
+G1.AlphaGrove:ShadowHelper (50):0
+G1.AlphaGrove:ShadowHelper (51):0
+G1.AlphaGrove:ShadowHelper (52):0
+G1.AlphaGrove:ShadowHelper (54):0
+G1.AlphaGrove:ShadowHelper (60):0
+G1.AlphaGrove:ShadowHelper (61):0
+G1.AlphaGrove:ShadowHelper (62):0
+G1.AlphaGrove:ShadowHelper (63):0
+G1.AlphaGrove:ShadowHelper (64):0
+G1.AlphaGrove:ShadowHelper (65):0
+G1.AlphaGrove:ShadowHelper (67):0
+G1.AlphaGrove:ShadowHelper (68):0
+G1.AlphaGrove:ShadowHelper (69):0
+G1.AlphaGrove:ShadowHelper (70):0
+G1.AlphaGrove:ShadowHelper (71):0
+G1.AlphaGrove:ShadowHelper (72):0
+G1.AlphaGrove:ShadowHelper (73):0
+G1.AlphaGrove:ShadowHelper (74):0
+G1.AlphaGrove:ShadowHelper (75):0
+G1.AlphaGrove:ShadowHelper (76):0
+G1.AlphaGrove:ShadowHelper (77):0
+G1.AlphaGrove:ShadowHelper (78):0
+G1.AlphaGrove:ShadowHelper (79):0
+G1.AlphaGrove:ShadowHelper (80):0
+G1.AlphaGrove:ShadowHelper (81):0
+G1.AlphaGrove:ShadowHelper (82):0
+G1.AlphaGrove:ShadowHelper (83):0
+G1.AlphaGrove:ShadowHelper (84):0
+G1.AlphaGrove:ShadowHelper (85):0
+G1.AlphaGrove:ShadowHelper (86):0
+G1.AlphaGrove:ShadowHelper (87):0
+G1.AlphaGrove:ShadowHelper (88):0
+G1.AlphaGrove:ShadowHelper (89):0
+G1.AlphaGrove:ShadowHelper (90):0
+G1.AlphaGrove:ShadowHelper (91):0
+G1.AlphaGrove:ShadowHelper (53):0
+G1.AlphaGrove:ShadowHelper (55):0
+G1.AlphaGrove:ShadowHelper (56):0
+G1.AlphaGrove:ShadowHelper (57):0
+G1.AlphaGrove:ShadowHelper (58):0
+G1.AlphaGrove:ShadowHelper (59):0
+G1.AlphaGrove:ShadowHelper (66):0
+G1.AlphaGrove:ShadowHelper (92):0
+G1.AlphaGrove:ShadowHelper (93):0
+G1.AlphaGrove:ShadowHelper (94):0
+G1.AlphaGrove:ShadowHelper (95):0
+G1.AlphaGrove:ShadowHelper (96):0
+G1.AlphaGrove:ShadowHelper (97):0
+G1.AlphaGrove:ShadowHelper (98):0
+G1.AlphaGrove:ShadowHelper (99):0
+G1.AlphaGrove:ShadowHelper (100):0
+G1.AlphaGrove:ShadowHelper (101):0
+G1.AlphaGrove:ShadowHelper (102):0
+G1.AlphaGrove:ShadowHelper (103):0
+G1.AlphaGrove:ShadowHelper (104):0
+G1.AlphaGrove:ShadowHelper (105):0
+G1.AlphaGrove:ShadowHelper (106):0
+G1.AlphaGrove:ShadowHelper (107):0
+G1.AlphaGrove:ShadowHelper (108):0
+G1.AlphaGrove:ShadowHelper (109):0
+G1.AlphaGrove:ShadowHelper (110):0
+G1.AlphaGrove:ShadowHelper (111):0
+G1.AlphaGrove:ShadowHelper (112):0
+G1.AlphaGrove:ShadowHelper (113):0
+G1.AlphaGrove:ShadowHelper (114):0
+G1.AlphaGrove:ShadowHelper (115):0
+G1.AlphaGrove:ShadowHelper (116):0
+G1.AlphaGrove:ShadowHelper (117):0
+G1.AlphaGrove:ShadowHelper (118):0
+G1.AlphaGrove:ShadowHelper (119):0
+G1.AlphaGrove:ShadowHelper (120):0
+G1.AlphaGrove:ShadowHelper (121):0
+G1.AlphaGrove:ShadowHelper (122):0
+G1.AlphaGrove:chunk_maint2_9_slice128_top(Clone):0
+G1.AlphaGrove:chunk_maint2_9_slice128_top(Clone) (1):0
+G2.BetaGrove:9
+G2.BetaGrove:G2.Geometry:0
+G2.BetaGrove:G2.DynamicObjectsSaveableInstantiated:0
+G2.BetaGrove:G2.LightsStaticSaveable:0
+G2.BetaGrove:G2.LightsStaticImmutable:0
+G2.BetaGrove:G2.DoorsStaticSaveable:21
+G2.BetaGrove:G2.StaticObjectsSaveable:15
+G2.BetaGrove:G2.StaticObjectsImmutable:276
+G2.BetaGrove:G2.NPCsSaveableInstantiated:798
+G2.BetaGrove:grovedome (1):0
+G4.DeltaGrove:12
+G4.DeltaGrove:G4.Geometry:0
+G4.DeltaGrove:G4.DynamicObjectsSaveableInstantiated:0
+G4.DeltaGrove:G4.LightsStaticSaveable:0
+G4.DeltaGrove:G4.LightsStaticImmutable:0
+G4.DeltaGrove:G4.DoorsStaticSaveable:18
+G4.DeltaGrove:G4.StaticObjectsSaveable:31
+G4.DeltaGrove:G4.StaticObjectsImmutable:243
+G4.DeltaGrove:G4.NPCsSaveableInstantiated:377
+G4.DeltaGrove:GroveScreen3_Camera:0
+G4.DeltaGrove:GroveScreen4_Camera:0
+G4.DeltaGrove:door_elevator3 (1):2
+G4.DeltaGrove:grovedome (1):0
+6.ExecutiveLevel:43
+6.ExecutiveLevel:6.Geometry:0
+6.ExecutiveLevel:6.DynamicObjectsSaveableInstantiated:0
+6.ExecutiveLevel:6.LightsStaticSaveable:56
+6.ExecutiveLevel:6.LightsStaticImmutable:0
+6.ExecutiveLevel:6.DoorsStaticSaveable:283
+6.ExecutiveLevel:6.StaticObjectsSaveable:413
+6.ExecutiveLevel:6.StaticObjectsImmutable:852
+6.ExecutiveLevel:6.NPCsSaveableInstantiated:2705
+6.ExecutiveLevel:ExecScreen5_Camera:0
+6.ExecutiveLevel:ExecScreen6_Camera:0
+6.ExecutiveLevel:prop_chair02 (21):1
+6.ExecutiveLevel:chunk_eng2_1 (722):1
+6.ExecutiveLevel:chunk_eng2_1 (723):1
+6.ExecutiveLevel:chunk_exec1_1 (504):1
+6.ExecutiveLevel:chunk_exec1_1 (505):1
+6.ExecutiveLevel:chunk_exec1_1 (506):1
+6.ExecutiveLevel:chunk_exec1_1 (507):1
+6.ExecutiveLevel:chunk_exec1_1 (508):1
+6.ExecutiveLevel:chunk_exec1_1 (509):1
+6.ExecutiveLevel:chunk_exec1_1 (510):1
+6.ExecutiveLevel:chunk_exec3_2 (114):1
+6.ExecutiveLevel:chunk_exec3_2 (115):1
+6.ExecutiveLevel:chunk_exec3_2 (116):1
+6.ExecutiveLevel:chunk_exec3_2 (117):1
+6.ExecutiveLevel:chunk_flight2_2 (158):1
+6.ExecutiveLevel:chunk_exec3_2 (118):1
+6.ExecutiveLevel:chunk_exec3_2 (119):1
+6.ExecutiveLevel:chunk_exec3_2 (120):1
+6.ExecutiveLevel:chunk_exec3_2 (121):1
+6.ExecutiveLevel:chunk_flight2_2 (159):1
+6.ExecutiveLevel:chunk_flight2_2 (160):1
+6.ExecutiveLevel:chunk_exec1_1 (511):1
+6.ExecutiveLevel:chunk_flight2_2 (161):1
+6.ExecutiveLevel:chunk_black:0
+6.ExecutiveLevel:chunk_blocker:0
+6.ExecutiveLevel:chunk_maint2_5d_slice45:1
+6.ExecutiveLevel:chunk_maint2_5d_slice45 (2):1
+6.ExecutiveLevel:chunk_maint2_5d_slice45 (1):1
+6.ExecutiveLevel:chunk_maint2_5d_slice45 (3):1
+6.ExecutiveLevel:chunk_exec2_6 (355):1
+6.ExecutiveLevel:chunk_exec2_6 (356):1
+6.ExecutiveLevel:chunk_exec2_6 (357):1
+6.ExecutiveLevel:chunk_exec2_6 (358):1
+5.FlightDeck:15
+5.FlightDeck:5.Geometry:11938
+5.FlightDeck:5.DynamicObjectsSaveableInstantiated:266
+5.FlightDeck:5.LightsStaticSaveable:182
+5.FlightDeck:5.LightsStaticImmutable:2032
+5.FlightDeck:5.DoorsStaticSaveable:277
+5.FlightDeck:5.StaticObjectsSaveable:236
+5.FlightDeck:5.StaticObjectsImmutable:477
+5.FlightDeck:5.NPCsSaveableInstantiated:2683
+5.FlightDeck:FlightScreen1_Camera:0
+5.FlightDeck:flightpods_exterior:51
+5.FlightDeck:chunk_blockerflightbay (3):0
+5.FlightDeck:chunk_blockerflightbay (2):0
+5.FlightDeck:chunk_blockerflightbay:0
+5.FlightDeck:chunk_blockerflightbay (1):0
+5.FlightDeck:chunk_reac6_3:2
+4.StorageLevel:69
+4.StorageLevel:4.Geometry:0
+4.StorageLevel:4.DynamicObjectsSaveableInstantiated:0
+4.StorageLevel:4.LightsStaticSaveable:44
+4.StorageLevel:4.LightsStaticImmutable:0
+4.StorageLevel:4.DoorsStaticSaveable:361
+4.StorageLevel:4.StaticObjectsSaveable:237
+4.StorageLevel:4.StaticObjectsImmutable:158
+4.StorageLevel:4.NPCsSaveableInstantiated:3232
+4.StorageLevel:StorageScreen_Camera:0
+4.StorageLevel:chunk_crate_impenetrable (27):0
+4.StorageLevel:chunk_crate_impenetrable (26):0
+4.StorageLevel:chunk_crate_impenetrable (25):0
+4.StorageLevel:chunk_crate_impenetrable (10):0
+4.StorageLevel:chunk_crate_impenetrable (24):0
+4.StorageLevel:chunk_crate_impenetrable (23):0
+4.StorageLevel:chunk_crate_impenetrable (22):0
+4.StorageLevel:chunk_crate_impenetrable (21):0
+4.StorageLevel:chunk_crate_impenetrable (20):0
+4.StorageLevel:chunk_crate_impenetrable (19):0
+4.StorageLevel:chunk_crate_impenetrable (18):0
+4.StorageLevel:chunk_crate_impenetrable (17):0
+4.StorageLevel:chunk_crate_impenetrable (16):0
+4.StorageLevel:chunk_crate_impenetrable (15):0
+4.StorageLevel:chunk_crate_impenetrable (14):0
+4.StorageLevel:chunk_crate_impenetrable (13):0
+4.StorageLevel:chunk_crate_impenetrable (12):0
+4.StorageLevel:chunk_crate_impenetrable (11):0
+4.StorageLevel:chunk_crate_impenetrable (9):0
+4.StorageLevel:chunk_crate_impenetrable (8):0
+4.StorageLevel:chunk_crate_impenetrable (7):0
+4.StorageLevel:chunk_crate_impenetrable (28):0
+4.StorageLevel:chunk_crate_impenetrable (29):0
+4.StorageLevel:chunk_crate_impenetrable (30):0
+4.StorageLevel:chunk_crate_impenetrable (31):0
+4.StorageLevel:chunk_crate_impenetrable (32):0
+4.StorageLevel:chunk_crate_impenetrable (33):0
+4.StorageLevel:chunk_crate_impenetrable (34):0
+4.StorageLevel:chunk_crate_impenetrable (35):0
+4.StorageLevel:chunk_crate_impenetrable (36):0
+4.StorageLevel:chunk_crate_impenetrable (37):0
+4.StorageLevel:chunk_crate_impenetrable (38):0
+4.StorageLevel:chunk_crate_impenetrable (39):0
+4.StorageLevel:chunk_crate_impenetrable (40):0
+4.StorageLevel:chunk_crate_impenetrable (41):0
+4.StorageLevel:chunk_crate_impenetrable (42):0
+4.StorageLevel:chunk_crate_impenetrable (43):0
+4.StorageLevel:chunk_crate_impenetrable (44):0
+4.StorageLevel:chunk_crate_impenetrable (45):0
+4.StorageLevel:chunk_crate_impenetrable (46):0
+4.StorageLevel:chunk_crate_impenetrable (47):0
+4.StorageLevel:chunk_crate_impenetrable (48):0
+4.StorageLevel:chunk_crate_impenetrable (49):0
+4.StorageLevel:chunk_crate_impenetrable (50):0
+4.StorageLevel:chunk_crate_impenetrable (51):0
+4.StorageLevel:chunk_crate_impenetrable (52):0
+4.StorageLevel:chunk_crate_impenetrable (53):0
+4.StorageLevel:chunk_crate_impenetrable:0
+4.StorageLevel:chunk_crate_impenetrable (1):0
+4.StorageLevel:chunk_crate_impenetrable (2):0
+4.StorageLevel:chunk_crate_impenetrable (3):0
+4.StorageLevel:chunk_crate_impenetrable (4):0
+4.StorageLevel:chunk_crate_impenetrable (5):0
+4.StorageLevel:chunk_crate_impenetrable (6):0
+4.StorageLevel:chunk_crate_impenetrable (54):0
+4.StorageLevel:chunk_crate_impenetrable (55):0
+4.StorageLevel:chunk_crate_impenetrable (57):0
+4.StorageLevel:chunk_crate_impenetrable (56):0
+4.StorageLevel:chunks_hideblack:1
+4.StorageLevel:chunks_hideblack (1):1
+3.MaintenanceLevel:9
+3.MaintenanceLevel:3.Geometry:0
+3.MaintenanceLevel:3.DynamicObjectsSaveableInstantiated:0
+3.MaintenanceLevel:3.LightsStaticSaveable:14
+3.MaintenanceLevel:3.LightsStaticImmutable:0
+3.MaintenanceLevel:3.DoorsStaticSaveable:127
+3.MaintenanceLevel:3.StaticObjectsSaveable:534
+3.MaintenanceLevel:3.StaticObjectsImmutable:542
+3.MaintenanceLevel:3.NPCsSaveableInstantiated:463
+3.MaintenanceLevel:MaintScreen_Camera:0
+2.ScienceLevel:64
+2.ScienceLevel:2.Geometry:0
+2.ScienceLevel:2.DynamicObjectsSaveableInstantiated:0
+2.ScienceLevel:2.LightsStaticSaveable:158
+2.ScienceLevel:2.LightsStaticImmutable:0
+2.ScienceLevel:2.DoorsStaticSaveable:306
+2.ScienceLevel:2.StaticObjectsSaveable:346
+2.ScienceLevel:2.StaticObjectsImmutable:701
+2.ScienceLevel:2.NPCsSaveableInstantiated:0
+2.ScienceLevel:SciScreen6_Camera:0
+2.ScienceLevel:chunk_maint2_2 (113):1
+2.ScienceLevel:chunk_maint2_2 (116):1
+2.ScienceLevel:chunk_exteriorpanel1:0
+2.ScienceLevel:chunk_exteriorpanel1 (1):0
+2.ScienceLevel:chunk_exteriorpanel1 (2):0
+2.ScienceLevel:chunk_exteriorpanel1 (3):0
+2.ScienceLevel:chunk_exteriorpanel1 (4):0
+2.ScienceLevel:chunk_exteriorpanel1 (5):0
+2.ScienceLevel:chunk_exteriorpanel1 (6):0
+2.ScienceLevel:chunk_exteriorpanel1 (7):0
+2.ScienceLevel:chunk_exteriorpanel1 (8):0
+2.ScienceLevel:chunk_exteriorpanel1 (9):0
+2.ScienceLevel:chunk_exteriorpanel1 (10):0
+2.ScienceLevel:chunk_exteriorpanel1 (11):0
+2.ScienceLevel:chunk_exteriorpanel1 (12):0
+2.ScienceLevel:chunk_exteriorpanel1 (13):0
+2.ScienceLevel:chunk_exteriorpanel1 (14):0
+2.ScienceLevel:chunk_exteriorpanel1 (15):0
+2.ScienceLevel:chunk_exteriorpanel1 (17):0
+2.ScienceLevel:chunk_exteriorpanel1 (18):0
+2.ScienceLevel:chunk_exteriorpanel1 (19):0
+2.ScienceLevel:chunk_exteriorpanel1 (20):0
+2.ScienceLevel:chunk_exteriorpanel1 (21):0
+2.ScienceLevel:chunk_exteriorpanel1 (22):0
+2.ScienceLevel:chunk_exteriorpanel1 (23):0
+2.ScienceLevel:chunk_exteriorpanel1 (24):0
+2.ScienceLevel:chunk_exteriorpanel1 (25):0
+2.ScienceLevel:chunk_exteriorpanel1 (26):0
+2.ScienceLevel:chunk_exteriorpanel1 (27):0
+2.ScienceLevel:chunk_exteriorpanel1 (28):0
+2.ScienceLevel:chunk_exteriorpanel1 (29):0
+2.ScienceLevel:chunk_exteriorpanel1 (30):0
+2.ScienceLevel:chunk_exteriorpanel1 (31):0
+2.ScienceLevel:chunk_exteriorpanel1 (32):0
+2.ScienceLevel:chunk_exteriorpanel1 (33):0
+2.ScienceLevel:chunk_exteriorpanel1 (34):0
+2.ScienceLevel:chunk_exteriorpanel1 (35):0
+2.ScienceLevel:chunk_exteriorpanel1 (36):0
+2.ScienceLevel:chunk_exteriorpanel1 (37):0
+2.ScienceLevel:chunk_exteriorpanel1 (38):0
+2.ScienceLevel:chunk_exteriorpanel1 (39):0
+2.ScienceLevel:chunk_exteriorpanel1 (40):0
+2.ScienceLevel:chunk_exteriorpanel1 (41):0
+2.ScienceLevel:chunk_exteriorpanel1 (16):0
+2.ScienceLevel:chunk_exteriorpanel1 (42):0
+2.ScienceLevel:chunk_exteriorpanel1 (43):0
+2.ScienceLevel:chunk_exteriorpanel1 (44):0
+2.ScienceLevel:chunk_exteriorpanel1 (45):0
+2.ScienceLevel:chunk_exteriorpanel1 (46):0
+2.ScienceLevel:chunk_exteriorpanel1 (47):0
+2.ScienceLevel:chunk_exteriorpanel1 (48):0
+2.ScienceLevel:chunk_exteriorpanel1 (49):0
+2.ScienceLevel:chunk_exteriorpanel1 (50):0
+2.ScienceLevel:chunk_exteriorpanel1 (51):0
+2.ScienceLevel:chunk_exteriorpanel1 (52):0
+1.MedicalLevel:133
+1.MedicalLevel:1.Geometry:0
+1.MedicalLevel:1.DynamicObjectsSaveableInstantiated:0
+1.MedicalLevel:1.LightsStaticSaveable:96
+1.MedicalLevel:1.LightsStaticImmutable:0
+1.MedicalLevel:1.DoorsStaticSaveable:333
+1.MedicalLevel:1.StaticObjectsSaveable:294
+1.MedicalLevel:1.StaticObjectsImmutable:928
+1.MedicalLevel:1.NPCsSaveableInstantiated:0
+1.MedicalLevel:MedScreen14_Camera:0
+1.MedicalLevel:MedScreen15_Camera:0
+1.MedicalLevel:pumpkin:0
+1.MedicalLevel:pumpkin (1):0
+1.MedicalLevel:pumpkin (2):4
+1.MedicalLevel:text_decal:0
+1.MedicalLevel:hide_blocker:0
+1.MedicalLevel:hide_blocker (1):0
+1.MedicalLevel:clip_npc:0
+1.MedicalLevel:ShadowHelper:0
+1.MedicalLevel:ShadowHelper (1):0
+1.MedicalLevel:ShadowHelper (2):0
+1.MedicalLevel:ShadowHelper (3):0
+1.MedicalLevel:ShadowHelper (4):0
+1.MedicalLevel:ShadowHelper (5):0
+1.MedicalLevel:ShadowHelper (6):0
+1.MedicalLevel:ShadowHelper (7):0
+1.MedicalLevel:ShadowHelper (8):0
+1.MedicalLevel:ShadowHelper (9):0
+1.MedicalLevel:ShadowHelper (10):0
+1.MedicalLevel:ShadowHelper (11):0
+1.MedicalLevel:ShadowHelper (12):0
+1.MedicalLevel:ShadowHelper (13):0
+1.MedicalLevel:ShadowHelper (14):0
+1.MedicalLevel:ShadowHelper (15):0
+1.MedicalLevel:ShadowHelper (16):0
+1.MedicalLevel:ShadowHelper (17):0
+1.MedicalLevel:ShadowHelper (18):0
+1.MedicalLevel:ShadowHelper (19):0
+1.MedicalLevel:ShadowHelper (20):0
+1.MedicalLevel:ShadowHelper (21):0
+1.MedicalLevel:ShadowHelper (22):0
+1.MedicalLevel:ShadowHelper (23):0
+1.MedicalLevel:ShadowHelper (24):0
+1.MedicalLevel:ShadowHelper (25):0
+1.MedicalLevel:ShadowHelper (26):0
+1.MedicalLevel:ShadowHelper (27):0
+1.MedicalLevel:ShadowHelper (28):0
+1.MedicalLevel:ShadowHelper (29):0
+1.MedicalLevel:ShadowHelper (30):0
+1.MedicalLevel:ShadowHelper (31):0
+1.MedicalLevel:ShadowHelper (32):0
+1.MedicalLevel:ShadowHelper (33):0
+1.MedicalLevel:ShadowHelper (34):0
+1.MedicalLevel:ShadowHelper (35):0
+1.MedicalLevel:ShadowHelper (36):0
+1.MedicalLevel:ShadowHelper (37):0
+1.MedicalLevel:ShadowHelper (38):0
+1.MedicalLevel:ShadowHelper (39):0
+1.MedicalLevel:ShadowHelper (40):0
+1.MedicalLevel:ShadowHelper (41):0
+1.MedicalLevel:ShadowHelper (42):0
+1.MedicalLevel:ShadowHelper (43):0
+1.MedicalLevel:ShadowHelper (44):0
+1.MedicalLevel:ShadowHelper (45):0
+1.MedicalLevel:ShadowHelper (46):0
+1.MedicalLevel:ShadowHelper (47):0
+1.MedicalLevel:ShadowHelper (48):0
+1.MedicalLevel:ShadowHelper (49):0
+1.MedicalLevel:ShadowHelper (50):0
+1.MedicalLevel:ShadowHelper (51):0
+1.MedicalLevel:ShadowHelper (52):0
+1.MedicalLevel:ShadowHelper (53):0
+1.MedicalLevel:ShadowHelper (54):0
+1.MedicalLevel:ShadowHelper (55):0
+1.MedicalLevel:ShadowHelper (56):0
+1.MedicalLevel:ShadowHelper (57):0
+1.MedicalLevel:ShadowHelper (58):0
+1.MedicalLevel:ShadowHelper (59):0
+1.MedicalLevel:ShadowHelper (60):0
+1.MedicalLevel:ShadowHelper (61):0
+1.MedicalLevel:ShadowHelper (62):0
+1.MedicalLevel:ShadowHelper (63):0
+1.MedicalLevel:ShadowHelper (64):0
+1.MedicalLevel:ShadowHelper (65):0
+1.MedicalLevel:ShadowHelper (66):0
+1.MedicalLevel:ShadowHelper (67):0
+1.MedicalLevel:ShadowHelper (68):0
+1.MedicalLevel:ShadowHelper (69):0
+1.MedicalLevel:ShadowHelper (70):0
+1.MedicalLevel:ShadowHelper (71):0
+1.MedicalLevel:ShadowHelper (72):0
+1.MedicalLevel:ShadowHelper (73):0
+1.MedicalLevel:ShadowHelper (74):0
+1.MedicalLevel:ShadowHelper (75):0
+1.MedicalLevel:ShadowHelper (76):0
+1.MedicalLevel:ShadowHelper (77):0
+1.MedicalLevel:ShadowHelper (78):0
+1.MedicalLevel:ShadowHelper (79):0
+1.MedicalLevel:ShadowHelper (80):0
+1.MedicalLevel:ShadowHelper (81):0
+1.MedicalLevel:ShadowHelper (82):0
+1.MedicalLevel:ShadowHelper (83):0
+1.MedicalLevel:ShadowHelper (84):0
+1.MedicalLevel:ShadowHelper (85):0
+1.MedicalLevel:ShadowHelper (86):0
+1.MedicalLevel:ShadowHelper (87):0
+1.MedicalLevel:ShadowHelper (88):0
+1.MedicalLevel:ShadowHelper (89):0
+1.MedicalLevel:ShadowHelper (90):0
+1.MedicalLevel:ShadowHelper (91):0
+1.MedicalLevel:ShadowHelper (92):0
+1.MedicalLevel:ShadowHelper (93):0
+1.MedicalLevel:ShadowHelper (94):0
+1.MedicalLevel:ShadowHelper (95):0
+1.MedicalLevel:ShadowHelper (96):0
+1.MedicalLevel:ShadowHelper (97):0
+1.MedicalLevel:ShadowHelper (98):0
+1.MedicalLevel:ShadowHelper (99):0
+1.MedicalLevel:ShadowHelper (100):0
+1.MedicalLevel:ShadowHelper (101):0
+1.MedicalLevel:ShadowHelper (102):0
+1.MedicalLevel:ShadowHelper (103):0
+1.MedicalLevel:ShadowHelper (104):0
+1.MedicalLevel:ShadowHelper (105):0
+1.MedicalLevel:ShadowHelper (106):0
+1.MedicalLevel:ShadowHelper (107):0
+1.MedicalLevel:ShadowHelper (108):0
+1.MedicalLevel:ShadowHelper (109):0
+1.MedicalLevel:ShadowHelper (110):0
+1.MedicalLevel:ShadowHelper (111):0
+1.MedicalLevel:ShadowHelper (112):0
+1.MedicalLevel:ShadowHelper (113):0
+1.MedicalLevel:ShadowHelper (114):0
+1.MedicalLevel:ShadowHelper (115):0
+CatchTrayClip:0
+R.ReactorLevel:11
+R.ReactorLevel:R.Geometry:0
+R.ReactorLevel:R.DynamicObjectsSaveableInstantiated:0
+R.ReactorLevel:R.LightsStaticSaveable:112
+R.ReactorLevel:R.LightsStaticImmutable:0
+R.ReactorLevel:R.DoorsStaticSaveable:277
+R.ReactorLevel:R.StaticObjectsSaveable:218
+R.ReactorLevel:R.StaticObjectsImmutable:625
+R.ReactorLevel:R.NPCsSaveableInstantiated:0
+R.ReactorLevel:ReacScreen1_Camera:0
+R.ReactorLevel:ReacScreen1_Camera (1):0
+R.ReactorLevel:ReacScreen1_Camera (2):0
+CatchTrayDefault:0
+Exterior:5
+Exterior:exterior_shieldgenerator (3):0
+Exterior:exterior_shieldgenerator (2):0
+Exterior:exterior_shieldgenerator (1):0
+Exterior:exterior_shieldgenerator:0
+Exterior:exterior_shield:1
+CatchTrayInterDebris:0
+CatchTrayNPCClip:0
+item_cyber_data:2
+item_cyber_data:iceholder:1
+item_cyber_data:visualAspect:0
+item_cyber_data (1):2
+item_cyber_data (1):iceholder:1
+item_cyber_data (1):visualAspect:0
+item_cyber_data (2):2
+item_cyber_data (2):iceholder:1
+item_cyber_data (2):visualAspect:0
+item_cyber_data (3):2
+item_cyber_data (3):iceholder:1
+item_cyber_data (3):visualAspect:0
+info_ressurection_point:0
+info_ressurection_point (1):0
+info_ressurection_point:0
+info_ressurection_point:0
+info_ressurection_point:0
+info_ressurection_point:0
+info_ressurection_point (1):0
+info_ressurection_point (1):0
+info_playsound_resdest (1):0
+info_elev_destination.9.1_resdest:1
+info_elev_destination.9.1_resdest:elev_volume:0
+

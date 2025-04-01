@@ -155,7 +155,8 @@ public class MainMenuHandler : MonoBehaviour {
 	void ReEnableCamera() {
 		if (MouseLookScript.a == null) return;
 
-		MouseLookScript.a.playerCamera.enabled = true; 
+		MouseLookScript.a.playerCamera.enabled = true;
+		UnityEngine.Debug.Log("Camera reenabled");
 	}
 
 	void OnEnable() {
@@ -754,7 +755,6 @@ public class MainMenuHandler : MonoBehaviour {
 		if (returnToPause) {
 			PauseScript.a.ExitSaveDialog();
 			ResetPages();
-			MouseCursor.a.mainCamera.enabled = true;
 			returnToPause = false;
 			this.gameObject.SetActive(false);
 			return;

@@ -48,7 +48,7 @@ public class AIController : MonoBehaviour {
 	[HideInInspector] public bool hasTargetIDAttached = false; // save
     [HideInInspector] public float gracePeriodFinished; // save
     [HideInInspector] public float meleeDamageFinished; // save
-	[HideInInspector] public bool inSight = false; // save
+	public bool inSight = false; // save
     [HideInInspector] public bool infront; // save
     [HideInInspector] public bool inProjFOV; // save
     [HideInInspector] public bool LOSpossible; // save
@@ -212,7 +212,7 @@ public class AIController : MonoBehaviour {
 		attack2SoundTime = PauseScript.a.relativeTime;
 		attack3SoundTime = PauseScript.a.relativeTime;
 		timeTillEnemyChangeFinished = PauseScript.a.relativeTime;
-		huntFinished = PauseScript.a.relativeTime;
+		SetHuntFinished();
 		attackFinished = PauseScript.a.relativeTime;
 		attack2Finished = PauseScript.a.relativeTime;
 		attack3Finished = PauseScript.a.relativeTime;
@@ -328,6 +328,7 @@ public class AIController : MonoBehaviour {
 			if (enemyHM == null) enemyHM = Utils.GetMainHealthManager(enemy);
 			if (enemyHM != null) {
 				if (!HasHealth(enemyHM)) {
+					Debug.Log("Enemy died, forgetting and wandering");
 					if (IsCyberNPC()) {
 						currentState = AIState.Idle;
 					} else {
@@ -338,6 +339,7 @@ public class AIController : MonoBehaviour {
 					}
 					
 					enemy = null; // Forget the enemy.
+					Debug.Log("enemy forgotten");
 					enemyHM = null;
 					posCheckFinished = PauseScript.a.relativeTime;
 					lastPosition = transform.position;
@@ -862,7 +864,7 @@ public class AIController : MonoBehaviour {
 	}
 	
 	Vector3 GetSearchPoint(bool hunting) {
-		if (hunting) return lastKnownEnemyPos; // When we can't see the enemy, go to the last spot we saw them.
+		//if (hunting) return lastKnownEnemyPos; // When we can't see the enemy, go to the last spot we saw them.
 		
 		switch(Const.a.typeForNPC[index]) {
 			case NPCType.Mutant: return GetWanderPoint();
@@ -874,6 +876,20 @@ public class AIController : MonoBehaviour {
 		}
 		
 		return GetWanderPoint();
+	}
+	
+	private void SetHuntFinished() {
+		Debug.Log("Set hunt finished time");
+		huntFinished = PauseScript.a.relativeTime;
+		int diff = Const.a.difficultyCombat;
+		if (IsCyberNPC()) diff = Const.a.difficultyCyber;
+		if (diff <= 1) { // More forgetful on easy.
+			huntFinished += Mathf.Max((Const.a.huntTimeForNPC[index] * 0.75f),60f);
+		} else if (diff >= 3) { // Good memory on hard.
+			huntFinished += Mathf.Max((Const.a.huntTimeForNPC[index] * 2.00f),60f); 
+		} else {
+		    huntFinished += Mathf.Max(Const.a.huntTimeForNPC[index],60f);
+		}
 	}
 
 	void Run() {
@@ -901,9 +917,10 @@ public class AIController : MonoBehaviour {
 		}
 
         if (!inSight) {
-            if (huntFinished > PauseScript.a.relativeTime && !wandering) {
+            if (huntFinished > PauseScript.a.relativeTime) {
                 Hunt();
             } else {
+				Debug.Log("enemy hunt ended");
                 enemy = null;
 				enemyHM = null;
 				wandering = true; // Sometimes look like we are still searching
@@ -920,17 +937,7 @@ public class AIController : MonoBehaviour {
 		}
 
 		shotFired = false;
-		huntFinished = PauseScript.a.relativeTime;
-		int diff = Const.a.difficultyCombat;
-		if (IsCyberNPC()) diff = Const.a.difficultyCyber;
-		if (diff <= 1) { // More forgetful on easy.
-			huntFinished += (Const.a.huntTimeForNPC[index] * 0.75f);
-		} else if (diff >= 3) { // Good memory on hard.
-			huntFinished += (Const.a.huntTimeForNPC[index] * 2.00f); 
-		} else {
-		    huntFinished += Const.a.huntTimeForNPC[index];
-		}
-		
+		SetHuntFinished();
 		near = Const.a.rangeForNPC[index]  * Const.a.rangeForNPC[index];
 		mid  = Const.a.rangeForNPC2[index] * Const.a.rangeForNPC2[index];
 		far  = Const.a.rangeForNPC3[index] * Const.a.rangeForNPC3[index];
@@ -1793,6 +1800,7 @@ public class AIController : MonoBehaviour {
 		enemyHM = Utils.GetMainHealthManager(enemSent);
 		lastKnownEnemyPos = enemy.transform.position;
 		targettingPosition = targettingPosSent.position;
+		SetHuntFinished();
 	}
 
 	void PlaySightSound() {
@@ -1836,12 +1844,9 @@ public class AIController : MonoBehaviour {
 	public void Alert(UseData ud) {
 		if (Const.a.difficultyCombat == 0) return;
 
-		enemy = Const.a.player1Capsule;
-		posCheckFinished = PauseScript.a.relativeTime + positionCheckDelay;
-		lastPosition = transform.position;
-		wandering = false;
-		wanderFinished = PauseScript.a.relativeTime;
-		if (enemy != null) enemyHM = Utils.GetMainHealthManager(enemy);
+		SetEnemy(Const.a.player1Capsule,Const.a.player1Capsule.transform);
+		currentDestination = enemy.transform.position;
+		inSight = false;
 	}
 
 	public void AwakeFromSleep(UseData ud) {

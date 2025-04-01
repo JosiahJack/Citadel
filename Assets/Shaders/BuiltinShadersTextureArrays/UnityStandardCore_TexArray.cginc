@@ -435,25 +435,18 @@ half4 fragForwardAdd (VertexOutputForwardAdd i) : SV_Target     // backward comp
 // ------------------------------------------------------------------
 //  Deferred pass
 
-struct VertexOutputDeferred
-{
+struct VertexOutputDeferred {
     UNITY_POSITION(pos);
     float4 tex                            : TEXCOORD0;
     float3 eyeVec                         : TEXCOORD1;
     float4 tangentToWorldAndPackedData[3] : TEXCOORD2;    // [3x3:tangentToWorld | 1x3:viewDirForParallax or worldPos]
     half4 ambientOrLightmapUV             : TEXCOORD5;    // SH or Lightmap UVs
-
-//     #if UNITY_REQUIRE_FRAG_WORLDPOS && !UNITY_PACK_WORLDPOS_WITH_TANGENT
-//         float3 posWorld                     : TEXCOORD6;
-//     #endif
-
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
 
-VertexOutputDeferred vertDeferred (VertexInput v)
-{
+VertexOutputDeferred vertDeferred(VertexInput v) {
     UNITY_SETUP_INSTANCE_ID(v);
     VertexOutputDeferred o;
     UNITY_INITIALIZE_OUTPUT(VertexOutputDeferred, o);
@@ -461,34 +454,30 @@ VertexOutputDeferred vertDeferred (VertexInput v)
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
     float4 posWorld = mul(unity_ObjectToWorld, v.vertex);
-//     #if UNITY_REQUIRE_FRAG_WORLDPOS
-//         #if UNITY_PACK_WORLDPOS_WITH_TANGENT
-//             o.tangentToWorldAndPackedData[0].w = posWorld.x;
-//             o.tangentToWorldAndPackedData[1].w = posWorld.y;
-//             o.tangentToWorldAndPackedData[2].w = posWorld.z;
-//         #else
-//             o.posWorld = posWorld.xyz;
-//         #endif
-//     #endif
     o.pos = UnityObjectToClipPos(v.vertex);
-
+    o.tex = 0;
     o.tex = TexCoords(v);
+    o.eyeVec = 0;
     o.eyeVec = NormalizePerVertexNormal(posWorld.xyz - _WorldSpaceCameraPos);
     float3 normalWorld = UnityObjectToWorldNormal(v.normal);
     float4 tangentWorld = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);
     float3x3 tangentToWorld = CreateTangentToWorldPerVertex(normalWorld, tangentWorld.xyz, tangentWorld.w);
+    o.tangentToWorldAndPackedData[0] = 0;
+    o.tangentToWorldAndPackedData[1] = 0;
+    o.tangentToWorldAndPackedData[2] = 0;
     o.tangentToWorldAndPackedData[0].xyz = tangentToWorld[0];
     o.tangentToWorldAndPackedData[1].xyz = tangentToWorld[1];
     o.tangentToWorldAndPackedData[2].xyz = tangentToWorld[2];
-    o.ambientOrLightmapUV = 0;
+    half4 ambientOrLightmapUV = 0; // Temp variable
     #ifdef LIGHTMAP_ON
-        o.ambientOrLightmapUV.xy = v.uv1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
+        ambientOrLightmapUV.xy = v.uv1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
     #elif UNITY_SHOULD_SAMPLE_SH
-        o.ambientOrLightmapUV.rgb = ShadeSHPerVertex (normalWorld, o.ambientOrLightmapUV.rgb);
+        ambientOrLightmapUV.rgb = ShadeSHPerVertex(normalWorld, ambientOrLightmapUV.rgb);
     #endif
     #ifdef DYNAMICLIGHTMAP_ON
-        o.ambientOrLightmapUV.zw = v.uv2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
+        ambientOrLightmapUV.zw = v.uv2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
     #endif
+    o.ambientOrLightmapUV = ambientOrLightmapUV; // Single final write
     return o;
 }
 

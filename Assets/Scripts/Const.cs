@@ -135,7 +135,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public bool[] hasLaserOnAttack3ForNPC;
 	[HideInInspector] public bool[] explodeOnAttack3ForNPC;
 	[HideInInspector] public bool[] preactivateMeleeCollidersForNPC;
-	[HideInInspector] public float[] huntTimeForNPC;
+	public float[] huntTimeForNPC;
 	[HideInInspector] public float[] flightHeightForNPC;
 	[HideInInspector] public bool[] flightHeightIsPercentageForNPC;
 	[HideInInspector] public bool[] switchMaterialOnDeathForNPC;
@@ -390,18 +390,11 @@ public class Const : MonoBehaviour {
 				// MOST IMPORTANT PART!!
 
 		// Cache values needed by awake prior to the .a instances of others.
-		PlayerReferenceManager prm =
-							  a.player1.GetComponent<PlayerReferenceManager>();
-
-		if (prm != null) {
-			a.player1Capsule = prm.playerCapsule;
-			a.player1CapsuleMainCameragGO = prm.playerCapsuleMainCamera;
-		}
-
+		PlayerReferenceManager prm = a.player1.GetComponent<PlayerReferenceManager>();
+		a.player1Capsule = prm.playerCapsule;
+		a.player1CapsuleMainCameragGO = prm.playerCapsuleMainCamera;
 		a.player1TargettingPos = a.player1CapsuleMainCameragGO.transform;
-		a.player1PlayerMovementScript = 
-							   a.player1Capsule.GetComponent<PlayerMovement>();
-
+		a.player1PlayerMovementScript = a.player1Capsule.GetComponent<PlayerMovement>();
 		a.CheckIfNewGame();
 		a.LoadTextForLanguage(0); // Initialize with US English (index 0)
 		// Force Initialize all TextLocalization so language loaded from config
