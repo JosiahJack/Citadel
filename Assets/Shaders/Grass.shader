@@ -34,7 +34,8 @@ Shader "Roystan/Grass"
 		float3 normal : NORMAL;
 		float2 uv : TEXCOORD0;
 		// unityShadowCoord4 is defined as a float4 in UnityShadowLibrary.cginc.
-		unityShadowCoord4 _ShadowCoord : TEXCOORD1;
+		float3 worldPos : TEXCOORD1;
+		unityShadowCoord4 _ShadowCoord : TEXCOORD2;
 	#endif
 	};
 
@@ -75,6 +76,7 @@ Shader "Roystan/Grass"
 	#if UNITY_PASS_FORWARDBASE
 		o.normal = UnityObjectToWorldNormal(normal);
 		o.uv = uv;
+		o.worldPos = mul(unity_ObjectToWorld, float4(pos, 1.0)).xyz;
 		// Shadows are sampled from a screen-space shadow map texture.
 		o._ShadowCoord = ComputeScreenPos(o.pos);
 	#elif UNITY_PASS_SHADOWCASTER
@@ -208,16 +210,48 @@ Shader "Roystan/Grass"
 			float4 _BottomColor;
 			float _TranslucentGain;
 
+			// Calculate point light contribution
+            float3 CalculatePointLight(float3 normal, float3 worldPos)
+            {
+                float3 totalLight = 0;
+                
+                // Unity supports up to 4 point lights in forward rendering
+                for (int i = 0; i < 4; i++)
+                {
+                    // Skip if light is not active
+                    if (unity_LightColor[i].a == 0)
+                        continue;
+
+                    float3 lightPos = float3(unity_4LightPosX0[i], unity_4LightPosY0[i], unity_4LightPosZ0[i]);
+                    float3 lightVec = lightPos - worldPos;
+                    float distance = length(lightVec);
+                    float3 lightDir = lightVec / distance;
+
+                    // Attenuation based on light range
+                    float range = unity_4LightAtten0[i];
+                    float attenuation = 1.0 / (1.0 + range * distance * distance);
+                    
+                    // Lambertian lighting with translucency
+                    float NdotL = saturate(dot(normal, lightDir) + _TranslucentGain);
+                    totalLight += unity_LightColor[i].rgb * NdotL * attenuation;
+                }
+                
+                return totalLight;
+            }
+
 			float4 frag (geometryOutput i,  fixed facing : VFACE) : SV_Target
             {			
 				float3 normal = facing > 0 ? i.normal : -i.normal;
 
 				float shadow = SHADOW_ATTENUATION(i);
 				float NdotL = saturate(saturate(dot(normal, _WorldSpaceLightPos0)) + _TranslucentGain) * shadow;
-
+	
 				float3 ambient = ShadeSH9(float4(normal, 1));
 				float4 lightIntensity = NdotL * _LightColor0 + float4(ambient, 1);
-                float4 col = lerp(_BottomColor, _TopColor * lightIntensity, i.uv.y);
+
+                float3 pointLights = CalculatePointLight(normal, i.worldPos);
+                float3 finalLight = lightIntensity + pointLights + ambient;
+                float4 col = lerp(_BottomColor, _TopColor * float4(finalLight,1), i.uv.y);
 
 				return col;
             }
