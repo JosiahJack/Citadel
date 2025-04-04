@@ -82,7 +82,9 @@ Shader "Deferred/Grass" {
         v.vertex = patch[0].vertex * barycentricCoordinates.x + 
                 patch[1].vertex * barycentricCoordinates.y + 
                 patch[2].vertex * barycentricCoordinates.z;
-        v.normal = float3(0,-1,0);
+        v.normal = patch[0].normal * barycentricCoordinates.x + 
+                patch[1].normal * barycentricCoordinates.y + 
+                patch[2].normal * barycentricCoordinates.z;
         v.tangent = patch[0].tangent * barycentricCoordinates.x + 
                     patch[1].tangent * barycentricCoordinates.y + 
                     patch[2].tangent * barycentricCoordinates.z;
@@ -124,7 +126,6 @@ Shader "Deferred/Grass" {
     [maxvertexcount(BLADE_SEGMENTS * 2 + 4)]
     void geo(triangle tessellationVert IN[3], inout TriangleStream<geometryOutput> triStream) {
         float3 pos = IN[0].pos.xyz;
-//         float3 worldPos = mul(unity_ObjectToWorld, float4(pos, 1.0)).xyz;
 
         // Each blade of grass is constructed in tangent space with respect
 		// to the emitting vertex's normal and tangent vectors, where the width
@@ -135,13 +136,10 @@ Shader "Deferred/Grass" {
 
 		// Matrix to bend the blade in the direction it's facing.
         float3x3 bendRotationMatrix = AngleAxis3x3(rand(pos.zzx) * _BendRotationRandom * UNITY_PI * 0.5, float3(-1, 0, 0));
-        float2 windSample = float2(0.001,0.001);
-        float3 wind = normalize(float3(windSample.x, windSample.y, 0));
-        float3x3 windRotation = AngleAxis3x3(UNITY_PI * windSample, wind);
 
 		// Construct a matrix to transform our blade from tangent space
 		// to local space; this is the same process used when sampling normal maps.
-        float3 vNormal = IN[0].normal;//float3(0, 1, 0);
+        float3 vNormal = IN[0].normal;
         float4 vTangent = IN[0].tangent;
         float3 vBinormal = cross(vNormal, vTangent) * vTangent.w;
         float3x3 tangentToLocal = float3x3(
@@ -153,7 +151,7 @@ Shader "Deferred/Grass" {
         // Construct full tangent to local matrix, including our rotations.
 		// Construct a second matrix with only the facing rotation; this will be used 
 		// for the root of the blade, to ensure it always faces the correct direction.
-        float3x3 transformationMatrix = mul(mul(mul(tangentToLocal, windRotation), facingRotationMatrix), bendRotationMatrix);
+        float3x3 transformationMatrix = mul(mul(tangentToLocal, facingRotationMatrix), bendRotationMatrix);
         float3x3 transformationMatrixFacing = mul(tangentToLocal, facingRotationMatrix);
 
         float height = abs(rand(pos) * 2 - 1) * _BladeHeightRandom + _BladeHeight;
@@ -218,11 +216,10 @@ Shader "Deferred/Grass" {
             structurePS pixel_shader(geometryOutput vs) {
                 structurePS ps;
                 float3 normalDirection = normalize(vs.normal);
-                half3 diffuseColor = _Color;
-                ps.albedo = half4(diffuseColor, 1.0);
-                ps.specular = half4(0,0,0,0);
-                ps.normal = half4(normalDirection * 0.5 + 0.5, 1.0);
-                ps.emission = half4(0, 0, 0, 1);
+                ps.albedo = _Color;
+                ps.specular = 0;
+                ps.normal = float4(normalDirection * 0.5 + 0.5, 1.0);
+                ps.emission = half4(0, 0.1, 0, 1);
                 #ifndef UNITY_HDR_ON
                     ps.emission.rgb = exp2(-ps.emission.rgb);
                 #endif

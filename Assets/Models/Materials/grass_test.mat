@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: grass_tessellated
+  m_Name: grass_test
   m_Shader: {fileID: 4800000, guid: daf3636c86cf7ffb78e7473065466cc5, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -124,14 +124,14 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BendRotationRandom: 0.177
+    - _BendRotationRandom: 1
     - _BladeCurve: 4
-    - _BladeForward: 0.1
-    - _BladeHeight: 0.08
-    - _BladeHeightRandom: 0.16
+    - _BladeForward: 0.09
+    - _BladeHeight: 0.24
+    - _BladeHeightRandom: 0.04
     - _BladeRandomAmount: 0.5
     - _BladeSegments: 3
-    - _BladeWidth: 0
+    - _BladeWidth: 0.015
     - _BladeWidthRandom: 0.02
     - _BumpScale: 1
     - _ClusterSize: 3
@@ -157,7 +157,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TessellationUniform: 28
+    - _TessellationUniform: 40.9
     - _TranslucentGain: 0
     - _UVSec: 0
     - _Weight1: 0.5
@@ -172,7 +172,7 @@ Material:
     - _BaseColor: {r: 0.012602621, g: 0.13207549, b: 0.011836951, a: 1}
     - _BendProperties: {r: 0.1, g: 0.5, b: 0, a: 0}
     - _BottomColor: {r: 0.0481043, g: 0.21698111, b: 0.04857514, a: 1}
-    - _Color: {r: 0.13725491, g: 0.37254903, b: 0.13725491, a: 1}
+    - _Color: {r: 0, g: 0.5754717, b: 0.06694827, a: 1}
     - _Dimensions: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _RootTint: {r: 1, g: 1, b: 1, a: 0}

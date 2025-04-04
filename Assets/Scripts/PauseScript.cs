@@ -49,6 +49,7 @@ public class PauseScript : MonoBehaviour {
 
 		menuActive = mainMenu.activeSelf;
 		if (!menuActive) {
+			if (!MouseLookScript.a.playerCamera.enabled) MouseLookScript.a.playerCamera.enabled = true;
 			if (GetInput.a.Menu()) {
 				if (onSaveDialog)
 					ExitSaveDialog();

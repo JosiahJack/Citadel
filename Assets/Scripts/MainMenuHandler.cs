@@ -156,7 +156,7 @@ public class MainMenuHandler : MonoBehaviour {
 		if (MouseLookScript.a == null) return;
 
 		MouseLookScript.a.playerCamera.enabled = true;
-		UnityEngine.Debug.Log("Camera reenabled");
+		//UnityEngine.Debug.Log("Camera reenabled");
 	}
 
 	void OnEnable() {

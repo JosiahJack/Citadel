@@ -219,13 +219,13 @@ public class DynamicCulling : MonoBehaviour {
             case 91:  return 255f; // Slice, but would be 69f / 255f;
             case 92:  return  70f / 255f;
 
-            case 94:  return  71f / 255f;
+//             case 94:  return  71f / 255f;
 //             case 95:  return 255f; // Slice, but would be 71f / 255f;
-            case 96:  return  72f / 255f;
-            case 97:  return  73f / 255f;
-            case 98:  return  74f / 255f;
-            case 99:  return  75f / 255f;
-            case 100: return  76f / 255f;
+//             case 96:  return  72f / 255f;
+//             case 97:  return  73f / 255f;
+//             case 98:  return  74f / 255f;
+//             case 99:  return  75f / 255f;
+//             case 100: return  76f / 255f;
             case 101: return  77f / 255f;
             case 102: return  78f / 255f;
             case 103: return  79f / 255f;
