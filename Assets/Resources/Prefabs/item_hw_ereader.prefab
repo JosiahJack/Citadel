@@ -150,6 +150,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rbody: {fileID: 0}
+  previousVelocity: {x: 0, y: 0, z: 0}
+  previousUseGravity: 0
+  previousKinematic: 0
+  previouscolDetMode: 0
+  previousSet: 0
 --- !u!114 &4893094862303010476
 MonoBehaviour:
   m_ObjectHideFlags: 0

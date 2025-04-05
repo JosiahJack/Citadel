@@ -937,10 +937,17 @@ public static class SaveLoad {
         lit.color = new Color(readFloatx, readFloaty, readFloatz, readFloatw);
         lit.spotAngle = Utils.GetFloatFromString(entries[index],"spotAngle"); index++;
         lit.shadows = GetLightShadowsFromString(entries[index],"shadows"); index++;
-        if ((lit.intensity / (lit.range * lit.range)) < Const.a.shadowThreshold) lit.shadows = LightShadows.None;
+        float luminosity = (lit.intensity / (lit.range * lit.range));
+        float thresh = Const.a.shadowThreshold;
+        if (curlevel >= 10) thresh += 0.015f;
+        if (curlevel == 7 || curlevel == 0 || curlevel == 8) thresh += 0.0051f; // makes it 0.0451, heehehe
+        if (curlevel == 8) thresh += 0.005f;
+        if (luminosity < thresh) lit.shadows = LightShadows.None;
         else numLightsWithShadows++;
         lit.shadowStrength = Utils.GetFloatFromString(entries[index],"shadowStrength"); index++;
         lit.shadowResolution = GetShadowResFromString(entries[index],"shadowResolution"); index++;
+        if (lit.shadows != LightShadows.None && lit.intensity > 2f) lit.shadowResolution = LightShadowResolution.High;
+        else lit.shadowResolution = LightShadowResolution.Low;
         lit.shadowBias = Utils.GetFloatFromString(entries[index],"shadowBias"); index++;
         lit.shadowBias = 0.004f;
         lit.shadowNormalBias = Utils.GetFloatFromString(entries[index],"shadowNormalBias"); index++;

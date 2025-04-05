@@ -13,16 +13,23 @@ public class WeaponFire : MonoBehaviour {
     public Animator anim; // assign in the editor
 	public Animator rapieranim; // assign in the editor
 	public GameObject muzFlashMK3;
+	public GameObject muzSmokeMK3;
 	public GameObject muzFlashBlaster;
 	public GameObject muzFlashDartgun;
 	public GameObject muzFlashFlechette;
+	public GameObject muzSmokeFlechette;
 	public GameObject muzFlashIonBeam;
+	public GameObject muzSmokeMagnum;
 	public GameObject muzFlashMagnum;
+	public GameObject muzSmokePistol;
 	public GameObject muzFlashPistol;
 	public GameObject muzFlashMagpulse;
 	public GameObject muzFlashPlasma;
+	public GameObject muzSmokeRailgun;
 	public GameObject muzFlashRailgun;
+	public GameObject muzSmokeRiotgun;
 	public GameObject muzFlashRiotgun;
+	public GameObject muzSmokeSkorpion;
 	public GameObject muzFlashSkorpion;
 	public GameObject muzFlashSparq;
 	public GameObject muzFlashStungun;
@@ -570,12 +577,16 @@ public class WeaponFire : MonoBehaviour {
     void FireWeapon(int index, bool isSilent) {
 		PlayerHealth.a.makingNoise = true;
 		PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime + 0.5f;
+		GameObject smoke = null;
         switch (WeaponCurrent.a.weaponIndex) {
             case 36:
                 //Mark3 Assault Rifle
                 if (!isSilent) Utils.PlayUIOneShotSavable(251); // wmarksman
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashMK3.SetActive(true);
+				smoke = Instantiate(muzSmokeMK3,muzFlashMK3.transform.position,Const.a.quaternionIdentity) as GameObject;
+				smoke.transform.parent = reloadContainer;
+				smoke.SetActive(true);
                 break;
             case 37:
                 //ER-90 Blaster
@@ -602,7 +613,10 @@ public class WeaponFire : MonoBehaviour {
                 if (!isSilent) Utils.PlayUIOneShotSavable(243); // wflechette
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashFlechette.SetActive(true);
-                break;
+				smoke = Instantiate(muzSmokeFlechette,muzFlashFlechette.transform.position,Const.a.quaternionIdentity) as GameObject;
+				smoke.transform.parent = reloadContainer;
+				smoke.SetActive(true);
+				break;
             case 40:
                 //RW-45 Ion Beam
 				ionSetting = WeaponCurrent.a.weaponEnergySetting[WeaponCurrent.a.weaponCurrent];
@@ -630,6 +644,9 @@ public class WeaponFire : MonoBehaviour {
                 if (!isSilent) Utils.PlayUIOneShotSavable(249); // wmagnum
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashMagnum.SetActive(true);
+				smoke = Instantiate(muzSmokeMagnum,muzFlashMagnum.transform.position,Const.a.quaternionIdentity) as GameObject;
+				smoke.transform.parent = reloadContainer;
+				smoke.SetActive(true);
                 break;
             case 44:
                 //SB-20 Magpulse
@@ -642,6 +659,9 @@ public class WeaponFire : MonoBehaviour {
                 if (!isSilent) Utils.PlayUIOneShotSavable(255); // wpistol
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashPistol.SetActive(true);
+				smoke = Instantiate(muzSmokePistol,muzFlashPistol.transform.position,Const.a.quaternionIdentity) as GameObject;
+				smoke.transform.parent = reloadContainer;
+				smoke.SetActive(true);
                 break;
             case 46:
                 //LG-XX Plasma Rifle
@@ -662,18 +682,27 @@ public class WeaponFire : MonoBehaviour {
                 if (!isSilent) Utils.PlayUIOneShotSavable(259); // wrailgun
                 FireRailgun(index);
 				muzFlashRailgun.SetActive(true);
+				smoke = Instantiate(muzSmokeRailgun,muzFlashRailgun.transform.position,Const.a.quaternionIdentity) as GameObject;
+				smoke.transform.parent = reloadContainer;
+				smoke.SetActive(true);
                 break;
             case 48:
                 //DC-05 Riotgun
                 if (!isSilent) Utils.PlayUIOneShotSavable(262); // wriotgun
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashRiotgun.SetActive(true);
+				smoke = Instantiate(muzSmokeRiotgun,muzFlashRiotgun.transform.position,Const.a.quaternionIdentity) as GameObject;
+				smoke.transform.parent = reloadContainer;
+				smoke.SetActive(true);
                 break;
             case 49:
                 //RF-07 Skorpion
                 if (!isSilent) Utils.PlayUIOneShotSavable(263); // wskorpion
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashSkorpion.SetActive(true);
+				smoke = Instantiate(muzSmokeSkorpion,muzFlashSkorpion.transform.position,Const.a.quaternionIdentity) as GameObject;
+				smoke.transform.parent = reloadContainer;
+				smoke.SetActive(true);
                 break;
             case 50:
                 //Sparq Beam

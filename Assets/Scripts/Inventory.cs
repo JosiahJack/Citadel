@@ -13,9 +13,9 @@ public class Inventory : MonoBehaviour {
 	private AccessCardType doorAccessTypeAcquired;
 
 	// Hardware
-	[HideInInspector] public bool[] hasHardware; // save
-	[HideInInspector] public int[] hardwareVersion; // save
-	[HideInInspector] public int[] hardwareVersionSetting; // save
+	public bool[] hasHardware; // save
+	public int[] hardwareVersion; // save
+	public int[] hardwareVersionSetting; // save
 	public GameObject[] hwButtons; // The UI buttons in the mfd center tab's Hardware tab.
 	public HardwareButton hardwareButtonManager;
 	[HideInInspector] public int hardwareInvCurrent; // save, Current slot in the general inventory (14 slots).
@@ -753,14 +753,15 @@ public class Inventory : MonoBehaviour {
 	                                   int hwversion, bool overt) {
 		if (index < 0) return;
 
-		if (hwversion < 1) {
+		if (hwversion < 0) {
 			Const.sprint("BUG: Adding hardware with no version, using 0 (v1)");
-			hwversion = 1;
+			hwversion = 0;
 		}
 
 		if (overt) MFDManager.a.SendInfoToItemTab(constIndex);
-		if (hwversion <= hardwareVersion[index] && overt) {
-		    Const.sprint(Const.a.stringTable[46] );
+		if (hwversion < 0) hwversion = 0;
+		if (hwversion <= hardwareVersion[index] && hwversion > 0) {
+		    if (overt) Const.sprint(Const.a.stringTable[46]); // "THAT WARE IS OBSOLETE. DISCARDED."
 		    return;
 		}
 
@@ -843,11 +844,7 @@ public class Inventory : MonoBehaviour {
 			hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
 		}
 
-		if (overt) {
-		    Const.sprint(Const.a.stringTable[textIndex + 326] + " v"
-					     + hwversion.ToString() );
-		}
-
+		if (overt) Const.sprint(Const.a.stringTable[textIndex + 326] + " v" + hwversion.ToString() );
 		if (MouseLookScript.a.firstTimePickup && overt) {
 			MFDManager.a.CenterTabButtonClickSilent(1,true);
 		}
@@ -871,11 +868,6 @@ public class Inventory : MonoBehaviour {
 
 	public bool BioMonitorActive() {
 		return hasHardware[6] && hardwareIsActive[6];
-	}
-
-	// Lantern utility functions. [7]
-	public int LanternVersion() {
-		return hardwareVersion[7];
 	}
 	
 	public bool LanternActive() {

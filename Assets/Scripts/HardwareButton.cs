@@ -65,7 +65,9 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	// 0 = bio, 1 = sen, 2 = lan, 3 = shi, 4 = nig, 5 = ere, 6 = boo, 7 = jum
+	// verz must come from Inventory.a.hardwareVersionSetting[] as this value has already subtracted 1 since the version number on prefabs is 1 based but the one needed for images is 0 based.
 	public void SetVersionIconForButton(bool isOn, int verz, int button8Index) {
+		Debug.Log("SetVersionIconForButton with version " + verz.ToString() + ", and button8Index of " + button8Index.ToString());
 		if (button8Index < 0 || button8Index > 7) button8Index = 0;
 		if (isOn) {
 			switch (verz) {
@@ -112,7 +114,7 @@ public class HardwareButton : MonoBehaviour {
 	// Called by PlayerEnergy when exhausted energy to 0 so mustn't play sound.
 	public void BioOff() {
 		Inventory.a.hardwareIsActive[6] = false;
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[6],Inventory.a.BioMonitorVersion(),0);
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[6],Inventory.a.hardwareVersionSetting[6],0);
 		
 		if (MFDManager.a.FPS.activeInHierarchy) return;
 		if (BiomonitorGraphSystem.a != null) {
@@ -124,7 +126,7 @@ public class HardwareButton : MonoBehaviour {
 
 	public void BioOn() {
 		Inventory.a.hardwareIsActive[6] = true;
-		SetVersionIconForButton(Inventory.a.BioMonitorActive(),Inventory.a.BioMonitorVersion(),0);
+		SetVersionIconForButton(Inventory.a.BioMonitorActive(),Inventory.a.hardwareVersionSetting[6],0);
 		Utils.Activate(bioMonitorContainer);
 	}
 
@@ -255,10 +257,10 @@ public class HardwareButton : MonoBehaviour {
 
 	public void LanternOn() {
 		Inventory.a.hardwareIsActive[7] = true;
-		SetVersionIconForButton(Inventory.a.LanternActive(), Inventory.a.LanternVersion(),2);
+		SetVersionIconForButton(Inventory.a.LanternActive(), Inventory.a.hardwareVersionSetting[7],2);
 
 		// Figure out which brightness setting to use depending on version.
-		switch(Inventory.a.LanternVersion()) {
+		switch(Inventory.a.hardwareVersionSetting[7]) {
 			case 0: brightness = lanternVersion1Brightness; break;
 			case 1: brightness = lanternVersion2Brightness; break;
 			case 2: brightness = lanternVersion3Brightness; break;
@@ -385,12 +387,12 @@ public class HardwareButton : MonoBehaviour {
 	
 	public void JumpJetsOn() {
 		Inventory.a.hardwareIsActive[10] = true;
-		SetVersionIconForButton(Inventory.a.JumpJetsActive(), Inventory.a.JumpJetsVersion(),7);
+		SetVersionIconForButton(Inventory.a.JumpJetsActive(),Inventory.a.hardwareVersionSetting[10],7);
 	}
 
 	// called by PlayerMovement when exhausted energy to < 11f
 	public void JumpJetsOff() {
 		Inventory.a.hardwareIsActive[10] = false;
-		SetVersionIconForButton(Inventory.a.JumpJetsActive(), Inventory.a.JumpJetsVersion(),7);
+		SetVersionIconForButton(Inventory.a.JumpJetsActive(),Inventory.a.hardwareVersionSetting[10],7);
 	}
 }

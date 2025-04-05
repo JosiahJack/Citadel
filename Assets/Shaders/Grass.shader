@@ -7,7 +7,7 @@ Shader "Deferred/Grass" {
         _BladeHeight("Blade Height", Float) = 0.5
         _BladeHeightRandom("Blade Height Random", Float) = 0.3
         _BladeForward("Blade Forward Amount", Float) = 0.38
-        _BladeCurve("Blade Curvature Amount", Range(1, 4)) = 2
+        _BladeCurve("Blade Curvature Amount", Range(0, 4)) = 2
         _BendRotationRandom("Bend Rotation Random", Range(0, 1)) = 0.2
     }
 
@@ -125,8 +125,14 @@ Shader "Deferred/Grass" {
     #define BLADE_SEGMENTS 3
     [maxvertexcount(BLADE_SEGMENTS * 2 + 4)]
     void geo(triangle tessellationVert IN[3], inout TriangleStream<geometryOutput> triStream) {
-        float3 pos = IN[0].pos.xyz;
-
+//         float3 pos = IN[0].pos.xyz;
+//         float3 pos = (IN[0].pos.xyz + IN[1].pos.xyz + IN[2].pos.xyz) / 3.0; // Average position
+        float3 pos0 = IN[0].pos.xyz;
+        float3 pos1 = IN[1].pos.xyz;
+        float3 pos2 = IN[2].pos.xyz;
+        float3 pos = pos0;
+        if (pos1.x < pos.x) pos = pos1;
+        if (pos2.x < pos.x) pos = pos2;
         // Each blade of grass is constructed in tangent space with respect
 		// to the emitting vertex's normal and tangent vectors, where the width
 		// lies along the X axis and the height along Z.
@@ -193,6 +199,7 @@ Shader "Deferred/Grass" {
     SubShader {
         Pass {
             Tags {"LightMode"="Deferred"}
+//             Cull Off
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment pixel_shader
@@ -219,7 +226,8 @@ Shader "Deferred/Grass" {
                 ps.albedo = _Color;
                 ps.specular = 0;
                 ps.normal = float4(normalDirection * 0.5 + 0.5, 1.0);
-                ps.emission = half4(0, 0.1, 0, 1);
+                ps.emission = _Color * 0.25;
+                ps.emission.a = 1;
                 #ifndef UNITY_HDR_ON
                     ps.emission.rgb = exp2(-ps.emission.rgb);
                 #endif
@@ -231,6 +239,7 @@ Shader "Deferred/Grass" {
         // Shadow Caster Pass
         Pass {
             Tags {"LightMode" = "ShadowCaster"}
+//             Cull Off
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment shadow_fragment

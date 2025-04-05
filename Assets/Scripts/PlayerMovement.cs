@@ -1207,7 +1207,7 @@ public class PlayerMovement : MonoBehaviour {
 				float energysuck = 25f;
 				jumpVelocityApply = jumpVelocityBoots * rbody.mass;
 				jumpVel.y = jumpVelocityApply;
-				switch (Inventory.a.JumpJetsVersion()) {
+				switch (Inventory.a.hardwareVersionSetting[10]) {
 					case 0: energysuck = 11f; break;
 					case 1: energysuck = 26f; break;
 					case 2: energysuck = 22f; break;
