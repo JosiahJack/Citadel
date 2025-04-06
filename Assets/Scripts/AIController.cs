@@ -1370,8 +1370,8 @@ public class AIController : MonoBehaviour {
 
 		switch (att_type) {
 			case AttackType.Melee:				ProjectileRaycast(ind); break;
-			case AttackType.Projectile:			ProjectileRaycast(ind); break;
-			case AttackType.ProjectileLaunched:	ProjectileLaunched(ind); break;
+			case AttackType.Projectile:			ProjectileRaycast(ind); WeaponFire.a.fogFac += 1; break;
+			case AttackType.ProjectileLaunched:	ProjectileLaunched(ind); WeaponFire.a.fogFac += 1; break;
 		}
 	}
 
@@ -1420,6 +1420,7 @@ public class AIController : MonoBehaviour {
 	// Typically used for secondary projectile or grenade attack
 	void Attack3() {
 		if (Const.a.explodeOnAttack3ForNPC[index]) {
+			WeaponFire.a.fogFac += 5;
 			ExplodeAttack(3);
 			return;  // No time check, this is only done once without delay.
 					 // We are dead now so exit on out.

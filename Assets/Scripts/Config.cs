@@ -295,7 +295,7 @@ public class Config {
 				break;
 			case 2: // Soft Shadows
 				QualitySettings.shadows = ShadowQuality.All;
-				QualitySettings.shadowResolution = ShadowResolution.Low;
+				QualitySettings.shadowResolution = ShadowResolution.VeryHigh;
 				QualitySettings.shadowDistance = 50.0f; // Check layers in LevelManager shadCullArray
 				break;
 		}
@@ -307,7 +307,7 @@ public class Config {
 		if (Const.a.GraphicsModelDetail == 0) {
 			DynamicCulling.a.lodSqrDist = 0f;
 		} else {
-			DynamicCulling.a.lodSqrDist = 2621.44f;
+			DynamicCulling.a.lodSqrDist = DynamicCulling.lodSqrDistDefault;
 		}
 		
 		DynamicCulling.a.forceRecull = true; // Recull to reapply meshes.

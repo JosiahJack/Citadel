@@ -39,6 +39,7 @@ public class ProjectileEffectImpact : MonoBehaviour {
 		dd.damage = DamageData.GetDamageTakeAmount(dd);
 		if (impactType == PoolType.RailgunImpacts) {
 			Utils.ApplyImpactForceSphere(dd,transform.position,3.2f,1f);
+			WeaponFire.a.fogFac += 4;
 		}
 
 		GameObject hitGO = other.contacts[0].otherCollider.gameObject;

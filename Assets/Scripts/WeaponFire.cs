@@ -38,6 +38,8 @@ public class WeaponFire : MonoBehaviour {
 	public float reloadFinished; // save
 	public float lerpStartTime; // save
 	public float reloadLerpValue; // save
+	public int fogFac;
+	public float fogBase = 0.015f;
 
     [HideInInspector] public DamageData damageData;
     [HideInInspector] public float waitTilNextFire = 0f; // save
@@ -112,6 +114,7 @@ public class WeaponFire : MonoBehaviour {
 		reloadLerpValue = 0;
 		reloadFinished = PauseScript.a.relativeTime;
 		lerpStartTime = PauseScript.a.relativeTime;
+		fogFac = 0;
     }
 
     void GetWeaponData(int index) {
@@ -188,14 +191,19 @@ public class WeaponFire : MonoBehaviour {
 
     void HeatBleedOff() {
         if (heatTickFinished < PauseScript.a.relativeTime) {
-			Inventory.a.currentEnergyWeaponHeat[0] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[0] <= 0f) Inventory.a.currentEnergyWeaponHeat[0] = 0f;
-			Inventory.a.currentEnergyWeaponHeat[1] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[1] <= 0f) Inventory.a.currentEnergyWeaponHeat[1] = 0f;
-			Inventory.a.currentEnergyWeaponHeat[2] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[2] <= 0f) Inventory.a.currentEnergyWeaponHeat[2] = 0f;
-			Inventory.a.currentEnergyWeaponHeat[3] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[3] <= 0f) Inventory.a.currentEnergyWeaponHeat[3] = 0f;
-			Inventory.a.currentEnergyWeaponHeat[4] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[4] <= 0f) Inventory.a.currentEnergyWeaponHeat[4] = 0f;
-			Inventory.a.currentEnergyWeaponHeat[5] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[5] <= 0f) Inventory.a.currentEnergyWeaponHeat[5] = 0f;
-			Inventory.a.currentEnergyWeaponHeat[6] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[6] <= 0f) Inventory.a.currentEnergyWeaponHeat[6] = 0f;
-            if (CurrentWeaponUsesEnergy()) energheatMgr.HeatBleed(Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.a.weaponCurrent]); // update hud heat ticks if current weapon uses energy
+			fogFac--;
+			if (fogFac < 0) fogFac = 0;
+			if (WeaponsHaveAnyHeat() || CurrentWeaponUsesEnergy()) {
+				Inventory.a.currentEnergyWeaponHeat[0] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[0] <= 0f) Inventory.a.currentEnergyWeaponHeat[0] = 0f;
+				Inventory.a.currentEnergyWeaponHeat[1] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[1] <= 0f) Inventory.a.currentEnergyWeaponHeat[1] = 0f;
+				Inventory.a.currentEnergyWeaponHeat[2] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[2] <= 0f) Inventory.a.currentEnergyWeaponHeat[2] = 0f;
+				Inventory.a.currentEnergyWeaponHeat[3] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[3] <= 0f) Inventory.a.currentEnergyWeaponHeat[3] = 0f;
+				Inventory.a.currentEnergyWeaponHeat[4] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[4] <= 0f) Inventory.a.currentEnergyWeaponHeat[4] = 0f;
+				Inventory.a.currentEnergyWeaponHeat[5] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[5] <= 0f) Inventory.a.currentEnergyWeaponHeat[5] = 0f;
+				Inventory.a.currentEnergyWeaponHeat[6] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[6] <= 0f) Inventory.a.currentEnergyWeaponHeat[6] = 0f;
+				if (CurrentWeaponUsesEnergy()) energheatMgr.HeatBleed(Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.a.weaponCurrent]); // update hud heat ticks if current weapon uses energy
+			}
+			
             heatTickFinished = PauseScript.a.relativeTime + heatTickTime;
         }
     }
@@ -278,8 +286,9 @@ public class WeaponFire : MonoBehaviour {
 		if (PauseScript.a.MenuActive()) return;
 
 		// Slowly cool off any weapons that have been heated from firing
-		if (WeaponsHaveAnyHeat() || CurrentWeaponUsesEnergy()) HeatBleedOff();
-
+		HeatBleedOff();
+		if (fogFac > 1000) fogFac = 1000;
+		RenderSettings.fogDensity = fogBase + ((((float)fogFac)/1000f) * fogBase);
 		UpdateWeaponReloadDip();
 		RotateViewWeapon();
 		Recoiling();
@@ -587,6 +596,7 @@ public class WeaponFire : MonoBehaviour {
 				smoke = Instantiate(muzSmokeMK3,muzFlashMK3.transform.position,Const.a.quaternionIdentity) as GameObject;
 				smoke.transform.parent = reloadContainer;
 				smoke.SetActive(true);
+				fogFac += 2;
                 break;
             case 37:
                 //ER-90 Blaster
@@ -616,6 +626,7 @@ public class WeaponFire : MonoBehaviour {
 				smoke = Instantiate(muzSmokeFlechette,muzFlashFlechette.transform.position,Const.a.quaternionIdentity) as GameObject;
 				smoke.transform.parent = reloadContainer;
 				smoke.SetActive(true);
+				fogFac += 1;
 				break;
             case 40:
                 //RW-45 Ion Beam
@@ -647,6 +658,7 @@ public class WeaponFire : MonoBehaviour {
 				smoke = Instantiate(muzSmokeMagnum,muzFlashMagnum.transform.position,Const.a.quaternionIdentity) as GameObject;
 				smoke.transform.parent = reloadContainer;
 				smoke.SetActive(true);
+				fogFac += 3;
                 break;
             case 44:
                 //SB-20 Magpulse
@@ -662,6 +674,7 @@ public class WeaponFire : MonoBehaviour {
 				smoke = Instantiate(muzSmokePistol,muzFlashPistol.transform.position,Const.a.quaternionIdentity) as GameObject;
 				smoke.transform.parent = reloadContainer;
 				smoke.SetActive(true);
+				fogFac += 1;
                 break;
             case 46:
                 //LG-XX Plasma Rifle
@@ -685,6 +698,7 @@ public class WeaponFire : MonoBehaviour {
 				smoke = Instantiate(muzSmokeRailgun,muzFlashRailgun.transform.position,Const.a.quaternionIdentity) as GameObject;
 				smoke.transform.parent = reloadContainer;
 				smoke.SetActive(true);
+				fogFac += 2;
                 break;
             case 48:
                 //DC-05 Riotgun
@@ -694,6 +708,7 @@ public class WeaponFire : MonoBehaviour {
 				smoke = Instantiate(muzSmokeRiotgun,muzFlashRiotgun.transform.position,Const.a.quaternionIdentity) as GameObject;
 				smoke.transform.parent = reloadContainer;
 				smoke.SetActive(true);
+				fogFac += 4;
                 break;
             case 49:
                 //RF-07 Skorpion
@@ -703,6 +718,7 @@ public class WeaponFire : MonoBehaviour {
 				smoke = Instantiate(muzSmokeSkorpion,muzFlashSkorpion.transform.position,Const.a.quaternionIdentity) as GameObject;
 				smoke.transform.parent = reloadContainer;
 				smoke.SetActive(true);
+				fogFac += 2;
                 break;
             case 50:
                 //Sparq Beam

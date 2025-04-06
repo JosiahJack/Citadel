@@ -53,7 +53,8 @@ public class DynamicCulling : MonoBehaviour {
     public int playerCellY = 0;
     [HideInInspector] public float deltaX = 0.0f;
     [HideInInspector] public float deltaY = 0.0f;
-    [HideInInspector] public float lodSqrDist = 2621.44f; // (20 * 2.56f)^2
+    public const float lodSqrDistDefault = 163.84f;
+    [HideInInspector] public float lodSqrDist = lodSqrDistDefault;//2621.44f; // (20 * 2.56f)^2
     public Vector3 worldMin;
     [HideInInspector] public List<Transform> npcTransforms;
     [HideInInspector] public List<AIController> npcAICs = new List<AIController>();
@@ -530,6 +531,11 @@ public class DynamicCulling : MonoBehaviour {
         MeshFilter mf = go.GetComponent<MeshFilter>();
         Meshenderer mrr = new Meshenderer();
         mrr.meshRenderer = mr;
+        mrr.shadCastModeUsual = mrr.meshRenderer.shadowCastingMode;
+        if (mrr.meshRenderer.sharedMaterial == Const.a.shadowCaster) {
+            mrr.meshRenderer.shadowCastingMode = mrr.shadCastModeUsual = ShadowCastingMode.ShadowsOnly;
+        }
+        
         mrr.meshFilter = mf;
         msh = mf.sharedMesh;
         mrr.meshUsual = msh;
@@ -1531,6 +1537,7 @@ public class DynamicCulling : MonoBehaviour {
     void ToggleVisibility() {
         gridCells[playerCellX,playerCellY].visible = true; // Guarantee enable.
         ChunkPrefab chp = null;
+        Meshenderer mshush = null;
         Vector3 playerPos = MouseLookScript.a.transform.position;
         float distSqrCheck = lodSqrDist;
         bool pidGood = false;
@@ -1546,19 +1553,30 @@ public class DynamicCulling : MonoBehaviour {
                     
                     int meshendCount = chp.meshenderers.Count;
                     for (int k=0;k<meshendCount;k++) {
-                        //if (chp.meshenderers[k].meshRenderer == null) continue;
+                        mshush = chp.meshenderers[k];                        
+                        mshush.meshRenderer.enabled = gridCells[x,y].visible;
+                        bool isEnabled = gridCells[x,y].visible;
+                        Quaternion quat = mshush.meshRenderer.transform.localRotation;
+                        bool pointsDn = Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(0,0f,0f),30f);
+                        // Floors already have shadows turned off as an optimization to minimize shadow casters for light shadowmap renders.  Ceilings need to block sunlight though.
+                        if (pointsDn && !skyVisibleToPlayer && mshush.meshRenderer.sharedMaterial != Const.a.shadowCaster) {
+                            mshush.meshRenderer.shadowCastingMode = ShadowCastingMode.Off;
+                        } else {
+                            if (mshush.meshRenderer.shadowCastingMode != mshush.shadCastModeUsual) {
+                                mshush.meshRenderer.shadowCastingMode = mshush.shadCastModeUsual;
+                            }
+                        }
                         
-                        chp.meshenderers[k].meshRenderer.enabled = gridCells[x,y].visible;
                         if (!gridCells[x,y].visible) continue;
                         if (chp.constIndex > 304 || chp.constIndex < 0) continue;
 
-                        pidGood = ConsoleEmulator.ConstIndexIsGeometry(chp.meshenderers[k].constIndex);
+                        pidGood = ConsoleEmulator.ConstIndexIsGeometry(mshush.constIndex);
                         if (useLODMeshes && pidGood) {
-                            sqrdist = (playerPos - chp.meshenderers[k].meshRenderer.transform.position).sqrMagnitude;
-                            chp.meshenderers[k].SetMesh(sqrdist >= distSqrCheck);
+                            sqrdist = (playerPos - mshush.meshRenderer.transform.position).sqrMagnitude;
+                            mshush.SetMesh(sqrdist >= distSqrCheck);
                         }
                         
-//                         if (mergeVisibleMeshes) sourceMeshenderers.Add(chp.meshenderers[k]);
+//                         if (mergeVisibleMeshes) sourceMeshenderers.Add(mshush);
                     }
                 }
             }
@@ -2008,12 +2026,13 @@ public class Meshenderer {
     public Mesh meshLOD;
     public Material materialUsual;
     public Material materialLOD;
+    public ShadowCastingMode shadCastModeUsual;
     public int constIndex;
     public void SetMesh(bool useLOD) {
         meshFilter.sharedMesh = useLOD ? meshLOD : meshUsual;
         meshRenderer.sharedMaterial = useLOD ? materialLOD : materialUsual;
         meshRenderer.receiveShadows = true;
-        meshRenderer.shadowCastingMode = ShadowCastingMode.TwoSided;
+//         meshRenderer.shadowCastingMode = ShadowCastingMode.TwoSided;
     }
 }
 

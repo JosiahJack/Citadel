@@ -368,6 +368,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public float damageDealt = 0f;
 	[HideInInspector] public float damageReceived = 0f;
 	[HideInInspector] public int savesScummed = 0;
+	public Material shadowCaster;
 	private int lastTargetRegistrySize = 0;
 
 	public static RaycastHit hitNull;	

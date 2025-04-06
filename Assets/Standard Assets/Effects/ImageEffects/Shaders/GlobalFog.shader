@@ -118,7 +118,7 @@ CGINCLUDE
 		return g;
 	}
 
-	half4 ComputeFog (v2f i, bool distance, bool height) : SV_Target
+	float4 ComputeFog (v2f i, bool distance, bool height) : SV_Target
 	{
 		half4 sceneColor = tex2D(_MainTex, i.uv);
 		
@@ -137,15 +137,17 @@ CGINCLUDE
 			g += ComputeHalfSpace (wsDir);
 
 		// Compute fog amount
-		half fogFac = ComputeFogFactor (max(0.0,g));
+		float fogFac = ComputeFogFactor (max(0.0,g));
+
 		// Do not fog skybox
-		if (rawDepth >= 0.999999)
-			fogFac = 1.0;
+		if (rawDepth >= 0.999999) fogFac = 1.0;
 		//return fogFac; // for debugging
 		
-		// Lerp between fog color & original scene color
-		// by fog amount
-		return lerp (unity_FogColor, sceneColor, fogFac);
+		// Lerp between fog color & original scene color by fog amount
+
+		float4 fogCol = unity_FogColor * (1 - fogFac);
+		float4 blended = lerp(unity_FogColor, sceneColor, fogFac);
+		return sceneColor > fogCol ? blended: fogCol;
 	}
 
 ENDCG

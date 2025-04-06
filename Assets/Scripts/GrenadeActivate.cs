@@ -110,13 +110,13 @@ public class GrenadeActivate : MonoBehaviour {
 			explosionEffect.transform.position = transform.position;
 			int soundIndex = 60; // attack1_explode
 			switch(constIndex) {
-				case 7:  soundIndex = 64; break; // explosion1
-				case 8:  soundIndex = 60; break; // attack1_explode
-				case 9:  soundIndex = 67; break; // hit2
-				case 10: soundIndex = 60; break; // attack1_explode
-				case 11: soundIndex = 64; break; // explosion1
-				case 12: soundIndex = 60; break; // attack1_explode
-				case 13: soundIndex = 63; break; // explode_minor
+				case 7:  soundIndex = 64; WeaponFire.a.fogFac += 5; break; // frag, explosion1
+				case 8:  soundIndex = 60; WeaponFire.a.fogFac += 7; break; // conc, attack1_explode
+				case 9:  soundIndex = 67; break; // emp, hit2
+				case 10: soundIndex = 60; WeaponFire.a.fogFac += 7; break; // earth, attack1_explode
+				case 11: soundIndex = 64; WeaponFire.a.fogFac += 5; break; // mine, explosion1
+				case 12: soundIndex = 60; WeaponFire.a.fogFac += 6; break; // nitro, attack1_explode
+				case 13: soundIndex = 63; WeaponFire.a.fogFac += 10; break; // gas, explode_minor
 			}
 			
 			Utils.PlayTempAudio(transform.position,Const.a.sounds[soundIndex]);

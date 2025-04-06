@@ -1,0 +1,188 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: grass_tessellated_lite
+  m_Shader: {fileID: 4800000, guid: daf3636c86cf7ffb78e7473065466cc5, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Albedo1:
+        m_Texture: {fileID: 2800000, guid: e917b80ab73905b4d9d832869977871a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Albedo2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Albedo3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AlbedoMap:
+        m_Texture: {fileID: 2800000, guid: 559aff0070ae0004ba5c7078271fa67f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DensityDropOffMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailsMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DisruptionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GrowthMap:
+        m_Texture: {fileID: 2800000, guid: 14ff7d2a316d13c41b54da0efd99ab86, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Noise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal1:
+        m_Texture: {fileID: 2800000, guid: 14ff7d2a316d13c41b54da0efd99ab86, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Roughness1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Roughness2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Roughness3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WindDistortionMap:
+        m_Texture: {fileID: 2800000, guid: 433fa7b2f8e5e6b23ad9e4b88ccb5c4e, type: 3}
+        m_Scale: {x: 0.01, y: 0.01}
+        m_Offset: {x: 0, y: 0}
+    - _WindMap:
+        m_Texture: {fileID: 2800000, guid: 433fa7b2f8e5e6b23ad9e4b88ccb5c4e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BendRotationRandom: 0.266
+    - _BladeCurve: 1.48
+    - _BladeForward: 0.08
+    - _BladeHeight: 0.05
+    - _BladeHeightRandom: 0.01
+    - _BladeRandomAmount: 0.5
+    - _BladeSegments: 3
+    - _BladeWidth: 0.035
+    - _BladeWidthRandom: 0.005
+    - _BumpScale: 1
+    - _ClusterSize: 3
+    - _Cutoff: 0.575
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _GrassHeight: 0.25
+    - _GrassWidth: 0.25
+    - _Invert1: 0
+    - _Invert2: 0
+    - _Invert3: 0
+    - _Metallic: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _RootTintSpread: 0.8
+    - _RootTintStart: 0.2
+    - _Rotation: 0
+    - _RotationRandom: 0.174
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _TessellationUniform: 7
+    - _TranslucentGain: 0
+    - _UVSec: 0
+    - _Weight1: 0.5
+    - _Weight2: 0.5
+    - _Weight3: 0.5
+    - _WindScale: 1
+    - _WindSpeed: 100
+    - _WindStength: 0.05
+    - _WindStrength: 0.001
+    - _ZWrite: 1
+    m_Colors:
+    - _BaseColor: {r: 0.012602621, g: 0.13207549, b: 0.011836951, a: 1}
+    - _BendProperties: {r: 0.1, g: 0.5, b: 0, a: 0}
+    - _BottomColor: {r: 0.0481043, g: 0.21698111, b: 0.04857514, a: 1}
+    - _Color: {r: 0.17528479, g: 0.3679245, b: 0.17528479, a: 1}
+    - _Dimensions: {r: 1, g: 1, b: 1, a: 0}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _RootTint: {r: 1, g: 1, b: 1, a: 0}
+    - _SpecColor: {r: 1, g: 1, b: 1, a: 0}
+    - _SpecularColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Tint1: {r: 1, g: 1, b: 1, a: 0}
+    - _Tint2: {r: 1, g: 1, b: 1, a: 0}
+    - _Tint3: {r: 1, g: 1, b: 1, a: 0}
+    - _TipColor: {r: 0.09794411, g: 0.2924528, b: 0.10444517, a: 1}
+    - _TopColor: {r: 0.23503011, g: 0.4339623, b: 0.13305448, a: 1}
+    - _WindFrequency: {r: 0.001, g: 0.001, b: 0, a: 0}
+    - _WindHighlights: {r: 0, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []

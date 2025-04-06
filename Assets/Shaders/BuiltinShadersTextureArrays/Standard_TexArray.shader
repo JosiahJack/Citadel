@@ -24,6 +24,7 @@ Shader "Custom/StandardTextureArray" {
             #pragma exclude_renderers nomrt
             #pragma shader_feature _EMISSION
             #pragma multi_compile_prepassfinal
+            #pragma multi_compile_instancing
             #pragma vertex vertDeferred
             #pragma fragment fragDeferred
             #include "UnityStandardCore_TexArray.cginc"
@@ -43,6 +44,7 @@ Shader "Custom/StandardTextureArray" {
             #pragma vertex vertShadow
             #pragma fragment fragShadow
             #pragma multi_compile_shadowcaster
+            #pragma multi_compile_instancing
             #include "UnityCG.cginc"
 
             struct v2f {

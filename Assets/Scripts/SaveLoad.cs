@@ -639,17 +639,19 @@ public static class SaveLoad {
         if (chunk == null) return null;
 
         chunk.name = entries[index]; index++;
-        if (chunk.name == "chunk_cyberpanel (3918)") UnityEngine.Debug.Log("Loading chunk_cyberpanel (3918)");
+//         if (chunk.name == "chunk_cyberpanel (3918)") UnityEngine.Debug.Log("Loading chunk_cyberpanel (3918)");
         index = Utils.LoadTransform(chunk.transform,ref entries,index);
         Quaternion quat = chunk.transform.localRotation;
         bool pointsUp = Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(180f,0f,0f),30f);
         bool pointsDn = Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(0,0f,0f),30f);
         MeshRenderer mr = chunk.GetComponent<MeshRenderer>();
         MeshRenderer childMR = null;
+        // Shadowcaster mode for ceilings set in DynamicCulling so that if sky is visible we preserve twosided shadows and don't get sun leaks.
         if (mr != null) {
-            if (pointsUp || pointsDn) {
-                mr.shadowCastingMode = ShadowCastingMode.Off;
-            }
+            if (pointsUp && mr.sharedMaterial != Const.a.shadowCaster) mr.shadowCastingMode = ShadowCastingMode.Off;
+//             if (mr.sharedMaterial == Const.a.shadowCaster) {
+//                 mr.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
+//             }
         }
         
         if (curlevel <= 9) {
@@ -667,7 +669,7 @@ public static class SaveLoad {
             
             // Align to grid if not rotated
             float yShifted = chunk.transform.localPosition.y;
-            if (!(chunk.name == "chunk_stor1_5 (99)" || chunk.name == "chunk_stor1_5 (101)" || chunk.name == "chunk_stor1_5 (105)" || chunk.name == "chunk_stor1_5 (110)")) {
+            if (!(chunk.name == "chunk_stor1_5 (99)" || chunk.name == "chunk_stor1_5 (101)" || chunk.name == "chunk_stor1_5 (105)" || chunk.name == "chunk_stor1_5 (110)" || chunk.name == "chunk_med2_1 (27)")) {
                 yShifted = Mathf.Round(chunk.transform.localPosition.y / 0.16f) * 0.16f;
             }
             
@@ -768,6 +770,20 @@ public static class SaveLoad {
                 Transform subtr = chunk.transform.GetChild(0);
                 if (subtr != null) {
                     subtr.gameObject.SetActive(Utils.GetBoolFromString(entries[index],"collisionAid.activeSelf")); index++;
+                }
+                
+                if (chunk.transform.childCount >= 2) { // Remove shadowCaster on thin wafer chunks acting as bridges.
+                    subtr = chunk.transform.GetChild(1);
+                    if (subtr != null) {
+                        MeshRenderer shadRenderer = subtr.GetComponent<MeshRenderer>();
+                        if (shadRenderer != null) {
+                            if (shadRenderer.sharedMaterial == Const.a.shadowCaster) {
+                                MonoBehaviour.DestroyImmediate(shadRenderer);
+                                shadRenderer = null;
+                                MonoBehaviour.DestroyImmediate(subtr.gameObject);
+                            }
+                        }
+                    }
                 }
             }
 
