@@ -172,7 +172,7 @@ Material:
     - _BaseColor: {r: 0.012602621, g: 0.13207549, b: 0.011836951, a: 1}
     - _BendProperties: {r: 0.1, g: 0.5, b: 0, a: 0}
     - _BottomColor: {r: 0.0481043, g: 0.21698111, b: 0.04857514, a: 1}
-    - _Color: {r: 0.17528479, g: 0.3679245, b: 0.17528479, a: 1}
+    - _Color: {r: 0.047058824, g: 0.14901961, b: 0.047058824, a: 1}
     - _Dimensions: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _RootTint: {r: 1, g: 1, b: 1, a: 0}

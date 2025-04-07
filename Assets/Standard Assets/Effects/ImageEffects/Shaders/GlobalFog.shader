@@ -140,7 +140,7 @@ CGINCLUDE
 		float fogFac = ComputeFogFactor (max(0.0,g));
 
 		// Do not fog skybox
-		if (rawDepth >= 0.999999) fogFac = 1.0;
+		if (rawDepth >= 0.5) fogFac = 1.00;
 		//return fogFac; // for debugging
 		
 		// Lerp between fog color & original scene color by fog amount

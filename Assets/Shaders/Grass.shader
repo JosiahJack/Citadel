@@ -112,8 +112,8 @@ Shader "Deferred/Grass" {
     geometryOutput GenerateGrassVertex(float3 vertexPosition, float width, float height, float forward, float3x3 transformMatrix, float4 tangent) {
         geometryOutput o;
         float3 tangentPoint = float3(width, forward, height);
-        float3 tangentNormal = -normalize(float3(0, -1, forward));
-        float3 localNormal = mul(transformMatrix, tangentNormal);
+        float3 tangentNormal = float3(0,-1,0);//-normalize(float3(0, -1, forward));
+        float3 localNormal = normalize(mul(transformMatrix, tangentNormal));
         float3 localOffset = mul(transformMatrix, tangentPoint);
         float3 localPosition = vertexPosition + localOffset;
         o.pos = UnityObjectToClipPos(localPosition);

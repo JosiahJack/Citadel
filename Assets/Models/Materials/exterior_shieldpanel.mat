@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: exterior_shieldpanel
-  m_Shader: {fileID: 45, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 10752, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: _DETAIL_MULX2 _EMISSION
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 1
@@ -40,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 679b8765fada4f44b873dc3a32dd4ecf, type: 3}
+        m_Texture: {fileID: 2800000, guid: 8c58e301d954477239b18d32dfa3c80e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -82,3 +82,4 @@ Material:
     - _EmissionColor: {r: 0.4528302, g: 0.4528302, b: 0.4528302, a: 1}
     - _EmissionColorUI: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.084905684, g: 0.052261688, b: 0.02202742, a: 1}
+  m_BuildTextureStacks: []

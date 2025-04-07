@@ -33,13 +33,15 @@ public class WeaponFire : MonoBehaviour {
 	public GameObject muzFlashSkorpion;
 	public GameObject muzFlashSparq;
 	public GameObject muzFlashStungun;
+	public float[] fogBaseDensityForLevel;
+	public Color[] fogColorForLevel;
+	public SSMS.SSMSGlobalFog ssmsGlobalFog;
 	public Transform reloadContainer; // Recoil the weapon view models
     public bool overloadEnabled; // save
 	public float reloadFinished; // save
 	public float lerpStartTime; // save
 	public float reloadLerpValue; // save
 	public int fogFac;
-	public float fogBase = 0.015f;
 
     [HideInInspector] public DamageData damageData;
     [HideInInspector] public float waitTilNextFire = 0f; // save
@@ -287,8 +289,9 @@ public class WeaponFire : MonoBehaviour {
 
 		// Slowly cool off any weapons that have been heated from firing
 		HeatBleedOff();
-		if (fogFac > 1000) fogFac = 1000;
-		RenderSettings.fogDensity = fogBase + ((((float)fogFac)/1000f) * fogBase);
+		if (fogFac > 255) fogFac = 255;
+		ssmsGlobalFog.fogDensity = fogBaseDensityForLevel[LevelManager.a.currentLevel] + ((((float)fogFac)/255f) * fogBaseDensityForLevel[LevelManager.a.currentLevel]);
+		ssmsGlobalFog.fogColor = ssmsGlobalFog.fogTint = fogColorForLevel[LevelManager.a.currentLevel];
 		UpdateWeaponReloadDip();
 		RotateViewWeapon();
 		Recoiling();
