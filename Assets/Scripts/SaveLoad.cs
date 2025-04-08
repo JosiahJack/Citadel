@@ -959,7 +959,10 @@ public static class SaveLoad {
         if (curlevel == 7 || curlevel == 0 || curlevel == 8) thresh += 0.0051f; // makes it 0.0451, heehehe
         if (curlevel == 8) thresh += 0.005f;
         if (luminosity < thresh) lit.shadows = LightShadows.None;
-        else numLightsWithShadows++;
+        else {
+            if (lit.range > 7f || lit.intensity < 1f) lit.shadows = LightShadows.None;
+            else numLightsWithShadows++;
+        }
         lit.shadowStrength = Utils.GetFloatFromString(entries[index],"shadowStrength"); index++;
         lit.shadowResolution = GetShadowResFromString(entries[index],"shadowResolution"); index++;
         if (lit.shadows != LightShadows.None && lit.intensity > 2f) lit.shadowResolution = LightShadowResolution.High;

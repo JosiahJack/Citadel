@@ -53,7 +53,7 @@ public class DynamicCulling : MonoBehaviour {
     public int playerCellY = 0;
     [HideInInspector] public float deltaX = 0.0f;
     [HideInInspector] public float deltaY = 0.0f;
-    public const float lodSqrDistDefault = 163.84f;
+    public const float lodSqrDistDefault = 655.36f; // (10 * 2.56)^2
     [HideInInspector] public float lodSqrDist = lodSqrDistDefault;//2621.44f; // (20 * 2.56f)^2
     public Vector3 worldMin;
     [HideInInspector] public List<Transform> npcTransforms;

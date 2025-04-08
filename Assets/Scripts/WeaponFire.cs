@@ -290,7 +290,7 @@ public class WeaponFire : MonoBehaviour {
 		// Slowly cool off any weapons that have been heated from firing
 		HeatBleedOff();
 		if (fogFac > 255) fogFac = 255;
-		ssmsGlobalFog.fogDensity = fogBaseDensityForLevel[LevelManager.a.currentLevel] + ((((float)fogFac)/255f) * fogBaseDensityForLevel[LevelManager.a.currentLevel]);
+		ssmsGlobalFog.fogDensity = 0.451f * (fogBaseDensityForLevel[LevelManager.a.currentLevel] + ((((float)fogFac)/255f) * fogBaseDensityForLevel[LevelManager.a.currentLevel]));
 		ssmsGlobalFog.fogColor = ssmsGlobalFog.fogTint = fogColorForLevel[LevelManager.a.currentLevel];
 		UpdateWeaponReloadDip();
 		RotateViewWeapon();
