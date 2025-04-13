@@ -386,6 +386,7 @@ public class Const : MonoBehaviour {
 	}
 
 	public void Awake() {
+		TARGET_FPS = 144;
 		Application.targetFrameRate = TARGET_FPS;
 		SetA(); // Create a new instance so that it can be accessed globally.
 				// MOST IMPORTANT PART!!

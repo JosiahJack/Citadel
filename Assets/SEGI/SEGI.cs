@@ -38,7 +38,6 @@ public class SEGI : MonoBehaviour {
 	public bool visualizeVoxels = false;
 	[HideInInspector] public bool halfResolution = true;
 	[HideInInspector] public bool stochasticSampling = true;
-	[HideInInspector] public bool infiniteBounces = true;
 	public Transform followTransform;
 	[HideInInspector] public int cones = 32;
 	[HideInInspector] public int coneTraceSteps = 16;
@@ -51,8 +50,6 @@ public class SEGI : MonoBehaviour {
 	[HideInInspector] public float nearLightGain = 0.84f;
 	[HideInInspector] public float giGain = 0.1f;
 	[HideInInspector] public float secondaryBounceGain = 0.5f;
-	[HideInInspector] public float softSunlight = 0.0f;
-	[HideInInspector] public float skyIntensity = 0.0f;
 	[HideInInspector] public bool doReflections = false;
 	[HideInInspector] public int reflectionSteps = 70;
 	[HideInInspector] public float reflectionOcclusionPower = 1.0f;
@@ -280,8 +277,6 @@ public class SEGI : MonoBehaviour {
 		voxelResolution = preset.voxelResolution;
 		voxelAA = preset.voxelAA;
 		innerOcclusionLayers = preset.innerOcclusionLayers;
-		infiniteBounces = preset.infiniteBounces;
-
 		temporalBlendWeight = preset.temporalBlendWeight;
 		useBilateralFiltering = preset.useBilateralFiltering;
 		halfResolution = preset.halfResolution;
@@ -775,48 +770,28 @@ public class SEGI : MonoBehaviour {
         return mat;
     }
 
-	void OnPreRender()
-	{
+	void OnPreRender() {
 		//Force reinitialization to make sure that everything is working properly if one of the cameras was unexpectedly destroyed
-		if (!voxelCamera || !shadowCam)
-			initChecker = null;
-			
+		if (!voxelCamera || !shadowCam) initChecker = null;
 		InitCheck();
-
-		if (notReadyToRender)
-			return;
-
-		if (!updateGI)
-		{
-			return;
-		}
+		if (notReadyToRender) return;
+		if (!updateGI) return;
 
 		//Cache the previous active render texture to avoid issues with other Unity rendering going on
 		RenderTexture previousActive = RenderTexture.active;
-
 		Shader.SetGlobalInt("SEGIVoxelAA", voxelAA ? 1 : 0);
 
-
-
 		//Main voxelization work
-		if (renderState == RenderState.Voxelize)
-		{
+		if (renderState == RenderState.Voxelize) {
 			activeVolume = voxelFlipFlop == 0 ? volumeTextures[0] : volumeTextureB;				//Flip-flopping volume textures to avoid simultaneous read and write errors in shaders
 			previousActiveVolume = voxelFlipFlop == 0 ? volumeTextureB : volumeTextures[0];
-
-			//float voxelTexel = (1.0f * voxelSpaceSize) / (int)voxelResolution * 0.5f;			//Calculate the size of a voxel texel in world-space units
-
-
 
 			//Setup the voxel volume origin position
 			float interval = voxelSpaceSize / 8.0f;												//The interval at which the voxel volume will be "locked" in world-space
 			Vector3 origin;
-			if (followTransform)
-			{
+			if (followTransform) {
 				origin = followTransform.position;
-			}
-			else
-			{
+			} else {
 				//GI is still flickering a bit when the scene view and the game view are opened at the same time
 				origin = transform.position + transform.forward * voxelSpaceSize / 4.0f;
 			}
@@ -826,10 +801,7 @@ public class SEGI : MonoBehaviour {
 			//Calculate how much the voxel origin has moved since last voxelization pass. Used for scrolling voxel data in shaders to avoid ghosting when the voxel volume moves in the world
 			voxelSpaceOriginDelta = voxelSpaceOrigin - previousVoxelSpaceOrigin;
 			Shader.SetGlobalVector("SEGIVoxelSpaceOriginDelta", voxelSpaceOriginDelta / voxelSpaceSize);
-
 			previousVoxelSpaceOrigin = voxelSpaceOrigin;
-
-
 
 			//Set the voxel camera (proxy camera used to render the scene for voxelization) parameters
 			voxelCamera.enabled = false;
@@ -843,17 +815,13 @@ public class SEGI : MonoBehaviour {
 			voxelCamera.backgroundColor = Color.black;
 			voxelCamera.cullingMask = giCullingMask;
 
-
 			//Move the voxel camera game object and other related objects to the above calculated voxel space origin
 			voxelCameraGO.transform.position = voxelSpaceOrigin - Vector3.forward * voxelSpaceSize * 0.5f;
 			voxelCameraGO.transform.rotation = rotationFront;
-
 			leftViewPoint.transform.position = voxelSpaceOrigin + Vector3.left * voxelSpaceSize * 0.5f;
 			leftViewPoint.transform.rotation = rotationLeft;
 			topViewPoint.transform.position = voxelSpaceOrigin + Vector3.up * voxelSpaceSize * 0.5f;
 			topViewPoint.transform.rotation = rotationTop;
-
-
 
 			//Set matrices needed for voxelization
 			Shader.SetGlobalMatrix("WorldToCamera", attachedCamera.worldToCameraMatrix);
@@ -863,74 +831,30 @@ public class SEGI : MonoBehaviour {
 			Shader.SetGlobalMatrix("SEGIWorldToVoxel", voxelCamera.worldToCameraMatrix);
 			Shader.SetGlobalMatrix("SEGIVoxelProjection", voxelCamera.projectionMatrix);
 			Shader.SetGlobalMatrix("SEGIVoxelProjectionInverse", voxelCamera.projectionMatrix.inverse);
-
 			Shader.SetGlobalInt("SEGIVoxelResolution", (int)voxelResolution);
-
 			Matrix4x4 voxelToGIProjection = (shadowCam.projectionMatrix) * (shadowCam.worldToCameraMatrix) * (voxelCamera.cameraToWorldMatrix);
 			Shader.SetGlobalMatrix("SEGIVoxelToGIProjection", voxelToGIProjection);
-			Shader.SetGlobalVector("SEGISunlightVector", sun ? Vector3.Normalize(sun.transform.forward) : Vector3.up);
+			Shader.SetGlobalVector("SEGISunlightVector",Vector3.up);
 
 			//Set paramteters
-			Shader.SetGlobalColor("GISunColor", sun == null ? Color.black : new Color(Mathf.Pow(sun.color.r, 2.2f), Mathf.Pow(sun.color.g, 2.2f), Mathf.Pow(sun.color.b, 2.2f), Mathf.Pow(sun.intensity, 2.2f)));
-			Shader.SetGlobalColor("SEGISkyColor", new Color(Mathf.Pow(skyColor.r * skyIntensity * 0.5f, 2.2f), Mathf.Pow(skyColor.g * skyIntensity * 0.5f, 2.2f), Mathf.Pow(skyColor.b * skyIntensity * 0.5f, 2.2f), Mathf.Pow(skyColor.a, 2.2f)));
+			Shader.SetGlobalColor("GISunColor",Color.black);
+			Shader.SetGlobalColor("SEGISkyColor",skyColor);
 			Shader.SetGlobalFloat("GIGain", giGain);
-			Shader.SetGlobalFloat("SEGISecondaryBounceGain", infiniteBounces ? secondaryBounceGain : 0.0f);
-			Shader.SetGlobalFloat("SEGISoftSunlight", softSunlight);
-			Shader.SetGlobalInt("SEGISphericalSkylight", sphericalSkylight ? 1 : 0);
+			Shader.SetGlobalFloat("SEGISecondaryBounceGain", secondaryBounceGain);
+			Shader.SetGlobalFloat("SEGISoftSunlight", 0.0f);
+			Shader.SetGlobalInt("SEGISphericalSkylight", 0);
 			Shader.SetGlobalInt("SEGIInnerOcclusionLayers", innerOcclusionLayers);
-
-
-			//Render the depth texture from the sun's perspective in order to inject sunlight with shadows during voxelization
-// 			if (sun != null)
-// 			{
-// 				shadowCam.cullingMask = giCullingMask;
-// 
-// 				Vector3 shadowCamPosition = voxelSpaceOrigin + Vector3.Normalize(-sun.transform.forward) * shadowSpaceSize * 0.5f * shadowSpaceDepthRatio;
-// 
-// 				shadowCamTransform.position = shadowCamPosition;
-// 				shadowCamTransform.LookAt(voxelSpaceOrigin, Vector3.up);
-// 
-// 				shadowCam.renderingPath = RenderingPath.Forward;
-// 				shadowCam.depthTextureMode |= DepthTextureMode.None;
-// 
-// 				shadowCam.orthographicSize = shadowSpaceSize;
-// 				shadowCam.farClipPlane = shadowSpaceSize * 2.0f * shadowSpaceDepthRatio;
-// 
-// 
-// 				Graphics.SetRenderTarget(sunDepthTexture);
-// 				shadowCam.SetTargetBuffers(sunDepthTexture.colorBuffer, sunDepthTexture.depthBuffer);
-// 
-// 				shadowCam.RenderWithShader(sunDepthShader, "");
-// 
-// 				Shader.SetGlobalTexture("SEGISunDepth", sunDepthTexture);
-// 			}
-
-
-
-
-			
-
-
-
 
 			//Clear the volume texture that is immediately written to in the voxelization scene shader
 			clearCompute.SetTexture(0, "RG0", integerVolume);
 			clearCompute.SetInt("Res", (int)voxelResolution);
 			clearCompute.Dispatch(0, (int)voxelResolution / 16, (int)voxelResolution / 16, 1);
 
-
-
-
-
-
-
-
 			//Render the scene with the voxel proxy camera object with the voxelization shader to voxelize the scene to the volume integer texture
 			Graphics.SetRandomWriteTarget(1, integerVolume);
 			voxelCamera.targetTexture = dummyVoxelTextureAAScaled;
 			voxelCamera.RenderWithShader(voxelizationShader, "");
 			Graphics.ClearRandomWriteTargets();
-
 
 			//Transfer the data from the volume integer texture to the main volume texture used for GI tracing. 
 			transferIntsCompute.SetTexture(0, "Result", activeVolume);
@@ -940,19 +864,12 @@ public class SEGI : MonoBehaviour {
 			transferIntsCompute.SetInt("Resolution", (int)voxelResolution);
 			transferIntsCompute.SetVector("VoxelOriginDelta", (voxelSpaceOriginDelta / voxelSpaceSize) * (int)voxelResolution);
 			transferIntsCompute.Dispatch(0, (int)voxelResolution / 16, (int)voxelResolution / 16, 1);
-
 			Shader.SetGlobalTexture("SEGIVolumeLevel0", activeVolume);
 
 			//Manually filter/render mip maps
-			for (int i = 0; i < numMipLevels - 1; i++)
-			{
+			for (int i = 0; i < numMipLevels - 1; i++) {
 				RenderTexture source = volumeTextures[i];
-
-				if (i == 0)
-				{
-					source = activeVolume;
-				}
-
+				if (i == 0) source = activeVolume;
 				int destinationRes = (int)voxelResolution / Mathf.RoundToInt(Mathf.Pow((float)2, (float)i + 1.0f));
 				mipFilterCompute.SetInt("destinationRes", destinationRes);
 				mipFilterCompute.SetTexture(mipFilterKernel, "Source", source);
@@ -966,21 +883,13 @@ public class SEGI : MonoBehaviour {
 					case 4: Shader.SetGlobalTexture("SEGIVolumeLevel4", volumeTextures[5]); break;
 					case 5: Shader.SetGlobalTexture("SEGIVolumeLevel5", volumeTextures[6]); break;
 				}
-				//Shader.SetGlobalTexture("SEGIVolumeLevel" + i.ToString(), volumeTextures[i + 1]); break;
 			}
 
 			//Advance the voxel flip flop counter
 			voxelFlipFlop += 1;
 			voxelFlipFlop = voxelFlipFlop % 2;
-
-			if (infiniteBounces)
-			{
-				renderState = RenderState.Bounce;
-			}
-		}
-		else if (renderState == RenderState.Bounce)
-		{
-
+			renderState = RenderState.Bounce;
+		} else if (renderState == RenderState.Bounce) {
 			//Clear the volume texture that is immediately written to in the voxelization scene shader
 			clearCompute.SetTexture(0, "RG0", integerVolume);
 			clearCompute.Dispatch(0, (int)voxelResolution / 16, (int)voxelResolution / 16, 1);
@@ -995,19 +904,14 @@ public class SEGI : MonoBehaviour {
 			voxelCamera.RenderWithShader(voxelTracingShader, "");
 			Graphics.ClearRandomWriteTargets();
 
-
 			//Transfer the data from the volume integer texture to the irradiance volume texture. This result is added to the next main voxelization pass to create a feedback loop for infinite bounces
 			transferIntsCompute.SetTexture(1, "Result", secondaryIrradianceVolume);
 			transferIntsCompute.SetTexture(1, "RG0", integerVolume);
 			transferIntsCompute.SetInt("Resolution", (int)voxelResolution);
 			transferIntsCompute.Dispatch(1, (int)voxelResolution / 16, (int)voxelResolution / 16, 1);
-
 			Shader.SetGlobalTexture("SEGIVolumeTexture1", secondaryIrradianceVolume);
-
 			renderState = RenderState.Voxelize;
 		}
-
-
 
 		RenderTexture.active = previousActive;
 	}

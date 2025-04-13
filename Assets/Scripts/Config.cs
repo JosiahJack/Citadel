@@ -231,6 +231,8 @@ public class Config {
 			Application.targetFrameRate = Const.a.TARGET_FPS;
 			QualitySettings.vSyncCount = 0;
 		}
+		
+		Debug.Log("Set VSYNC to " + Const.a.GraphicsVSync.ToString() + ", target framerate is " + Application.targetFrameRate.ToString());
 	}
 
 	public static void SetFXAA(AntialiasingModel.FxaaPreset preset) {

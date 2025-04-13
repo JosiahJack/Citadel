@@ -1,0 +1,61 @@
+Set all camera clear colors to black
+
+lev12 chunk_screen (1) scale x 0.99
+lev12 chunk_screen (3) scale x 0.99
+lev12 chunk_screen scale x 0.99, pos z -93.0451
+lev12 chunk_screen (2) scale x 0.99, pos z -93.045
+GroveScreen4_Camera - far 8.04, near 1.5
+GroveScreen3_Camera - far 4.32, near 0.7
+GroveScreen2_Camera - far 13.6, near 4
+GroveScreen1_Camera - far 9.4, near 1.3
+BridgScreen1_Camera - far 16.582, near 0.5
+BUG: screens who are out of view when culling first enables them do not get marked by dynamic culling to update their view
+SecScreen1_Camera (2) - far 9.4, near 1.2
+SecScreen1_Camera (1) - far 10.44, near 1
+lev8 chunk_screen (9) pos x 39.66
+lev8 decal_blood_splat rotation x 90, pos y 84.134
+lev8 chunk_screen (3) pos x 42.215
+lev8 chunk_screen (13) pos z -21.749
+lev8 chunk_screen (14) pos z -21.749
+lev8 chunk_screen (8) pos z -21.745
+lev8 chunk_screen (17) pos x 52.4546
+lev8 chunk_screen (10) pos z -21.749
+lev8 chunk_screen (16) pos x 57.576
+lev8 chunk_screen (2) pos x 57.573
+lev8 chunk_screen (5) pos z -24.306
+lev8 chunk_screen (6) pos z -24.306
+lev8 chunk_screen (1) pos x 42.212
+lev8 chunk_screen (12) pos z -21.749, disable ImageSequenceTextureArray, disable HealthManager
+SecScreen1_Camera (3) - far 12.7, near 0.7
+lev8 prop_light_emergsignal (1) pos z -23.06
+chunk_screen (4) pos z -24.305
+Screen Point 2 doesn't provide trigger for proper unculling for a camera
+lev8 chunk_screen (11) pos z -21.76
+SecScreen1_Camera (5) - far 12.53, near 0.99, fov 85
+lev8 chunk_screen (7) pos z -26.858wa
+SecScreen1_Camera (6) - far 16.38, near 0.56
+lev8 chunk_screen (15) pos x 55.02
+SecScreen1_Camera - far 10.05, near 0.33, fov 85, rotation y 28.5
+lev8 chunk_screen (22) scale x and z 0.51
+lev8 chunk_screen (21) pos z -34.588
+SecScreen1_Camera (4) - far 34.97, near 1.34, missing link for chunk_screen ( 
+CameraUnculling doesn't take into account camera range
+Lots of white fireflie gaps in level 5
+CameraView needs to offset so that multiple cameras don't render at once!
+Need shadow maps marked as never show sky regions in red
+Screens need shadow blockers! level 7!
+Lev7 core door didn't stay open!
+EngScreen5_Camera - far 9.79, near 0.77, fov 80
+EngScreen4_Camera - far 19.9, near 1.83
+EngScreen3_Camera - far 26.01, near 1.295, position x 8.9
+Beta grove elevator door needs marked to stay open!
+ExecScreen5_Camera - far 11.52, near 1.2, fov 90, rotation x 29
+ExecScreen6_Camera - far 11.87, near 0.06, fov 90, rotation x 36, ypos 35.2
+Level 6 fog rgb 0.3 0.24 0.33
+Level 5 chunk_screen (5) change from SciScreen3 to new one with shodan face on one frame rarely
+Level 5 chunk_screen (4) change from SciScreen3 to new one with shodan face on one frame rarely
+Level 5 chunk_screen (3) move x to -20.585, ASSIGN FlightScreen1 material, disable ImageSequenceTextureArray, disable HealthManager
+Level 5 add shadow blockers
+Level 5 fog density 0.03
+Make storage door visible on storage camera stay open after triggered!
+Link sec_camera to screen! for maintscreen_Camera

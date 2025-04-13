@@ -18,7 +18,6 @@ public class DynamicCulling : MonoBehaviour {
     public bool debugHelpers = false;
 //     public bool dynamicObjectCull = true;
     public bool lightCulling = true;
-//     public bool lightsFrustumCull = false;
     public bool outputDebugImages = false;
     public bool forceRecull = false;
 //     public bool mergeVisibleMeshes = false;
@@ -44,9 +43,7 @@ public class DynamicCulling : MonoBehaviour {
     [HideInInspector] public List<PrefabIdentifier> staticMeshesSaveablePIDs = new List<PrefabIdentifier>();
     [HideInInspector] public List<Vector2Int>   staticMeshSaveableCoords = new List<Vector2Int>();
     [HideInInspector] public List<Light> lights = new List<Light>();
-//     [HideInInspector] public List<Light> lightsInPVS = new List<Light>();
     [HideInInspector] public List<Vector2Int> lightCoords = new List<Vector2Int>();
-//     [HideInInspector] public List<Vector2Int> lightsInPVSCoords = new List<Vector2Int>();
     [HideInInspector] public List<MeshRenderer> doors = new List<MeshRenderer>();
     [HideInInspector] public List<Vector2Int> doorsCoords = new List<Vector2Int>();
     public int playerCellX = 0;
@@ -462,9 +459,7 @@ public class DynamicCulling : MonoBehaviour {
         if (doors == null) doors = new List<MeshRenderer>();
         if (doorsCoords == null) doorsCoords = new List<Vector2Int>();
         if (lights == null) lights = new List<Light>();
-//         if (lightsInPVS == null) lightsInPVS = new List<Light>();
         if (lightCoords == null) lightCoords = new List<Vector2Int>();
-//         if (lightsInPVSCoords == null) lightsInPVSCoords = new List<Vector2Int>();
         if (dynamicMeshes == null) dynamicMeshes = new List<MeshRenderer>();
         if (dynamicMeshesPIDs == null) dynamicMeshesPIDs = new List<PrefabIdentifier>();
         if (dynamicMeshesHMs == null) dynamicMeshesHMs = new List<HealthManager>();
@@ -488,9 +483,7 @@ public class DynamicCulling : MonoBehaviour {
         doors.Clear();
         doorsCoords.Clear();
         lights.Clear();
-//         lightsInPVS.Clear();
         lightCoords.Clear();
-//         lightsInPVSCoords.Clear();
         dynamicMeshes.Clear();
         dynamicMeshesPIDs.Clear();
         dynamicMeshesHMs.Clear();
@@ -1519,7 +1512,7 @@ public class DynamicCulling : MonoBehaviour {
             GameObject camGO = entry.Key; // The GameObject key
             CameraView camV = camGO.GetComponent<CameraView>();
             if (camV == null) continue;
-            if (!camV.IsVisible()) continue;
+//             if (!camV.IsVisible()) continue; // NO This is done on cell transition so player will likely turn around and see it and it won't show the correct thing!
 
             Vector3 position = entry.Value; // The position value
             pnt = PosToCellCoords(position);
@@ -1778,35 +1771,6 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
     }
-
-    public float lightDot = 0f; // Extra padding to account for near objects
-    public int lightNearCellCount = 5;
-//     public void LightsFrustumCull(int startX, int startY) {
-//         if (!lightCulling || !lightsFrustumCull) return;
-// 
-//         Vector3 dir;
-//         Camera cam = MouseLookScript.a.playerCamera;
-//         int dx,dy;
-//         for (int i = 0; i < lightsInPVS.Count; i++) {
-//             if (lightsInPVS[i] == null) continue;
-//             
-//             dir = lightsInPVS[i].transform.position - cam.transform.position;
-//             if (Vector3.Dot(dir.normalized,cam.transform.forward) > lightDot) {
-//                 lightsInPVS[i].enabled = true;
-//                 EnableSEGIEmitter(lightsInPVS[i]);
-//             } else {
-//                 dx = Mathf.Abs(startX - lightsInPVSCoords[i].x);
-//                 dy = Mathf.Abs(startY - lightsInPVSCoords[i].y);
-//                 if (dx < lightNearCellCount && dy < lightNearCellCount) {
-//                     lightsInPVS[i].enabled = true;
-//                     EnableSEGIEmitter(lightsInPVS[i]);
-//                 } else {
-//                     lightsInPVS[i].enabled = false;
-//                     DisableSEGIEmitter(lightsInPVS[i]);
-//                 }
-//             }
-//         }
-//     }
     
     private void EnableSEGIEmitter(Light lit) {
         if (lit == null) return;
@@ -1825,9 +1789,7 @@ public class DynamicCulling : MonoBehaviour {
     
     public void ToggleLightsVisibility() {
         if (!lightCulling) return;
-        
-//         lightsInPVS.Clear();
-//         lightsInPVSCoords.Clear();
+
         int x,y;
         bool inPVS = false;
         Camera cam = MouseLookScript.a.playerCamera;
@@ -1848,11 +1810,11 @@ public class DynamicCulling : MonoBehaviour {
             int yMax = y + range;
             inPVS = false;
             if (gridCells[x,y].visible || !gridCells[x,y].open) {
+                // Used this debug to find lights in the space outside windows lighting up the exterior, welp.  Ok then.  Leaving them as intended.
+//                 UnityEngine.Debug.Log("Rogue light placed in closed cell at " + x.ToString() + "," + y.ToString() + " with a position of " + lights[i].transform.position.ToString());
                 inPVS = true;
                 lights[i].enabled = true;
                 EnableSEGIEmitter(lights[i]);
-//                 lightsInPVS.Add(lights[i]);
-//                 lightsInPVSCoords.Add(lightCoords[i]);
             } else {
                 for (int ix = xMin;ix <= xMax; ix++) {
                     for (int iy = yMin;iy <= yMax; iy++) {
@@ -1871,8 +1833,7 @@ public class DynamicCulling : MonoBehaviour {
             LightContinue:
             if (inPVS) {
                 lights[i].enabled = true;
-//                 lightsInPVS.Add(lights[i]);
-//                 lightsInPVSCoords.Add(lightCoords[i]);
+                EnableSEGIEmitter(lights[i]);
             } else {
                 lights[i].enabled = false;
                 DisableSEGIEmitter(lights[i]);
@@ -1959,8 +1920,6 @@ public class DynamicCulling : MonoBehaviour {
         // Now handle player position updating PVS. Always do UpdatedPlayerCell
         // to set playerCellX and playerCellY.
         if (UpdatedPlayerCell() || force) CullCore();
-//         if (lightsFrustumCull) LightsFrustumCull(playerCellX,playerCellY);
-        
 
         // Update dynamic meshes after PVS has been updated, if player moved.
 //         if (dynamicObjectCull) {
