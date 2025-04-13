@@ -62,7 +62,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	// Internal references
 	public BodyState bodyState; // save
-	[HideInInspector] public bool ladderState = false; // save
+	[HideInInspector] public int ladderState = 0; // save
 	public bool gravliftState = false; // save
 	[HideInInspector] public bool inCyberSpace = false; // save
 	[HideInInspector] public float walkAcceleration = 2000f;
@@ -1042,7 +1042,7 @@ public class PlayerMovement : MonoBehaviour {
 		if (Vector3.Dot(movDir,floorAng) < 0f && running) return;
 
 		deceleration = walkDeacceleration;
-		if (!grounded && !ladderState && !justJumped) deceleration *= 1.5f;
+		if (!grounded && ladderState < 1 && !justJumped) deceleration *= 1.5f;
 		if (CheatNoclip) {
 			deceleration = 0.05f;
 			// Prevent gravity from affecting and decelerate like a horizontal.
@@ -1105,7 +1105,7 @@ public class PlayerMovement : MonoBehaviour {
 	bool GetGravity() {
 		if (inCyberSpace) return false;
 		if (CheatNoclip) return false;
-		if (ladderState) return false;
+		if (ladderState > 0) return false;
 		if (bodyState == BodyState.StandingUp
 			|| bodyState == BodyState.CrouchingDown
 			|| bodyState == BodyState.ProningDown
@@ -1131,7 +1131,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	// Get input for Jump and set impulse time, removed
-	// "&& (ladderState == false)" since I want to be able to jump off a ladder
+	// "&& (ladderState == 0)" since I want to be able to jump off a ladder
 	void Jump() {
 		if (CheatNoclip && !Inventory.a.JumpJetsActive()) return;
 
@@ -1153,7 +1153,7 @@ public class PlayerMovement : MonoBehaviour {
 						fatigue += jumpFatigue;
 					}
 				} else {
-					if (ladderState) {
+					if (ladderState > 1) {
 						jumpTime = jumpImpulseTime;
 						justJumped = true;
 						if (!Inventory.a.JumpJetsActive() && !Inventory.a.BoosterActive()) {
@@ -1226,7 +1226,7 @@ public class PlayerMovement : MonoBehaviour {
 					hwbJumpJets.JumpJetsOff();
 				}
 			} else {
-				if (ladderState) {
+				if (ladderState > 1) {
 					// Jump off ladder in direction of player facing.
 					jumpVel = transform.forward * jumpVelocityApply * rbody.mass;
 				}
@@ -1272,7 +1272,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	void LadderStates() {
 		if (CheatNoclip) return;
-		if (!ladderState) return;
+		if (ladderState < 1) return;
 
 		float sidForce = 0f;
 		float forForce = 0f;
@@ -1303,7 +1303,7 @@ public class PlayerMovement : MonoBehaviour {
 			float ladderSpeedMod = ladderSpeed;
 			if (isSprinting && running) ladderSpeedMod = 1.2f; // Climb fast!
 
-			sidForce = relSideways * walkAcceleration * Time.deltaTime * walkAccelAirRatio * 0.2f;
+			sidForce = relSideways * walkAcceleration * Time.deltaTime * walkAccelAirRatio * 0.3f;
 			forForce = relForward * walkAcceleration * Time.deltaTime * walkAccelAirRatio * 0.2f;
 			upForce = ladderSpeedMod * relForward * walkAcceleration
 							* Time.deltaTime;
@@ -1327,7 +1327,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	void WalkRun() {
 		if (CheatNoclip) return;
-		if (ladderState) return;
+		if (ladderState > 0) return;
 
 		float sidForce = relSideways * walkAcceleration * Time.deltaTime;
 		float forForce = relForward * walkAcceleration * Time.deltaTime;
@@ -1390,7 +1390,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	void FallDamage() {
 		if (CheatNoclip) return;
-		if (ladderState) return;
+		if (ladderState > 0) return;
 
 		// Handle fall damage (no impact damage in cyber space 5/5/18, JJ)
 		float velChange = Mathf.Abs((oldVelocity.y - rbody.velocity.y));
@@ -1651,7 +1651,7 @@ public class PlayerMovement : MonoBehaviour {
 	bool GetSprintInputState() {
 		if (consoleActivated) return false;
 
-		bool conditions = (grounded || CheatNoclip || ladderState
+		bool conditions = (grounded || CheatNoclip || ladderState > 0
 						   || gravliftState);
 
 		if (GetInput.a.Sprint()) {
@@ -1867,7 +1867,7 @@ public class PlayerMovement : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(Utils.BodyStateToInt(pm.bodyState),"bodyState"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(pm.ladderState,"ladderState"));
+		s1.Append(Utils.UintToString(pm.ladderState,"ladderState"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(pm.gravliftState,"gravliftState"));
 		s1.Append(Utils.splitChar);
@@ -1939,7 +1939,7 @@ public class PlayerMovement : MonoBehaviour {
 		pm.capsuleCollider.height = pm.currentCrouchRatio * 2f;
 		pm.leanCapsuleCollider.height = pm.capsuleCollider.height;
 		pm.bodyState = Utils.IntToBodyState(Utils.GetIntFromString(entries[index],"bodyState")); index++;
-		pm.ladderState = Utils.GetBoolFromString(entries[index],"ladderState"); index++;
+		pm.ladderState = Utils.GetIntFromString(entries[index],"ladderState"); index++;
 		pm.gravliftState = Utils.GetBoolFromString(entries[index],"gravliftState"); index++;
 		pm.inCyberSpace = Utils.GetBoolFromString(entries[index],"inCyberSpace"); index++;
 		pm.CheatWallSticky = Utils.GetBoolFromString(entries[index],"CheatWallSticky"); index++;

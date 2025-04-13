@@ -879,7 +879,7 @@ public class AIController : MonoBehaviour {
 	}
 	
 	private void SetHuntFinished() {
-		Debug.Log("Set hunt finished time");
+// 		Debug.Log("Set hunt finished time");
 		huntFinished = PauseScript.a.relativeTime;
 		int diff = Const.a.difficultyCombat;
 		if (IsCyberNPC()) diff = Const.a.difficultyCyber;

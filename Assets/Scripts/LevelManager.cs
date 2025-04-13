@@ -313,6 +313,7 @@ public class LevelManager : MonoBehaviour {
 		Music.a.SFXOverlay.Stop();
 		Music.a.levelEntry = true;
 		PlayerHealth.a.radiationArea = false;
+		PlayerMovement.a.ladderState = 0;
 		LoadLevelData(currentLevel);
 		Automap.a.SetAutomapExploredReference(currentLevel);
 		Automap.a.automapBaseImage.overrideSprite = Automap.a.automapsBaseImages[currentLevel];

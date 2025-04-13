@@ -1089,7 +1089,9 @@ public class MainMenuHandler : MonoBehaviour {
 		#if UNITY_EDITOR
 			UnityEditor.EditorApplication.isPlaying = false;
 		#endif
+		Const.a.WriteDatForIntroPlayed(false);
 		Config.SaveConfigToPlayerPrefs();
+		Utils.CopyLogFiles(false);
 	}
 	
 	void OnDestroy() {

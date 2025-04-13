@@ -1,21 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Ladder : MonoBehaviour {
-	PlayerMovement pmov;
-	GameObject other;
-	
+public class Ladder : MonoBehaviour {	
 	void  OnTriggerEnter (Collider other){
 		if (other.CompareTag("Player")) {
-			pmov = other.GetComponent<PlayerMovement>();
-			if (pmov != null) {	pmov.ladderState = true; }
+			PlayerMovement.a.ladderState++;
+			if (PlayerMovement.a.ladderState < 1) PlayerMovement.a.ladderState = 1;
 		}
 	}
 	
 	void  OnTriggerExit (Collider other){
 		if (other.CompareTag("Player")) {
-			pmov = other.GetComponent<PlayerMovement>();
-			if (pmov != null) {	pmov.ladderState = false; }
+			PlayerMovement.a.ladderState--;
+			if (PlayerMovement.a.ladderState < 0) PlayerMovement.a.ladderState = 0;
 		}
 	}
 }
