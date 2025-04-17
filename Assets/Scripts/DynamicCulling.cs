@@ -667,9 +667,10 @@ public class DynamicCulling : MonoBehaviour {
         Color32 skyData;
         for (int x=0;x<WORLDX;x++) {
             for (int y=0;y<WORLDX;y++) {
-                gridCells[x,y].skyVisible = false;
                 skyData = skyPixels[x + y * WORLDX];
-                if (skyData.r <= 0.5f && skyData.g <= 0.5f && skyData.b > 0.5f) gridCells[x,y].skyVisible = true;
+                if (skyData.r > 0.5f && skyData.g < 0.5 && skyData.b < 0.5f) gridCells[x,y].skyVisible = -1; // All red cells marked as -1
+                else if (skyData.r <= 0.5f && skyData.g <= 0.5f && skyData.b > 0.5f) gridCells[x,y].skyVisible = 1; // All blue cells marked as sky visible.
+                else gridCells[x,y].skyVisible = 0; // All white and black cells marked as 0.
             }
         }
     }
@@ -1520,8 +1521,9 @@ public class DynamicCulling : MonoBehaviour {
             for (int x=0;x<WORLDX;x++) {
                 for (int y=0;y<WORLDX;y++) {
                     if (gridCells[pnt.x,pnt.y].visibleCellsFromHere[x,y]) gridCells[x,y].visible = true;
-                        if (gridCells[x,y].visible && gridCells[x,y].skyVisible) skyVisibleToPlayer = true;
 
+                    // Cell that is in pvs of camera must be visible (either set from line above or elsewhere), must not be marked as -1 for skyVisible itself and must not be marked -1 for skyVisible for camera's cell.
+                    if (gridCells[x,y].visible && gridCells[x,y].skyVisible > 0 && gridCells[pnt.x,pnt.y].skyVisible >= 0) skyVisibleToPlayer = true;
                 }
             }
         }
@@ -1851,10 +1853,24 @@ public class DynamicCulling : MonoBehaviour {
         }
 
         skyVisibleToPlayer = false;
+        int skyVisType = -1;
         for (int y=0;y<WORLDX;y++) {
             for (int x=0;x<WORLDX;x++) {
                 gridCells[x,y].visible = gridCells[playerCellX,playerCellY].visibleCellsFromHere[x,y];
-                if (gridCells[x,y].visible && gridCells[x,y].skyVisible) skyVisibleToPlayer = true;
+
+                // Cell that is in pvs of player must be visible (set from line above), must be marked as 1 for skyVisible itself and must not be marked -1 for skyVisible for player's cell.
+                if (gridCells[x,y].visible) {
+                    if (gridCells[playerCellX,playerCellY].skyVisible < 0) {
+                        skyVisType = -1;
+                        skyVisibleToPlayer = false; // Force it to false from -1.
+                    } else if (gridCells[playerCellX,playerCellY].skyVisible == 1) {
+                        skyVisType = 1; // Sky + Sun
+                        skyVisibleToPlayer = true;
+                    } else if (gridCells[x,y].skyVisible > 0) { // Player's cell skyVisible == 0 here.
+                        skyVisType = 0; // Sun only
+                        skyVisibleToPlayer = false;
+                    }
+                }
 
                 worldCellsOpen[x,y] = gridCells[x,y].open || gridCells[x,y].visible;
                 if (outputDebugImages) {
@@ -1874,7 +1890,7 @@ public class DynamicCulling : MonoBehaviour {
         ToggleLightsVisibility();
         UpdateNPCPVS();
         ToggleNPCPVS();
-        if (LevelManager.a != null) LevelManager.a.SetSkyVisible(skyVisibleToPlayer);
+        if (LevelManager.a != null) LevelManager.a.SetSkyVisible(skyVisType);
 //         if (mergeVisibleMeshes) CombineMeshes(true);
 
         // Output Debug image of the open
@@ -2014,9 +2030,9 @@ public class DynamicObject {
 public class GridCell {
     public int x;
     public int y;
+    public int skyVisible;
     public bool open;
     public bool visible;
-    public bool skyVisible;
     public bool closedNorth; // For when chunk configurations are such that
     public bool closedEast;  // the immediately adjacent cell at this edge
     public bool closedSouth; // is not visible, consider edge as closed to

@@ -76,7 +76,7 @@ public class LevelManager : MonoBehaviour {
 		if (sky == null) Debug.Log("BUG: LevelManager missing manually assigned reference for sky.");
 		else sky.SetActive(true);
 
-		SetSkyVisible(true);
+		SetSkyVisible(1);
 		if (ressurectionBayDoor.Length != 8) Debug.Log("BUG: LevelManager ressurectionBayDoor array length not equal to 8.");
 		Time.timeScale = Const.defaultTimeScale;
 		levelDataLoaded = new bool[14];
@@ -149,16 +149,22 @@ public class LevelManager : MonoBehaviour {
 		}
 	}
 	
-	public void SetSkyVisible(bool on) {
-		skyMR.enabled = (on && showSkyForLevel[currentLevel]);
-		saturn.SetActive(on && showSaturnForLevel[currentLevel]);
-		exterior.SetActive(on && showExteriorForLevel[currentLevel]);
-		sun.SetActive(Const.a.GraphicsShadowMode >= 1 && on);
-		sunSprite.SetActive(on && showSaturnForLevel[currentLevel]);
+	public void SetSkyVisible(int on) {
+		// 0 = Sunlight only
+		// 1 = Sky + Sun + exterior + saturn
+		// -1 = Nothin much
+		skyMR.enabled = (on > 0 && showSkyForLevel[currentLevel]);
+		saturn.SetActive(on > 0 && showSaturnForLevel[currentLevel]);
+		exterior.SetActive(on > 0 && showExteriorForLevel[currentLevel]);
+		if (on == 1) Debug.Log("SkyVisible passed a 1, sky + sunlight");
+		if (on == 0) Debug.Log("SkyVisible passed a 0, sunlight only");
+		if (on == -1) Debug.Log("SkyVisible passed a -1, nope");
+		sun.SetActive(Const.a.GraphicsShadowMode >= 1 && on >= 0); // on == 0 is for Sunlight only!
+		sunSprite.SetActive(on > 0 && showSaturnForLevel[currentLevel]);
 		if (Const.a == null) return;
 		if (Const.a.questData == null) return;
 		
-		exterior_shield.SetActive(on && showExteriorForLevel[currentLevel]
+		exterior_shield.SetActive(on > 0 && showExteriorForLevel[currentLevel]
 								  && Const.a.questData.ShieldActivated);
 	}
 
@@ -319,7 +325,7 @@ public class LevelManager : MonoBehaviour {
 		Automap.a.automapBaseImage.overrideSprite = Automap.a.automapsBaseImages[currentLevel];
 		Const.a.ClearActiveAutomapOverlays(); // After other levels turned off.
 		Const.a.ResetPauseLists();
-		SetSkyVisible(true);
+		SetSkyVisible(1);
 		Config.SetLanguage(); // Update all translatable text.
 		Const.a.ClearPrefabs();
 		System.GC.Collect();
