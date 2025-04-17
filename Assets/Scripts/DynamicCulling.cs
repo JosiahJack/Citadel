@@ -1518,8 +1518,12 @@ public class DynamicCulling : MonoBehaviour {
             Vector3 position = entry.Value; // The position value
             pnt = PosToCellCoords(position);
             gridCells[pnt.x,pnt.y].visible = true;
+            float range = 1300f;
+            if (camV.cam != null) range = camV.cam.farClipPlane;
             for (int x=0;x<WORLDX;x++) {
                 for (int y=0;y<WORLDX;y++) {
+                    if ((float)(Math.Abs(pnt.x - x)) >= range || (float)(Math.Abs(pnt.y - y)) >= range) continue;
+
                     if (gridCells[pnt.x,pnt.y].visibleCellsFromHere[x,y]) gridCells[x,y].visible = true;
 
                     // Cell that is in pvs of camera must be visible (either set from line above or elsewhere), must not be marked as -1 for skyVisible itself and must not be marked -1 for skyVisible for camera's cell.

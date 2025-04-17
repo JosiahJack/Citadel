@@ -13,7 +13,7 @@ public class CameraView : MonoBehaviour {
 	/*[DTValidator.Optional] */public Transform screenPoint3;
 
 	// Internal references
-	private Camera cam;
+	[HideInInspector] public Camera cam;
 	private const float tick = 0.1f;
 	private float tickFinished; // Visual only, Time.time controlled
 	private MeshRenderer mR; // These are the screens showing the feed
