@@ -305,6 +305,7 @@ public class Door : MonoBehaviour {
 
 		if (PauseScript.a.relativeTime > waitBeforeClose) {
 			if ((doorOpen == DoorState.Open) && (!stayOpen) && (!startOpen) && !delayFrame) {
+				Debug.Log("Close Door, stayOpen: " + stayOpen.ToString());
 				CloseDoor();
 			}
 		}

@@ -1,21 +1,9 @@
-Set all camera clear colors to black
-
 CameraUnculling doesn't take into account camera range
 
 Lots of white fireflie gaps in level 5 (with no detail models)
 
 CameraView needs to offset so that multiple cameras don't render at once!
 
-Need shadow maps marked as never show sky regions in red
-
-Lev7 core door didn't stay open!
-Beta grove elevator door needs marked to stay open!
-Make storage door visible on storage camera stay open after triggered!
-
 Level 5 chunk_screen (5) change from SciScreen3 to new one with shodan face on one frame rarely
 Level 5 chunk_screen (4) change from SciScreen3 to new one with shodan face on one frame rarely
-
-Screens need shadow blockers! level 7!
-Level 5 add shadow blockers
-
 Link sec_camera to screen! for maintscreen_Camera
