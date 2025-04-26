@@ -6,17 +6,9 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
-[ExecuteInEditMode]
-#if UNITY_5_4_OR_NEWER
-[ImageEffectAllowedInSceneView]
-#endif
 [RequireComponent(typeof(Camera))]
 [AddComponentMenu("Image Effects/Sonic Ether/SEGI (Cascaded)")]
-public class SEGICascaded : MonoBehaviour
-{
-
-
-
+public class SEGICascaded : MonoBehaviour {
 #region Parameters
 	[Serializable]
 	public enum VoxelResolution

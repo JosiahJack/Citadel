@@ -524,6 +524,16 @@ public class MainMenuHandler : MonoBehaviour {
 		Const.a.difficultyMission = mission.difficultySetting;
 		Const.a.difficultyPuzzle = puzzle.difficultySetting;
 		Const.a.difficultyCyber = cyber.difficultySetting;
+		if (Const.a.difficultyMission < 3) {
+			MissionTimer.a.text.text = System.String.Empty;
+			MissionTimer.a.timerTypeText.text = System.String.Empty;
+			MFDManager.a.overallMissionTimerT.SetActive(false);
+			MFDManager.a.overallMissionTimer.SetActive(false);
+		} else {
+			MFDManager.a.overallMissionTimerT.SetActive(true);
+			MFDManager.a.overallMissionTimer.SetActive(true);
+		}
+		
 		if (isNew) {
 			string pname = newgamePage.GetComponentInChildren<InputField>(true).text;
 			if (string.IsNullOrWhiteSpace(pname)) pname = "Hacker";

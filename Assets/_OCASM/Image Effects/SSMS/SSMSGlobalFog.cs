@@ -1,17 +1,11 @@
 ﻿// Modified version of Unity's Global Fog Effect for SSMS
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SSMS
-{
-	[ExecuteInEditMode]
+namespace SSMS {
 	[RequireComponent (typeof(Camera))]
 	[AddComponentMenu ("OCASM/Image Effects/SSMS Global Fog")]
-	#if UNITY_5_4_OR_NEWER
-	[ImageEffectAllowedInSceneView]
-	#endif
 	public class SSMSGlobalFog : MonoBehaviour {
 
 		[Tooltip("Apply distance-based fog?")]

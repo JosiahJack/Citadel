@@ -20,7 +20,7 @@ using UnityEngine;
 // As berserk progresses, the effect gets "worse" by applying the affect to a
 // greater percentage of the screen by raising the high threshold and gets more
 // intense by raising the strength until finally the effect wears off rapidly.
-[ExecuteInEditMode]
+
 [AddComponentMenu("Image Effects/Color Adjustments/Berserk Effect")]
 public class BerserkEffect : UnityStandardAssets.ImageEffects.ImageEffectBase {
 	public Texture2D swapTexture;

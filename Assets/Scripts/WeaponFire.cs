@@ -1211,10 +1211,11 @@ public class WeaponFire : MonoBehaviour {
 					FootStepType fstep = PlayerMovement.a.GetFootstepTypeForPrefab(prefID.constIndex);
 					AudioClip stcp = PlayerMovement.a.JumpLandSound(fstep);
 					Utils.PlayTempAudio(transform.position,stcp,1f);
+					Utils.PlayTempAudio(transform.position,hit,0.65f);	
 				} else {
-					Utils.PlayUIOneShotSavable(hit);
+					Utils.PlayTempAudio(transform.position,hit,1f);	
 				}
-				
+
 				PlayerHealth.a.makingNoise = true;
 				PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime+0.5f;
 			}

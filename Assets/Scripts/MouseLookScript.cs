@@ -179,6 +179,10 @@ public class MouseLookScript : MonoBehaviour {
 				Const.sprint(Const.a.stringTable[602]); // Cannot save in cyberspace
 				return;
 			}
+			
+			if (MissionTimer.a.timesUP) {
+				return;
+			}
 
 			Const.a.StartSave(7,qsavename);
 		}

@@ -1,9 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace UnityStandardAssets.ImageEffects
-{
-    [ ExecuteInEditMode]
+namespace UnityStandardAssets.ImageEffects {
     [RequireComponent (typeof(Camera))]
     [AddComponentMenu ("Image Effects/Rendering/Screen Space Ambient Obscurance")]
     public class ScreenSpaceAmbientObscurance : PostEffectsBase {

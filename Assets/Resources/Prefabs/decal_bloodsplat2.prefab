@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4407576608266930}
   - component: {fileID: 33619677125300038}
   - component: {fileID: 23523053222841770}
+  - component: {fileID: 1730446979480678588}
   m_Layer: 19
   m_Name: corpse_eaten_mesh_001
   m_TagString: Untagged
@@ -39,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1524586474751380}
-  m_Mesh: {fileID: 4300004, guid: ef91e6be30b1c5d4eab15d7429d35ce9, type: 3}
+  m_Mesh: {fileID: 5486520193705300455, guid: 8f08993b3f952940d8879c6e0e15cb65, type: 3}
 --- !u!23 &23523053222841770
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -55,6 +56,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -79,6 +81,21 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1730446979480678588
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524586474751380}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5486520193705300455, guid: 8f08993b3f952940d8879c6e0e15cb65, type: 3}
 --- !u!1 &1622497249991902
 GameObject:
   m_ObjectHideFlags: 0
@@ -88,7 +105,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4773125096494006}
-  - component: {fileID: 2009236360627264323}
   - component: {fileID: -4054105729383937762}
   - component: {fileID: 7297023170629284172}
   m_Layer: 19
@@ -113,20 +129,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!64 &2009236360627264323
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1622497249991902}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!114 &-4054105729383937762
 MonoBehaviour:
   m_ObjectHideFlags: 0

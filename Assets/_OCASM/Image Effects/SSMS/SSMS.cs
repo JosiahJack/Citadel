@@ -22,16 +22,10 @@
 //
 using UnityEngine;
 
-namespace SSMS
-{	
-    [ExecuteInEditMode]
+namespace SSMS {
     [RequireComponent(typeof(Camera))]
     [AddComponentMenu("OCASM/Image Effects/SSMS")]
-	#if UNITY_5_4_OR_NEWER
-	[ImageEffectAllowedInSceneView]
-	#endif
-    public class SSMS : MonoBehaviour
-    {
+    public class SSMS : MonoBehaviour {
         #region Public Properties
 
         /// Prefilter threshold (gamma-encoded)

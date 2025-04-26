@@ -60,6 +60,12 @@ public class ImageSequenceTextureArrayUI : MonoBehaviour {
 
 	IEnumerator PlayLoop(float delay) {
 		yield return new WaitForSeconds(delay); // Wait for the time defined at the delay parameter.
+TryAgain:
+		if (PauseScript.a.Paused() && !playOnMenu) {
+			yield return null;
+			goto TryAgain;
+		}
+		
 		frameCounter = (++frameCounter)%sprites.Length; // Advance one frame
 		StopCoroutine("PlayLoop"); // Stop this coroutine
 	}  

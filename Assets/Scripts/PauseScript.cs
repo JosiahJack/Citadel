@@ -190,6 +190,13 @@ public class PauseScript : MonoBehaviour {
 		if (MouseLookScript.a.inventoryMode == false) {
 			MouseLookScript.a.ToggleInventoryMode();
 		}
+		
+		if (Inventory.a.vmailbetajet.activeInHierarchy) Inventory.a.vmailbetajetVideo.Pause();
+		if (Inventory.a.vmailbridgesep.activeInHierarchy) Inventory.a.vmailbridgesepVideo.Pause();
+		if (Inventory.a.vmailcitadestruct.activeInHierarchy) Inventory.a.vmailcitadestructVideo.Pause();
+		if (Inventory.a.vmailgenstatus.activeInHierarchy) Inventory.a.vmailgenstatusVideo.Pause();
+		if (Inventory.a.vmaillaserdest.activeInHierarchy) Inventory.a.vmaillaserdestVideo.Pause();
+		if (Inventory.a.vmailshieldsup.activeInHierarchy) Inventory.a.vmailshieldsupVideo.Pause();
 		EnablePauseUI();
 		pauseText.SetActive(true);
 	}
@@ -202,6 +209,12 @@ public class PauseScript : MonoBehaviour {
 			MouseLookScript.a.SetCameraCullDistances();
 		}
 		DisablePauseUI();
+		if (Inventory.a.vmailbetajet.activeInHierarchy) Inventory.a.vmailbetajetVideo.Play();
+		if (Inventory.a.vmailbridgesep.activeInHierarchy) Inventory.a.vmailbridgesepVideo.Play();
+		if (Inventory.a.vmailcitadestruct.activeInHierarchy) Inventory.a.vmailcitadestructVideo.Play();
+		if (Inventory.a.vmailgenstatus.activeInHierarchy) Inventory.a.vmailgenstatusVideo.Play();
+		if (Inventory.a.vmaillaserdest.activeInHierarchy) Inventory.a.vmaillaserdestVideo.Play();
+		if (Inventory.a.vmailshieldsup.activeInHierarchy) Inventory.a.vmailshieldsupVideo.Play();
 		pauseText.SetActive(false);
 	}
 

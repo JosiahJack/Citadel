@@ -496,7 +496,11 @@ public class Music : MonoBehaviour {
 
 		// 13 CYBERSPACE
 		if (levnum == 13) {
-			if (levelEntry) return levelMusic[0];
+			if (levelEntry && levelMusic != null) {
+				if (levelMusic.Length > 0) {
+					if (levelMusic[0] != null) return levelMusic[0];
+				}
+			}
 			if (cyberTube) {
 				rand = UnityEngine.Random.Range(4,8);
 				return levelMusic[rand];

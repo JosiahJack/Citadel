@@ -1,13 +1,10 @@
 using System;
 using UnityEngine;
 
-namespace UnityStandardAssets.ImageEffects
-{
-    [ExecuteInEditMode]
+namespace UnityStandardAssets.ImageEffects {
     [RequireComponent(typeof (Camera))]
     [AddComponentMenu("Image Effects/Color Adjustments/Tonemapping")]
-    public class Tonemapping : PostEffectsBase
-    {
+    public class Tonemapping : PostEffectsBase {
         public enum TonemapperType
         {
             SimpleReinhard,

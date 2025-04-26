@@ -272,6 +272,29 @@ public class LevelManager : MonoBehaviour {
 				case 12: targetPosition = elevatorTargetDestinations[24].transform.position; break;
 			}
 		}
+		
+		if (levnum != 1) {
+			QuestLogNotesManager.a.notes[6].SetActive(true);
+			QuestLogNotesManager.a.checkBoxes[6].isOn = true;	
+		}
+		
+		if (levnum == 2) {
+			QuestLogNotesManager.a.notes[1].SetActive(true);
+		} else if (levnum == 3) {
+			QuestLogNotesManager.a.notes[2].SetActive(true);
+		} else if (levnum == 4) {
+			QuestLogNotesManager.a.notes[3].SetActive(true);
+		} else if (levnum == 5) {
+			QuestLogNotesManager.a.notes[4].SetActive(true);
+		} else if (levnum == 6) {
+			QuestLogNotesManager.a.notes[5].SetActive(true);
+		} else if (levnum == 7) {
+			QuestLogNotesManager.a.notes[13].SetActive(true);
+			QuestLogNotesManager.a.notes[16].SetActive(true);
+		} else if (levnum == 8) {
+			QuestLogNotesManager.a.notes[16].SetActive(true);
+			QuestLogNotesManager.a.notes[17].SetActive(true);
+		}
 
 				 
 		// Return to level from cyberspace.

@@ -183,6 +183,15 @@ public class Config {
 		SetVSync();
 		if (MainMenuHandler.a != null) MainMenuHandler.a.RenderConfigView();
 		SaveConfigToPlayerPrefs();
+		if (Const.a.difficultyMission < 3) {
+			MissionTimer.a.text.text = System.String.Empty;
+			MissionTimer.a.timerTypeText.text = System.String.Empty;
+			MFDManager.a.overallMissionTimerT.SetActive(false);
+			MFDManager.a.overallMissionTimer.SetActive(false);
+		} else {
+			MFDManager.a.overallMissionTimerT.SetActive(true);
+			MFDManager.a.overallMissionTimer.SetActive(true);
+		}
 	}
 
 	public static void SaveConfigToPlayerPrefs() {

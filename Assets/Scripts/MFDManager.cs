@@ -530,6 +530,7 @@ public class MFDManager : MonoBehaviour  {
 		if (logFinished >= PauseScript.a.relativeTime) return;
 		if (logType == AudioLogType.Papers) return;
 		if (logType == AudioLogType.TextOnly) return;
+		if (logType == AudioLogType.Vmail) return;
 
 		logActive = false;
 		if (itemTabLH.eReaderSectionsContainer.activeInHierarchy) {
@@ -2079,6 +2080,20 @@ public class MFDManager : MonoBehaviour  {
 		s1.Append(Utils.BoolToString(mfd.rightTC.TabManager.DataTab.activeSelf,"rightTC.TabManager.DataTab.activeSelf"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(mfd.curCenterTab,"curCenterTab"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(MissionTimer.a.currentMissionIndex,"MissionTimer.a.currentMissionIndex"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(MissionTimer.a.lastTimer,"MissionTimer.a.lastTimer"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(MissionTimer.a.timerFinished,"MissionTimer.a.timerFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(MissionTimer.a.t,"MissionTimer.a.t"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveString(MissionTimer.a.currentMission,"MissionTimer.a.currentMission"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveString(MissionTimer.a.text.text,"MissionTimer.a.text.text"));		
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveString(MissionTimer.a.timerTypeText.text,"MissionTimer.a.timerTypeText.text"));		
 		return s1.ToString();
 	}
 
@@ -2133,6 +2148,13 @@ public class MFDManager : MonoBehaviour  {
 		mfd.curCenterTab = Utils.GetIntFromString(entries[index],"curCenterTab"); index++;
 		mfd.CenterTabButtonClickSilent(mfd.curCenterTab,true);
 		mfd.SetWepInfo(WeaponCurrent.a.weaponIndex);
+		MissionTimer.a.currentMissionIndex = Utils.GetIntFromString(entries[index],"MissionTimer.a.currentMissionIndex"); index++;
+		MissionTimer.a.lastTimer = Utils.GetBoolFromString(entries[index],"MissionTimer.a.lastTimer"); index++;
+		MissionTimer.a.timerFinished = Utils.LoadRelativeTimeDifferential(entries[index],"MissionTimer.a.timerFinished"); index++;
+		MissionTimer.a.t = Utils.LoadRelativeTimeDifferential(entries[index],"MissionTimer.a.t"); index++;
+		MissionTimer.a.currentMission = Utils.LoadString(entries[index],"MissionTimer.a.currentMission"); index++;
+		MissionTimer.a.text.text = Utils.LoadString(entries[index],"MissionTimer.a.text.text"); index++;
+		MissionTimer.a.timerTypeText.text = Utils.LoadString(entries[index],"MissionTimer.a.timerTypeText.text"); index++;
 		return index;
 	}
 }

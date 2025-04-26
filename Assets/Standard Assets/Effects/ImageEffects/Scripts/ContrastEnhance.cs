@@ -3,7 +3,6 @@ using UnityEngine;
 
 // Modified by Josiah Jack to reduce Garbage GC pressure by persisting RenderTextures.
 namespace UnityStandardAssets.ImageEffects {
-    [ExecuteInEditMode]
     [RequireComponent(typeof(Camera))]
     [AddComponentMenu("Image Effects/Color Adjustments/Contrast Enhance (Unsharp Mask)")]
     class ContrastEnhance : PostEffectsBase {

@@ -92,24 +92,32 @@ public class QuestBitRelay : MonoBehaviour {
 			Const.a.questData.BetaGroveCyberUnlocked = true;
 			Debug.Log("Bit set BetaGroveCyberUnlocked: "
 					  + Const.a.questData.BetaGroveCyberUnlocked.ToString());
+			
+			QuestLogNotesManager.a.notes[12].SetActive(true);
 		}
 
 		if (GroveAlphaJettisonEnabled) {
 			Const.a.questData.GroveAlphaJettisonEnabled = true;
 			Debug.Log("Bit set GroveAlphaJettisonEnabled: "
 					  + Const.a.questData.GroveAlphaJettisonEnabled.ToString());
+			
+			QuestLogNotesManager.a.notes[12].SetActive(true);
 		}
 
 		if (GroveBetaJettisonEnabled) {
 			Const.a.questData.GroveBetaJettisonEnabled = true;
 			Debug.Log("Bit set GroveBetaJettisonEnabled: "
 					  + Const.a.questData.GroveBetaJettisonEnabled.ToString());
+			
+			QuestLogNotesManager.a.notes[12].SetActive(true);
 		}
 
 		if (GroveDeltaJettisonEnabled) {
 			Const.a.questData.GroveDeltaJettisonEnabled = true;
 			Debug.Log("Bit set GroveDeltaJettisonEnabled: "
 					  + Const.a.questData.GroveDeltaJettisonEnabled.ToString());
+			
+			QuestLogNotesManager.a.notes[12].SetActive(true);
 		}
 
 		if (MasterJettisonBroken) {
@@ -121,6 +129,7 @@ public class QuestBitRelay : MonoBehaviour {
 				AutoSplitterData.missionSplitID++;
 			}
 
+			QuestLogNotesManager.a.notes[12].SetActive(true);
 			QuestLogNotesManager.a.notes[11].SetActive(true);
 			QuestLogNotesManager.a.labels[11].text =
 				Const.a.stringTable[563];// Set:Diagnose and repair broken relay
@@ -176,24 +185,32 @@ public class QuestBitRelay : MonoBehaviour {
 			Const.a.questData.AntennaNorthDestroyed = true;
 			Debug.Log("Bit set AntennaNorthDestroyed: "
 					  + Const.a.questData.AntennaNorthDestroyed.ToString());
+			
+			QuestLogNotesManager.a.notes[13].SetActive(true);
 		}
 
 		if (AntennaSouthDestroyed) {
 			Const.a.questData.AntennaSouthDestroyed = true;
 			Debug.Log("Bit set AntennaSouthDestroyed: "
 					  + Const.a.questData.AntennaSouthDestroyed.ToString());
+			
+			QuestLogNotesManager.a.notes[13].SetActive(true);
 		}
 
 		if (AntennaEastDestroyed) {
 			Const.a.questData.AntennaEastDestroyed = true;
 			Debug.Log("Bit set AntennaEastDestroyed: "
 					  + Const.a.questData.AntennaEastDestroyed.ToString());
+			
+			QuestLogNotesManager.a.notes[13].SetActive(true);
 		}
 
 		if (AntennaWestDestroyed) {
 			Const.a.questData.AntennaWestDestroyed = true;
 			Debug.Log("Bit set AntennaWestDestroyed: "
 					  + Const.a.questData.AntennaWestDestroyed.ToString());
+			
+			QuestLogNotesManager.a.notes[13].SetActive(true);
 		}
 
 		if (SelfDestructActivated) {
@@ -201,8 +218,23 @@ public class QuestBitRelay : MonoBehaviour {
 			Debug.Log("Bit set SelfDestructActivated: "
 					  + Const.a.questData.SelfDestructActivated.ToString());
 
+			QuestLogNotesManager.a.notes[0].SetActive(true);
+			QuestLogNotesManager.a.notes[1].SetActive(true);
+			QuestLogNotesManager.a.notes[2].SetActive(true);
+			QuestLogNotesManager.a.notes[3].SetActive(true);
+			QuestLogNotesManager.a.notes[4].SetActive(true);
+			QuestLogNotesManager.a.notes[5].SetActive(true);
+			QuestLogNotesManager.a.notes[6].SetActive(true);
+			QuestLogNotesManager.a.notes[7].SetActive(true);
+			QuestLogNotesManager.a.notes[8].SetActive(true);
+			QuestLogNotesManager.a.notes[9].SetActive(true);
+			QuestLogNotesManager.a.notes[10].SetActive(true);
+			QuestLogNotesManager.a.notes[11].SetActive(true);
+			QuestLogNotesManager.a.notes[12].SetActive(true);
+			QuestLogNotesManager.a.notes[13].SetActive(true);
 			QuestLogNotesManager.a.notes[14].SetActive(true); // Self destruct
 			QuestLogNotesManager.a.notes[15].SetActive(true); // Escape pod
+			QuestLogNotesManager.a.notes[16].SetActive(true); // Access the bridge
 			QuestLogNotesManager.a.checkBoxes[14].isOn =
 				Const.a.questData.SelfDestructActivated;
 
@@ -218,6 +250,20 @@ public class QuestBitRelay : MonoBehaviour {
 			Debug.Log("Bit set BridgeSeparated: "
 					  + Const.a.questData.BridgeSeparated.ToString());
 
+			QuestLogNotesManager.a.notes[0].SetActive(true);
+			QuestLogNotesManager.a.notes[1].SetActive(true);
+			QuestLogNotesManager.a.notes[2].SetActive(true);
+			QuestLogNotesManager.a.notes[3].SetActive(true);
+			QuestLogNotesManager.a.notes[4].SetActive(true);
+			QuestLogNotesManager.a.notes[5].SetActive(true);
+			QuestLogNotesManager.a.notes[6].SetActive(true);
+			QuestLogNotesManager.a.notes[7].SetActive(true);
+			QuestLogNotesManager.a.notes[8].SetActive(true);
+			QuestLogNotesManager.a.notes[9].SetActive(true);
+			QuestLogNotesManager.a.notes[10].SetActive(true);
+			QuestLogNotesManager.a.notes[11].SetActive(true);
+			QuestLogNotesManager.a.notes[12].SetActive(true);
+			QuestLogNotesManager.a.notes[13].SetActive(true);
 			QuestLogNotesManager.a.notes[14].SetActive(true); // Self destruct
 			QuestLogNotesManager.a.checkBoxes[14].isOn =
 				Const.a.questData.SelfDestructActivated;

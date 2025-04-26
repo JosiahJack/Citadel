@@ -51,7 +51,14 @@ public class InteractablePanel : MonoBehaviour {
 				// any extra effect objects?  activate them here...good for sparks or turning on any extra bits and bobs
 				if (effects.Length > 0) {
 					for(int i=0;i<effects.Length;i++) {
-						if (effects[i] != null) effects[i].SetActive(true);
+						if (effects[i] != null) {
+							effects[i].SetActive(true);
+							Rigidbody efrb = effects[i].GetComponent<Rigidbody>();
+							if (efrb != null) {
+								efrb.WakeUp();
+								efrb.useGravity = true;
+							}
+						}
 					}
 				}
 

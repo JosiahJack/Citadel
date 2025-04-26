@@ -1,9 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace UnityStandardAssets.ImageEffects
-{
-    [ExecuteInEditMode]
+namespace UnityStandardAssets.ImageEffects {
     [RequireComponent (typeof(Camera))]
     class PostEffectsHelper : MonoBehaviour
     {

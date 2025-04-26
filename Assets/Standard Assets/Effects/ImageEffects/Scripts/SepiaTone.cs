@@ -1,9 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace UnityStandardAssets.ImageEffects
-{
-    [ExecuteInEditMode]
+namespace UnityStandardAssets.ImageEffects {
     [AddComponentMenu("Image Effects/Color Adjustments/Sepia Tone")]
     public class SepiaTone : ImageEffectBase
 	{

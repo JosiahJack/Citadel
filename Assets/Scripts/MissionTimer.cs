@@ -10,11 +10,11 @@ public class MissionTimer : MonoBehaviour {
 	public int currentMissionIndex;
 
 	[HideInInspector] public bool lastTimer = false;
-	private float t;
+	[HideInInspector] public float t;
 	private float minutes;
 	private float seconds;
-	private float timerFinished;
-	private bool timesUP = false;
+	[HideInInspector] public float timerFinished;
+	[HideInInspector] public bool timesUP = false;
 
 	public static MissionTimer a;
 
@@ -25,11 +25,6 @@ public class MissionTimer : MonoBehaviour {
 		a.currentMission = Const.a.stringTable[504];
 		a.currentMissionIndex = 0;
 		a.timesUP = false;
-		if (Const.a.difficultyMission < 3) {
-			text.text = System.String.Empty;
-			timerTypeText.text = System.String.Empty;
-			gameObject.SetActive(false);
-		}
 	}
 
 	// 25200
@@ -38,8 +33,9 @@ public class MissionTimer : MonoBehaviour {
 	// 2700 for bridge in range for finishing download (level R, 5)
 	// 3000 for bridge separation countdown (level 8)
 	// 2700 for biotoxin release (level 9)
-
     public void UpdateToNextMission(float newTimerAmount,int misTextIndex, int nextMissionIndex) {
+		if (currentMissionIndex == nextMissionIndex) return;
+		
 		QuestLogNotesManager.a.UpdateToNextMission(nextMissionIndex);
 
 		if (Const.a.difficultyMission < 3) return; // Don't update timer on lower skill settings.

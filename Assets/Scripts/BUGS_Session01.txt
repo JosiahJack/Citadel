@@ -1,0 +1,182 @@
+// Bugs found this session:
+===========================
+
+// Triage:
+===========================
+// Med
+- Loading a game forces resolution to 1280x720 until windows are changed.
+- Need to mark all floors as floors.
+- Preplaced items can dissappear from floor or corpses notably:
+  - Earthshaker on level R opposite trap room
+  - Flechette on level R near 2 cyborg assassins with grav lift
+  - Logic probe on level R to left of the elevator
+
+// Low Priority / Visual
+- Legacy keybinds needs to respect hardware hotkeys.
+- Search FX not positioned to mouse
+- Search FX only goes to left MFD even if search is currently on the right.
+- Frob icons look terrible, placeholder.
+- No weapon recoil to camera.
+- Quest notes not always correct.
+
+// UPDATE
+- Use animation transitions between walk and idle.
+- Add timer setting bar for nitro and earth shaker grenades on Item tab.
+- Turbo Motion Booster mode options are not available in Item Tab.
+- Missing stance indicator.
+- Add HUD minigames.
+
+// Tested Items
+================================
+Useable Items:
+0 Good
+1 Good
+2 Good
+3 Good
+4 Good
+5 Good
+6 Good
+7 Good
+8 Good
+9 Good
+10 Fail, missing timer setting on Item Tab
+11 Good, but needs slight range increase for sensing
+12 Fail, missing timer setting on Item Tab
+13 Good, but it's a tad bit too shiny, looks like it has fire on it.
+14 Good
+15 Good
+16 Good
+17 Fail, only works if double clicked in inventory.
+18 Fail, only works if double clicked in inventory.
+19 Fail, never wears off.
+20 Good
+21 Good
+22 Good
+23 Good
+24 Good
+25 Good
+26 Good
+27 Good
+28 Good
+29 Need to use convex MeshCollider
+30 Can't toggle mode from Item Tab for Booster
+31 Good
+32 Good
+33 Does not pause physics during pause or console.  Can't destroy.
+34 Calls itself PHONE when picked up.
+35 Good
+36 Good
+37 Good
+38 Good
+39 Good
+40 Good
+41 Good
+42 Good
+43 Good
+44 Good
+45 Good
+46 Good
+47 Good
+48 Good
+49 Good
+50 Good
+51 Good
+52 Good
+53 Good
+54 Good
+55 Good
+56 Good
+57 Good
+58 Good
+59 N/A
+60 Good
+61 Need to add yellow lights.
+62 
+
+// Test Bench Performance Study (Using the Unity 2021 test scene):
+================================
+Array Test study:
+--------------------
+PlayerLoop 5.61ms
+-Camera.Render 4.39ms
+Batches 166
+SetPass calls 133
+Saved by batching 354
+156.2FPS, 6.3ms
+
+--------------------
+End array test study
+--------------------
+
+
+Using the Unity URP sample scene (construction site). FORWARD RENDERER
+Remove Reflection Probes
+Remove Light Probes
+Remove Vignette (0.01ms cost)
+
+Light Baking:
+Baked Indirect is slow, increases draw calls to 85, FPS 69.9, 14.3ms
+Subtractive is faster, reduces draw calls to 74, FPS 72, 13.9ms
+Shadowmask is slowest, increases draw calls to 85, FPS 68.3, 14.7ms
+Realtime is fastest, draw calls at 77, FPS 72.8, 13.7ms
+
+Scene Settings:
+Removing Environment Lighting skybox ambient lighting has no affect.
+Removing Environment Reflections, draw calls at 77, FPS 73.2FPS, 13.6ms
+Remove Directional Light, draw calls 53, FPS 80.5, 12.5ms
+Remove scene Other Settings Fog, draw calls 53, FPS 83.1, 12.0ms
+
+Re-add Reflection Probes, draw calls 61, FPS 78.2, 12.8ms (Needed subtractive bake)
+Removed Reflection Probes again.
+Re-add Light Probes, draw calls 61, FPS 82.0, 12.2ms
+Removed Light Probes again. (removed baking)
+Remove Bloom, draw calls 34, FPS 84.9, 11.8ms
+Remove Tonemapping, draw calls 34, FPS 90.0, 11.1ms
+
+Lighting:
+
+Lights that affect all objects (or very nearly):
+1 Spotlight, draw calls 34, FPS 90.0, 11.1ms
+2 Spotlights, draw calls 50, FPS 78.3, 12.8ms
+3 Spotlights, draw calls 66, FPS 63.8, 15.6ms
+4 Spotlights, draw calls 77, FPS 58.0, 17.2ms
+5 Spotlights, draw calls 92, FPS 56.8, 17.6ms
+6 Spotlights, draw calls 108, FPS 56.0, 17.9ms
+7 Spotlights, draw calls 119, FPS 55.8, 18.0ms
+8 Spotlights, draw calls 135, FPS 54.8, 18.3ms
+Huge cost with 4, plateaus somewhat after.
+Remove all back down to 1 Spotlight.
+Removed all spotlights.
+Add 1 Pointlight, draw calls 57, FPS 95.2, 10.6ms
+2 Point, draw calls 99, FPS 77.2, 13.0ms
+3 Point, draw calls 143, FPS 66.3, 15.2ms
+4 Point, draw calls 177, FPS 57.9, 17.3ms
+5 Point, draw calls 223, FPS 56.3, 17.9ms
+6 Point, draw calls 214, FPS 59.4, 16.9ms (Engine confusion on which is important)
+I recall that there is a limit of 4 lights per object so
+additional lights here don't do much.
+Remove all point lights and spotlights were already gone.
+
+Lights that affect at most 4 objects (as best as I can tell):
+Add 1 Spotlight, draw calls 27, FPS 100.6, 9.9ms
+2 Spotlights, draw calls 37, FPS 94.8, 10.6ms
+3 Spotlights, draw calls 36, FPS 86.6, 11.6ms
+4 Spotlights, draw calls 39, FPS 80.0, 12.5ms
+5 Spotlights, draw calls 48, FPS 79.9, 12.4ms
+6 Spotlights, draw calls 52, FPS 78.4, 12.8ms
+7 Spotlights, draw calls 56, FPS 76.7, 13.0ms
+8 Spotlights, draw calls 62, FPS 74.4, 13.3ms
+Removed all spotlights.
+Add 1 Pointlight, draw calls 48, FPS 106.4, 9.4ms (BEST YET!)
+2 Point, draw calls 81, FPS 89.2, 11.2ms
+3 Point, draw calls 97, FPS 82.2, 12.2ms
+4 Point, draw calls 113, FPS 75.2, 13.3ms
+5 Point, draw calls 143, FPS 72.6, 13.7ms
+6 Point, draw calls 138, FPS 75.4, 13.3ms
+7 Point, draw calls 160, FPS 70.3, 14.3ms
+8 Point, draw calls 173, FPS 68.3, 14.6ms
+Removed all point lights and spotlights.
+
+Chuck Light, chuck a whole bunch at it
+60 Spotlights, draw calls 523, FPS 43.5, 23.0ms
+60 Pointlights, draw calls 212, FPS 63.0, 15.9ms
