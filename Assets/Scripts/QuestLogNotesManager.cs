@@ -164,57 +164,72 @@ public class QuestLogNotesManager : MonoBehaviour {
 		if (Const.a.difficultyMission == 0) return;
 
 		switch (levelIndex) {
-			case 1:
+			case 1: // Level 1
 				notes[0].SetActive(true);
 				labels[0].text = Const.a.stringTable[556] + "1" + Const.a.stringTable[557]; // Set:Destroy level 1 nodes. // Make sure this was on.
-				notes[1].SetActive(true);
-				labels[1].text = Const.a.stringTable[556] + "2" + Const.a.stringTable[557]; // Set:Destroy level 2 nodes.
+				if (!notes[1].activeInHierarchy) { // Level 2
+					notes[1].SetActive(true);
+					labels[1].text = Const.a.stringTable[556] + "2" + Const.a.stringTable[557]; // Set:Destroy level 2 nodes.
+				}
+				
 				checkBoxes[0].isOn = true;
 				Inventory.a.hasNewNotes = true;
 				labels[0].text += Const.a.stringTable[558] + Const.a.questData.lev1SecCode.ToString() + "."; // Add:  Code is , Add:#, Add:.
 				break;
-			case 2:
+			case 2: // Level 2
 				notes[1].SetActive(true);
 				labels[1].text = Const.a.stringTable[556] + "2" + Const.a.stringTable[557]; // Set:Destroy level 2 nodes. // Make sure this was on.
-				notes[2].SetActive(true);
-				labels[2].text = Const.a.stringTable[556] + "3" + Const.a.stringTable[557]; // Set:Destroy level 3 nodes.
+				if (!notes[2].activeInHierarchy) { // Level 3
+					notes[2].SetActive(true);
+					labels[2].text = Const.a.stringTable[556] + "3" + Const.a.stringTable[557]; // Set:Destroy level 3 nodes.
+				}
+				
 				checkBoxes[1].isOn = true;
 				Inventory.a.hasNewNotes = true;
-				labels[1].text += Const.a.stringTable[558] + Const.a.questData.lev1SecCode.ToString() + "."; // Add:  Code is , Add:#, Add:.
+				labels[1].text += Const.a.stringTable[558] + Const.a.questData.lev2SecCode.ToString() + "."; // Add:  Code is , Add:#, Add:.
 				break;
-			case 3:
+			case 3: // Level 3
 				notes[2].SetActive(true);
 				labels[2].text = Const.a.stringTable[556] + "3" + Const.a.stringTable[557]; // Set:Destroy level 3 nodes. // Make sure this was on.
-				notes[3].SetActive(true);
-				labels[3].text = Const.a.stringTable[556] + "4" + Const.a.stringTable[557]; // Set:Destroy level 4 nodes.
+				if (!notes[3].activeInHierarchy) { // Level 4
+					notes[3].SetActive(true);
+					labels[3].text = Const.a.stringTable[556] + "4" + Const.a.stringTable[557]; // Set:Destroy level 4 nodes.
+				}
+								
 				checkBoxes[2].isOn = true;
 				Inventory.a.hasNewNotes = true;
-				labels[2].text += Const.a.stringTable[558] + Const.a.questData.lev1SecCode.ToString() + "."; // Add:  Code is , Add:#, Add:.
+				labels[2].text += Const.a.stringTable[558] + Const.a.questData.lev3SecCode.ToString() + "."; // Add:  Code is , Add:#, Add:.
 				break;
-			case 4:
+			case 4: // Level 4
 				notes[3].SetActive(true);
 				labels[3].text = Const.a.stringTable[556] + "4" + Const.a.stringTable[557]; // Set:Destroy level 4 nodes. // Make sure this was on.
-				notes[4].SetActive(true);
-				labels[4].text = Const.a.stringTable[556] + "5" + Const.a.stringTable[557]; // Set:Destroy level 5 nodes.
+				if (!notes[4].activeInHierarchy) { // Level 5
+					notes[4].SetActive(true);
+					labels[4].text = Const.a.stringTable[556] + "5" + Const.a.stringTable[557]; // Set:Destroy level 5 nodes.
+				}
+				
 				checkBoxes[3].isOn = true;
 				Inventory.a.hasNewNotes = true;
-				labels[3].text += Const.a.stringTable[558] + Const.a.questData.lev1SecCode.ToString() + "."; // Add:  Code is , Add:#, Add:.
+				labels[3].text += Const.a.stringTable[558] + Const.a.questData.lev4SecCode.ToString() + "."; // Add:  Code is , Add:#, Add:.
 				break;
-			case 5:
+			case 5: // Level 5
 				notes[4].SetActive(true);
 				labels[4].text = Const.a.stringTable[556] + "5" + Const.a.stringTable[557]; // Set:Destroy level 5 nodes. // Make sure this was on.
-				notes[5].SetActive(true);
-				labels[5].text = Const.a.stringTable[556] + "6" + Const.a.stringTable[557]; // Set:Destroy level 6 nodes.
+				if (!notes[5].activeInHierarchy) { // Level 6
+					notes[5].SetActive(true);
+					labels[5].text = Const.a.stringTable[556] + "6" + Const.a.stringTable[557]; // Set:Destroy level 6 nodes.
+				}
+				
 				checkBoxes[4].isOn = true;
 				Inventory.a.hasNewNotes = true;
-				labels[4].text += Const.a.stringTable[558] + Const.a.questData.lev1SecCode.ToString() + "."; // Add:  Code is , Add:#, Add:.
+				labels[4].text += Const.a.stringTable[558] + Const.a.questData.lev5SecCode.ToString() + "."; // Add:  Code is , Add:#, Add:.
 				break;
-			case 6:
+			case 6: // Level 6
 				notes[5].SetActive(true);
 				labels[5].text = Const.a.stringTable[556] + "6" + Const.a.stringTable[557]; // Set:Destroy level 6 nodes. // Make sure this was on.
 				checkBoxes[5].isOn = true;
 				Inventory.a.hasNewNotes = true;
-				labels[5].text += Const.a.stringTable[558] + Const.a.questData.lev1SecCode.ToString() + "."; // Add:  Code is , Add:#, Add:.
+				labels[5].text += Const.a.stringTable[558] + Const.a.questData.lev6SecCode.ToString() + "."; // Add:  Code is , Add:#, Add:.
 				break;
 		}
 	}

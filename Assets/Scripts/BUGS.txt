@@ -1,9 +1,3 @@
-CameraUnculling doesn't take into account camera range
-
-Lots of white fireflie gaps in level 5 (with no detail models)
-
+NEED TO SAVE QuestLogNotesManager states!
 CameraView needs to offset so that multiple cameras don't render at once!
-
-Level 5 chunk_screen (5) change from SciScreen3 to new one with shodan face on one frame rarely
-Level 5 chunk_screen (4) change from SciScreen3 to new one with shodan face on one frame rarely
 Link sec_camera to screen! for maintscreen_Camera
