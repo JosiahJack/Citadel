@@ -20,16 +20,19 @@ public class LightAnimation : MonoBehaviour {
 
 	private bool lerpUp;
 	private bool noSteps = false;
-	[HideInInspector] public float lerpTime = 0.5f; //save
+	public float lerpTime = 0.5f; //save
 	[HideInInspector] public float stepTime; //save
-	[HideInInspector] public float lerpStartTime; //save
+	public float lerpStartTime; //save
 	[HideInInspector] public Light animLight;
 	private float differenceInIntensity;
 	[HideInInspector] public float lerpValue; //save
 	private GameObject segiEmitter;
 	private static StringBuilder s1 = new StringBuilder();
+	private bool initialized = false;
 
-	void Start () {
+	public void Start () {
+		if (initialized) return;
+
 		if (minIntensity < 0.01f) minIntensity = 0.01f;
 		animLight = GetComponent<Light>();
 		animLight.intensity = maxIntensity;
@@ -50,6 +53,7 @@ public class LightAnimation : MonoBehaviour {
 			ScaleSEGIEmitter();
 		}
 		
+		initialized = true;
 	}
 	
 	private void EnableSEGIEmitter() {
@@ -186,11 +190,6 @@ public class LightAnimation : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		LightAnimation la = go.GetComponent<LightAnimation>();
-		if (la == null) {
-			Debug.Log("LightAnimation missing on savetype of Light!  GameObject.name: " + go.name);
-			return "1|0|0|0000.00000|0000.00000|0000.00000|0000.00000";
-		}
-
 		if (la.animLight == null) la.animLight = la.GetComponent<Light>();
 
 		s1.Clear();
@@ -214,10 +213,6 @@ public class LightAnimation : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		LightAnimation la = go.GetComponent<LightAnimation>();
-		if (la == null) {
-			Debug.Log("LightAnimation.Load failure, la == null");
-			return index + 7;
-		}
 		if (la.animLight == null) la.animLight = la.GetComponent<Light>();
 
 		if (index < 0) {
@@ -230,6 +225,7 @@ public class LightAnimation : MonoBehaviour {
 			return index + 7;
 		}
 
+		la.Start();
 		la.lightOn = Utils.GetBoolFromString(entries[index],"lightOn"); index++;
 		la.lerpOn = Utils.GetBoolFromString(entries[index],"lerpOn"); index++;
 		la.currentStep = Utils.GetIntFromString(entries[index],"currentStep"); index++;

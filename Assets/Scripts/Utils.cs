@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 #if UNITY_EDITOR
 	using UnityEditor;
@@ -36,6 +37,8 @@ public class Utils {
 	private static float readFloatx, readFloaty, readFloatz, readFloatw;
 	private static Vector3 tempvec;
 	private static Quaternion tempquat;
+	private static bool testAlreadyRan = false;
+	private static bool testRanSuccessful = false;
 
 	public static object SafeIndex(ref object[] array, int index, int max,
                                    object failValue) {
@@ -231,20 +234,24 @@ public class Utils {
     public static string SafePathCombine(string basePath,
 										 params string[] additional) {
         int totalLength = 0;
-        for (int i = 0; i < additional.Length; i++) {
-            totalLength += additional[i].Split(pathSplitCharacters).Length;
-        }
+		if (additional != null) {
+			for (int i = 0; i < additional.Length; i++) {
+				totalLength += additional[i].Split(pathSplitCharacters).Length;
+			}
+		}
 
         string[] segments = new string[totalLength + 1];
         segments[0] = basePath;
         int index = 0;
-        for (int i = 0; i < additional.Length; i++) {
-            string[] split = additional[i].Split(pathSplitCharacters);
-            for (int j = 0; j < split.Length; j++) {
-                index++;
-                segments[index] = split[j];
-            }
-        }
+		if (additional != null) {
+			for (int i = 0; i < additional.Length; i++) {
+				string[] split = additional[i].Split(pathSplitCharacters);
+				for (int j = 0; j < split.Length; j++) {
+					index++;
+					segments[index] = split[j];
+				}
+			}
+		}
 
 		string combinedPath = Path.Combine(segments);
 		combinedPath = combinedPath.Replace("\\","/"); // Turns out / works on
@@ -252,25 +259,120 @@ public class Utils {
 													   // it for everything.
         return combinedPath;
     }
+    
+    private static bool IsStreamingAssetsWritable() {
+        if (testAlreadyRan) return testRanSuccessful;
 
-    #pragma warning disable 618
-	public static StreamReader ReadStreamingAsset(string fName) {
-		StreamReader dataReader;
-        string fPath = SafePathCombine(Application.streamingAssetsPath,fName);
-        if (Application.platform == RuntimePlatform.Android) {
-            WWW reader = new WWW(fPath);
-            while (!reader.isDone) { }
-            MemoryStream memStr = new MemoryStream(Encoding.ASCII.GetBytes(reader.text));
-            dataReader = new StreamReader(memStr,Encoding.ASCII);
-        } else {
-// 			Debug.Log("Reading " + fName + " from StreamingAssets/");
-            Utils.ConfirmExistsInStreamingAssetsMakeIfNot(fName);
-		    dataReader = new StreamReader(fPath, Encoding.ASCII);
+		if (Application.platform != RuntimePlatform.WindowsPlayer &&
+            Application.platform != RuntimePlatform.WindowsEditor &&
+            Application.platform != RuntimePlatform.LinuxPlayer &&
+            Application.platform != RuntimePlatform.LinuxEditor) {
+
+            testAlreadyRan = true;
+			testRanSuccessful = false;
+			UnityEngine.Debug.Log("IsStreamingAssetsWritable result false 1");
+            return false;
         }
-        
+
+        // Check if streamingAssetsPath is in a protected directory (e.g., Program Files)
+        string streamingAssetsPath = Application.streamingAssetsPath.ToLower();
+        string programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles).ToLower();
+        string programFilesX86Path = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86).ToLower();
+
+		bool hasPrFls = false;
+		bool hasPrFls86 = false;
+		if (!string.IsNullOrWhiteSpace(programFilesPath)) hasPrFls = streamingAssetsPath.Contains(programFilesPath);
+		if (!string.IsNullOrWhiteSpace(programFilesX86Path)) hasPrFls86 = streamingAssetsPath.Contains(programFilesX86Path);
+        if ((Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor)
+			&& hasPrFls || hasPrFls86) {
+
+			testAlreadyRan = true;
+			testRanSuccessful = false;
+			UnityEngine.Debug.Log("IsStreamingAssetsWritable result false 2");
+            return false; // In a protected directory
+        }
+
+        // Attempt to create a temporary file to test writability
+        try {
+            string testFilePath = SafePathCombine(Application.streamingAssetsPath,"test_write.tmp");
+            File.WriteAllText(testFilePath,"test");
+            if (File.Exists(testFilePath)) {
+                File.Delete(testFilePath); // Clean up
+				testAlreadyRan = true;
+				testRanSuccessful = true;
+				UnityEngine.Debug.Log("IsStreamingAssetsWritable result true");
+                return true;
+            }
+            
+            testAlreadyRan = true;
+			testRanSuccessful = false;
+			UnityEngine.Debug.Log("IsStreamingAssetsWritable result false 3");
+            return false;
+        } catch {
+			testAlreadyRan = true;
+			testRanSuccessful = false;
+			UnityEngine.Debug.Log("IsStreamingAssetsWritable result false 4");
+			return false; // Exception indicates non-writable directory
+        }
+    }
+    
+    // Determines the appropriate path based on platform and writability
+    public static string GetAppropriateDataPath() {
+        if (Application.platform == RuntimePlatform.OSXEditor ||
+            Application.platform == RuntimePlatform.OSXPlayer ||
+            Application.platform == RuntimePlatform.Android) {
+			
+            return Application.persistentDataPath;
+        }
+
+        // For Windows and Linux, check if streamingAssetsPath is writable
+        if (IsStreamingAssetsWritable()) return Application.streamingAssetsPath;
+
+        // Fallback to persistentDataPath if streamingAssetsPath is not writable
+        return Application.persistentDataPath;
+    }
+
+	public static StreamReader ReadStreamingAsset(string fName) {
+        StreamReader dataReader = null;
+        string basePath = Application.streamingAssetsPath;
+        string fPath = SafePathCombine(basePath, fName);
+        if (Application.platform == RuntimePlatform.Android) {
+            // Android: Use UnityWebRequest to read from streamingAssetsPath
+            UnityWebRequest request = UnityWebRequest.Get(fPath);
+            var operation = request.SendWebRequest();
+
+            // Synchronous wait (consider async for better performance)
+            while (!operation.isDone) { }
+            if (request.result == UnityWebRequest.Result.Success) {
+                byte[] bytes = request.downloadHandler.data;
+                MemoryStream memStr = new MemoryStream(bytes);
+                dataReader = new StreamReader(memStr, Encoding.ASCII);
+            } else {
+                UnityEngine.Debug.LogError($"Failed to read {fPath} on Android: {request.error}");
+                return null; // No recovery needed for Android
+            }
+        } else {
+            // Windows/Linux/MacOS: Try streamingAssetsPath first
+            if (File.Exists(fPath)) {
+                dataReader = new StreamReader(fPath, Encoding.ASCII);
+            } else {
+                // File missing, attempt recovery from Resources/StreamingAssetsRecovery
+                UnityEngine.Debug.LogWarning($"File {fPath} not found, attempting recovery.");
+                string rsrc = ResourcesPathCombine("StreamingAssetsRecovery",fName);
+                TextAsset resourcesFile = (TextAsset)Resources.Load(rsrc);
+                if (resourcesFile != null) {
+                    // Create StreamReader from TextAsset's text
+                    MemoryStream memStr = new MemoryStream(Encoding.ASCII.GetBytes(resourcesFile.text));
+                    dataReader = new StreamReader(memStr, Encoding.ASCII);
+                } else {
+                    UnityEngine.Debug.LogError($"Recovery file {rsrc} not found in Resources/StreamingAssetsRecovery.");
+                    return null;
+                }
+            }
+        }
+
         return dataReader;
-	}
-	#pragma warning restore 618
+    }
 
 	// From the Unity Documentation on Resources.Load:
 	// Note: All asset names and paths in Unity use forward slashes, paths
@@ -284,68 +386,58 @@ public class Utils {
 		return SafePathCombine(folderInResources,fname);
 	}
 
-	public static void ConfirmExistsInStreamingAssetsMakeIfNot(string fileName) {
+	public static void ConfirmExistsMakeIfNot(string basePath, string fileName) {
 		if (string.IsNullOrWhiteSpace(fileName)) {
-			UnityEngine.Debug.Log("fileName was null or whitespace passed to "
-								  + "ConfirmExistsInStreamingAssetsMakeIfNot");
+			UnityEngine.Debug.LogWarning("fileName was null or whitespace passed to ConfirmExistsMakeIfNot");
+			return;
+		}
+		
+		if (string.IsNullOrWhiteSpace(basePath)) {
+			UnityEngine.Debug.LogWarning("basePath was null or whitespace passed to ConfirmExistsMakeIfNot");
 			return;
 		}
 
-		string strmAstPth = SafePathCombine(Application.streamingAssetsPath,
-											fileName);
-
+		 // Recreate StreamingAssets or PersistentDataPath if it doesn't exist.
+		string targetPath = basePath;
+		if (basePath == Application.streamingAssetsPath &&
+			(Application.platform == RuntimePlatform.Android ||
+			Application.platform == RuntimePlatform.OSXEditor ||
+			Application.platform == RuntimePlatform.OSXPlayer ||
+			!IsStreamingAssetsWritable())) {
+			
+			UnityEngine.Debug.LogWarning("Target path redirected to persistent data path for ConfirmExistsMakeIfNot()");
+			targetPath = Application.persistentDataPath;
+		}
+		
+		string strmAstPth = SafePathCombine(targetPath,fileName);
 		if (File.Exists(strmAstPth)) return; // Already exists, all good!
-
-		 // Recreate StreamingAssets if it doesn't exist.
-        if (!Directory.Exists(Application.streamingAssetsPath)) {
-			Directory.CreateDirectory(Application.streamingAssetsPath);
+    
+		string directoryPath = Path.GetDirectoryName(strmAstPth);
+		if (!Directory.Exists(directoryPath)) {
+			try {
+				Directory.CreateDirectory(directoryPath);
+			} catch (Exception ex) {
+				UnityEngine.Debug.LogError($"Failed to create directory {directoryPath}: {ex.Message}");
+				return;
+			}
 		}
 
 		string rsrc = ResourcesPathCombine("StreamingAssetsRecovery",fileName);
         TextAsset resourcesFile = (TextAsset)Resources.Load(rsrc);
         if (resourcesFile != null) {
-			// Recreate from Resources/StreamingAssetsRecovery/*
-			File.WriteAllText(strmAstPth, resourcesFile.text, // new, contents
-							  Encoding.ASCII);
-			if (File.Exists(strmAstPth)) {
-				UnityEngine.Debug.Log("File " + strmAstPth + " recreated");
-			} else {
-				UnityEngine.Debug.Log("File " + strmAstPth + " failed to be "
-									  + "created by File.WriteAllText!");
+			try {
+				// Recreate from Resources/StreamingAssetsRecovery/*
+				File.WriteAllBytes(strmAstPth, resourcesFile.bytes); // new, contents
+				if (File.Exists(strmAstPth)) {
+					UnityEngine.Debug.Log("File " + strmAstPth + " recreated");
+				} else {
+					UnityEngine.Debug.LogWarning("File " + strmAstPth + " failed to be created by File.WriteAllText!");
+				}
+			} catch (Exception ex) {
+				UnityEngine.Debug.LogError("Failed to recreate " + strmAstPth + ": " + ex.Message);
 			}
         } else {
-			UnityEngine.Debug.Log("File " + strmAstPth + " not found in the "
-								  + "Resources folder");
-		}
-	}
-
-	public static void ConfirmExistsInPersistentDataMakeIfNot(string fileName) {
-		if (string.IsNullOrWhiteSpace(fileName)) {
-			UnityEngine.Debug.Log("fileName was null or whitespace passed to "
-								  + "ConfirmExistsInPersistentDataMakeIfNot");
-			return;
-		}
-
-		string persDatPth = SafePathCombine(Application.persistentDataPath,
-											fileName);
-
-		if (File.Exists(persDatPth)) return; // Already exists, all good!
-
-		string rsrc = ResourcesPathCombine("StreamingAssetsRecovery",fileName);
-        TextAsset resourcesFile = (TextAsset)Resources.Load(rsrc);
-        if (resourcesFile != null) {
-			// Recreate from Resources/StreamingAssetsRecovery/*
-			File.WriteAllText(persDatPth, resourcesFile.text, // new, contents
-							  Encoding.ASCII);
-			if (File.Exists(persDatPth)) {
-				UnityEngine.Debug.Log("File " + persDatPth + " recreated");
-			} else {
-				UnityEngine.Debug.Log("File " + persDatPth + " failed to be "
-									  + "created by File.WriteAllText!");
-			}
-        } else {
-			UnityEngine.Debug.Log("File " + persDatPth + " not found in the "
-								  + "Resources folder");
+			UnityEngine.Debug.LogWarning("File " + fileName + " not found in the Resources/StreamingAssetsRecovery folder");
 		}
 	}
 

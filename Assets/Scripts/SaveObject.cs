@@ -75,7 +75,10 @@ public class SaveObject : MonoBehaviour {
 		if (prefID != null) {
 			s1.Append(Utils.UintToString(prefID.constIndex,"constIndex")); // 0
 			s1.Append(Utils.splitChar);
-		} else return "";
+		} else {
+			Debug.LogWarning("Skipped saveable " + go.name + "!  Not a prefab!");
+			return "";
+		}
 
 		s1.Append(Utils.SaveString(so.saveableType,"saveableType"));   // 1
 		s1.Append(Utils.splitChar);
@@ -113,40 +116,40 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.SearchableDestructable: s1.Append(SearchableItem.Save(go,prefID)); s1.Append(Utils.splitChar);
                                                        s1.Append(HealthManager.Save(go,prefID)); break; // Saves TargetIO
 			case SaveableType.Door:                             s1.Append(Door.Save(go,prefID)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.ForceBridge:               s1.Append(ForceBridge.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.Switch:                   s1.Append(ButtonSwitch.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.FuncWall:                     s1.Append(FuncWall.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.TeleDest:                s1.Append(TeleportTouch.Save(go)); break;
 			case SaveableType.LBranch:                   s1.Append(LogicBranch.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.LRelay:                     s1.Append(LogicRelay.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.LSpawner:                 s1.Append(SpawnManager.Save(go)); break;
 			case SaveableType.InteractablePanel:   s1.Append(InteractablePanel.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.ElevatorPanel:          s1.Append(KeypadElevator.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.Keypad:                  s1.Append(KeypadKeycode.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.PuzzleGrid:           s1.Append(PuzzleGridPuzzle.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.PuzzleWire:           s1.Append(PuzzleWirePuzzle.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.TCounter:               s1.Append(TriggerCounter.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.TGravity:                  s1.Append(GravityLift.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.GravPad:                s1.Append(TextureChanger.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.ChargeStation:           s1.Append(ChargeStation.Save(go)); break;
 			case SaveableType.Light:                  s1.Append(LightAnimation.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.LTimer:                     s1.Append(LogicTimer.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.Camera:                  s1.Append(BerserkEffect.Save(go)); s1.Append(Utils.splitChar);
 													           s1.Append(Utils.SaveCamera(go)); break;
 			case SaveableType.DelayedSpawn:             s1.Append(DelayedSpawn.Save(go)); break;
@@ -154,12 +157,12 @@ public class SaveObject : MonoBehaviour {
 													   s1.Append(HealthManager.Save(go.transform.GetChild(0).gameObject,prefID)); s1.Append(Utils.splitChar); // Saves TargetIO
 													           s1.Append(Utils.SaveTransform(go.transform.GetChild(0))); break;
 			case SaveableType.Trigger:                       s1.Append(Trigger.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.Projectile:               s1.Append(DelayedSpawn.Save(go)); s1.Append(Utils.splitChar);
 										      s1.Append(ProjectileEffectImpact.Save(go)); break;
 			case SaveableType.NormalScreen:            s1.Append(HealthManager.Save(go,prefID)); break; // Saves TargetIO
 			case SaveableType.CyberSwitch:               s1.Append(CyberSwitch.Save(go,prefID)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go,prefID)); break;
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.CyberItem:               s1.Append(HealthManager.Save(go.transform.GetChild(0).GetChild(0).gameObject,prefID)); break; // Saves TargetIO
 		}
 		return s1.ToString();
@@ -227,40 +230,40 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.SearchableDestructable: index =         SearchableItem.Load(go,ref entries,index,prefID);
 													  index =          HealthManager.Load(go,ref entries,index,prefID,levelID); break; // Loads TargetIO
 			case SaveableType.Door:                   index =                   Door.Load(go,ref entries,index,prefID);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.ForceBridge:            index =            ForceBridge.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.Switch:                 index =           ButtonSwitch.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.FuncWall:               index =               FuncWall.Load(go.transform.GetChild(0).gameObject,ref entries,index);
-													  index =               TargetIO.Load(go.transform.GetChild(0).gameObject,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go.transform.GetChild(0).gameObject,ref entries,index); break;
 			case SaveableType.TeleDest:               index =          TeleportTouch.Load(go,ref entries,index); break;
 			case SaveableType.LBranch:                index =            LogicBranch.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.LRelay:                 index =             LogicRelay.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.LSpawner:               index =           SpawnManager.Load(go,ref entries,index); break;
 			case SaveableType.InteractablePanel:      index =      InteractablePanel.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.ElevatorPanel:          index =         KeypadElevator.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.Keypad:                 index =          KeypadKeycode.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.PuzzleGrid:             index =       PuzzleGridPuzzle.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.PuzzleWire:             index =       PuzzleWirePuzzle.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.TCounter:               index =         TriggerCounter.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.TGravity:               index =            GravityLift.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.GravPad:                index =         TextureChanger.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.ChargeStation:          index =          ChargeStation.Load(go,ref entries,index); break;
 			case SaveableType.Light:                  index =         LightAnimation.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.LTimer:                 index =             LogicTimer.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.Camera:                 index =          BerserkEffect.Load(go,ref entries,index);
 													  index =                  Utils.LoadCamera(go,ref entries,index); break;
 			case SaveableType.DelayedSpawn:           index =           DelayedSpawn.Load(go,ref entries,index); break;
@@ -268,12 +271,12 @@ public class SaveObject : MonoBehaviour {
 													  index =          HealthManager.Load(go.transform.GetChild(0).gameObject,ref entries,index,prefID,levelID); // Loads TargetIO
 													  index =                  Utils.LoadTransform(go.transform.GetChild(0),ref entries,index); break;
 			case SaveableType.Trigger:                index =                Trigger.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.Projectile:             index =           DelayedSpawn.Load(go,ref entries,index);
 													  index = ProjectileEffectImpact.Load(go,ref entries,index); break;
 			case SaveableType.NormalScreen:			  index =          HealthManager.Load(go,ref entries,index,prefID,levelID); break; // Loads TargetIO
 			case SaveableType.CyberSwitch:			  index =            CyberSwitch.Load(go,ref entries,index,prefID,levelID);
-													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.CyberItem:			  index =          HealthManager.Load(go.transform.GetChild(0).GetChild(0).gameObject,ref entries,index,prefID,levelID); break; // Loads TargetIO
 		}
 	}

@@ -10,6 +10,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
 
 // GLOBAL SCRIPT EXECUTION ORDER (set in Unity Project Settings, here for ref)
 // UnityEngine.EventSystems.EventSystems.EventSystem -1000
@@ -736,17 +737,18 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 		string dr;
+		string fileName = "ng.dat";
 		if (Application.platform == RuntimePlatform.Android) {
 		    a.introNotPlayed = false;
 			return;
 		} else {
-			Utils.ConfirmExistsInStreamingAssetsMakeIfNot("ng.dat");
-			dr = Utils.SafePathCombine(Application.streamingAssetsPath,
-										      "ng.dat");
+			string basePath = Utils.GetAppropriateDataPath();
+			Utils.ConfirmExistsMakeIfNot(basePath,fileName);
+			dr = Utils.SafePathCombine(basePath,fileName);
 		}
 
 		if (!File.Exists(dr)) {
-			UnityEngine.Debug.Log("ng.dat not found nor recreated");
+			UnityEngine.Debug.Log(fileName + " not found nor recreated");
 			return;
 		}
 
@@ -764,12 +766,10 @@ public class Const : MonoBehaviour {
 	}
 
 	public void WriteDatForIntroPlayed(bool setIntroNotPlayed) {
-	    if (Application.platform == RuntimePlatform.Android) return;
-	    
 		// Write bit to file
 		// No need to confirm it exists as StreamWriter will make it if not.
-		string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
-										  "ng.dat");
+		string basePath = Utils.GetAppropriateDataPath();
+		string dr = Utils.SafePathCombine(basePath,"ng.dat");
 		StreamWriter sw = new StreamWriter(dr,false,Encoding.ASCII);
 		if (sw != null) {
 			using (sw) {
@@ -777,6 +777,7 @@ public class Const : MonoBehaviour {
 				sw.Close();
 			}
 		}
+
 		a.introNotPlayed = setIntroNotPlayed;
 	}
 
@@ -962,15 +963,41 @@ public class Const : MonoBehaviour {
 	}
 	
 	Texture2D LoadTextureFromFile(string imgPath) {
-		string path = Utils.SafePathCombine(Application.streamingAssetsPath,
-											"textures/" + imgPath);
-		
+        string basePath = Application.streamingAssetsPath;
+		Utils.ConfirmExistsMakeIfNot(basePath,"textures/" + imgPath);
+		string path = Utils.SafePathCombine(basePath,"textures/" + imgPath);
 		Texture2D tex = new Texture2D(64, 64); // Default to world grid size for cases where DynamicCulling needs to index as [64,64].
 		try {
-			if (File.Exists(path)) {
-				byte[] raw = File.ReadAllBytes(path);
-				tex.LoadImage(raw);
-				return tex;
+			bool isAndroidOrMacOS = (Application.platform == RuntimePlatform.Android
+								 || Application.platform == RuntimePlatform.OSXEditor
+								 || Application.platform == RuntimePlatform.OSXPlayer);
+			
+			if (isAndroidOrMacOS) {
+				if (Application.platform == RuntimePlatform.Android) {
+					// Android: Use UnityWebRequest to read from streamingAssetsPath
+					UnityWebRequest request = UnityWebRequest.Get(path);
+					var operation = request.SendWebRequest();
+
+					// Synchronous wait (consider async for better performance)
+					while (!operation.isDone) { }
+					if (request.result == UnityWebRequest.Result.Success) {
+						byte[] bytes = request.downloadHandler.data;
+						tex.LoadImage(bytes);
+					} else {
+						UnityEngine.Debug.LogError($"Failed to read {path} on Android: {request.error}");
+						goto CreateBlackTexture;
+					}
+				} else {
+					tex = Resources.Load<Texture2D>("StreamingAssetsRecovery/textures/" + imgPath);
+					if (tex != null) return tex;
+					else goto CreateBlackTexture;
+				}
+			} else {
+				if (File.Exists(path)) {
+					byte[] bytes = File.ReadAllBytes(path);
+					tex.LoadImage(bytes);
+					return tex;
+				}
 			}
 			goto CreateBlackTexture;
 		} catch (Exception e) {
@@ -1363,8 +1390,9 @@ CreateBlackTexture:
 
 		// Write to file
 		string sName = "sav" + saveFileIndex.ToString() + ".txt";
+		string basePath = Utils.GetAppropriateDataPath();
 		string sPath;
-		sPath = Utils.SafePathCombine(Application.streamingAssetsPath,sName);
+		sPath = Utils.SafePathCombine(basePath,sName);
 		StreamWriter sw = new StreamWriter(sPath,false,Encoding.ASCII);
 		if (sw != null) {
 			using (sw) {
@@ -1599,19 +1627,8 @@ CreateBlackTexture:
 		string[] entries = new string[2048]; // Holds pipe | delimited strings
 											 // on individual lines.
 		string lName = "sav" + saveFileIndex.ToString() + ".txt";
-		StreamReader sr;
-		if (Application.platform == RuntimePlatform.Android) {
-		    string fPath = Utils.SafePathCombine(Application.persistentDataPath,
-										  lName);
-										  
-		    sr = new StreamReader(fPath, Encoding.ASCII);
-		} else {
-		    sr = Utils.ReadStreamingAsset(lName);
-		}
-		
-		List<GameObject> allParents = 
-			SceneManager.GetActiveScene().GetRootGameObjects().ToList();
-			
+		StreamReader sr = Utils.ReadStreamingAsset(lName);
+		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
 		if (sr != null) {
 			// Read the file into a list, line by line
 			using (sr) {

@@ -71,7 +71,8 @@ public class Config {
 	    // --------------------------------------------------------------------
 	    
 		// The currently used config is always Config.ini.
-		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
+		string basePath = Utils.GetAppropriateDataPath();
+		Utils.ConfirmExistsMakeIfNot(basePath,"Config.ini");
 
 		// Graphics Configurations
 		Const.a.GraphicsResWidth = AssignConfigInt("Graphics","ResolutionWidth");

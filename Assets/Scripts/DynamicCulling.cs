@@ -979,10 +979,10 @@ public class DynamicCulling : MonoBehaviour {
     private void SetupDebugImageWorkingVariables() {
         debugTex = new Texture2D(WORLDX,WORLDX);
         pixels = new Color32[WORLDX * WORLDX];
-        visDebugImagePath = Utils.SafePathCombine(
-            Application.streamingAssetsPath,
-            "worldcellvis_" + LevelManager.a.currentLevel.ToString()
-            + ".png");        
+        string basePath = Utils.GetAppropriateDataPath();
+        string fileName = "worldcellvis_" + LevelManager.a.currentLevel.ToString() + ".png";
+		Utils.ConfirmExistsMakeIfNot(basePath,fileName);
+        visDebugImagePath = Utils.SafePathCombine(basePath,fileName);        
     }
 
     public void Cull_Init() {

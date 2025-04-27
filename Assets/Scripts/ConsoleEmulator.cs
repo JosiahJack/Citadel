@@ -1185,12 +1185,14 @@ Master Index
 745 us_puz_panel_teal_wire
 746 weapon_grenadeenergmine_live
 747 decal_logo_storage
+748 light animated
+749 generic transform
 
 999 PlayerCapsule
 */
 
 public static bool ConstIndexInBounds(int constdex) {
-	return (constdex >= 0 && constdex <= 748);
+	return (constdex >= 0 && constdex <= 749);
 }
 
 public static bool ConstIndexIsGeometry(int constdex) {
@@ -1208,6 +1210,14 @@ public static bool ConstIndexIsDynamicObject(int constdex) {
 
 public static bool ConstIndexIsDoor(int constdex) {
 	return (constdex >= 496 && constdex < 515);
+}
+
+public static bool ConstIndexIsLightStaticSaveable(int constdex) {
+	return constdex == 748;
+}
+
+public static bool ConstIndexIsGenericTransform(int constdex) {
+	return constdex == 749;
 }
 
 public static bool ConstIndexIsStaticObjectSaveable(int constdex) {

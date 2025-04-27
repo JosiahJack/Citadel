@@ -1100,10 +1100,16 @@ public class Inventory : MonoBehaviour {
 		if (Const.a.audioLogType[logIndex] == AudioLogType.Vmail) {
 			MouseLookScript.a.vmailActive = true; // allow click to end
 			MouseLookScript.a.ForceInventoryMode();
+			string basePath = Application.streamingAssetsPath;
+			string fileName;
+			string urlPath;
 			switch (logIndex) {
 				case 119:
 					vmailbetajet.SetActive(true);
-					vmailbetajetVideo.url = Application.streamingAssetsPath + "/betajet.webm";
+					fileName = "betajet.webm";
+					Utils.ConfirmExistsMakeIfNot(basePath,fileName);
+					urlPath = Utils.SafePathCombine(basePath,fileName);
+					vmailbetajetVideo.url = urlPath;
 					vmailbetajetVideo.Play();
 					if (!MainMenuHandler.a.dataFound) vmailbetajetVideo.SetDirectAudioMute(0,true);
 					else vmailbetajetVideo.SetDirectAudioMute(0,false);
@@ -1111,7 +1117,10 @@ public class Inventory : MonoBehaviour {
 					break;
 				case 116:
 					vmailbridgesep.SetActive(true);
-					vmailbridgesepVideo.url = Application.streamingAssetsPath + "/bridgesep.webm";
+					fileName = "bridgesep.webm";
+					Utils.ConfirmExistsMakeIfNot(basePath,fileName);
+					urlPath = Utils.SafePathCombine(basePath,fileName);
+					vmailbridgesepVideo.url = urlPath;
 					vmailbridgesepVideo.Play();
 					if (!MainMenuHandler.a.dataFound) vmailbridgesepVideo.SetDirectAudioMute(0,true);
 					else vmailbridgesepVideo.SetDirectAudioMute(0,false);
@@ -1119,7 +1128,10 @@ public class Inventory : MonoBehaviour {
 					break;
 				case 117:
 					vmailcitadestruct.SetActive(true);
-					vmailcitadestructVideo.url = Application.streamingAssetsPath + "/citadestruct.webm";
+					fileName = "citadestruct.webm";
+					Utils.ConfirmExistsMakeIfNot(basePath,fileName);
+					urlPath = Utils.SafePathCombine(basePath,fileName);
+					vmailcitadestructVideo.url = urlPath;
 					vmailcitadestructVideo.Play();
 					if (!MainMenuHandler.a.dataFound) vmailcitadestructVideo.SetDirectAudioMute(0,true);
 					else vmailcitadestructVideo.SetDirectAudioMute(0,false);
@@ -1127,7 +1139,10 @@ public class Inventory : MonoBehaviour {
 					break;
 				case 110:
 					vmailgenstatus.SetActive(true);
-					vmailgenstatusVideo.url = Application.streamingAssetsPath + "/genstatus.webm";
+					fileName = "genstatus.webm";
+					Utils.ConfirmExistsMakeIfNot(basePath,fileName);
+					urlPath = Utils.SafePathCombine(basePath,fileName);
+					vmailgenstatusVideo.url = urlPath;
 					vmailgenstatusVideo.Play();
 					if (!MainMenuHandler.a.dataFound) vmailgenstatusVideo.SetDirectAudioMute(0,true);
 					else vmailgenstatusVideo.SetDirectAudioMute(0,false);
@@ -1135,7 +1150,10 @@ public class Inventory : MonoBehaviour {
 					break;
 				case 114:
 					vmaillaserdest.SetActive(true);
-					vmaillaserdestVideo.url = Application.streamingAssetsPath + "/laserdest.webm";
+					fileName = "laserdest.webm";
+					Utils.ConfirmExistsMakeIfNot(basePath,fileName);
+					urlPath = Utils.SafePathCombine(basePath,fileName);
+					vmaillaserdestVideo.url = urlPath;
 					vmaillaserdestVideo.Play();
 					if (!MainMenuHandler.a.dataFound) vmaillaserdestVideo.SetDirectAudioMute(0,true);
 					else vmaillaserdestVideo.SetDirectAudioMute(0,false);
@@ -1143,7 +1161,10 @@ public class Inventory : MonoBehaviour {
 					break;
 				case 120:
 					vmailshieldsup.SetActive(true);
-					vmailshieldsupVideo.url = Application.streamingAssetsPath + "/shieldsup.webm";
+					fileName = "shieldsup.webm";
+					Utils.ConfirmExistsMakeIfNot(basePath,fileName);
+					urlPath = Utils.SafePathCombine(basePath,fileName);
+					vmailshieldsupVideo.url = urlPath;
 					vmailshieldsupVideo.Play();
 					if (!MainMenuHandler.a.dataFound) vmailshieldsupVideo.SetDirectAudioMute(0,true);
 					else vmailshieldsupVideo.SetDirectAudioMute(0,false);

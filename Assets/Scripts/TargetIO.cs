@@ -407,7 +407,7 @@ public class TargetIO : MonoBehaviour {
 	}
 
 	// Save searchable data
-	public static string Save(GameObject go, PrefabIdentifier prefID) {
+	public static string Save(GameObject go) {
 		TargetIO tio;
 		if (go.name.Contains("se_corpse_eaten")) tio = go.transform.GetChild(0).GetComponent<TargetIO>(); // se_corpse_eaten
 		else tio = go.GetComponent<TargetIO>(); 
@@ -536,8 +536,7 @@ public class TargetIO : MonoBehaviour {
 		return s1.ToString();
 	}
 
-	public static int Load(GameObject go, ref string[] entries, int index,
-						   bool instantiated, PrefabIdentifier prefID) {
+	public static int Load(GameObject go, ref string[] entries, int index) {
 		TargetIO tio;
 		if (go.name.Contains("se_corpse_eaten")) tio = go.transform.GetChild(0).GetComponent<TargetIO>(); // se_corpse_eaten
 		else tio = go.GetComponent<TargetIO>(); 

@@ -158,7 +158,7 @@ public static class SaveLoad {
             s1.Append(splitChar);
             s1.Append(Utils.SaveString(cybacc.argvalue,"argvalue"));
             s1.Append(splitChar);
-            s1.Append(TargetIO.Save(go,pid));
+            s1.Append(TargetIO.Save(go));
         } else if (pid.constIndex == 574) { // prop_healingbed
             HealingBed heb = go.GetComponent<HealingBed>();
             s1.Append(splitChar);
@@ -231,7 +231,7 @@ public static class SaveLoad {
             s1.Append(splitChar);
             s1.Append(Utils.BoolToString(em.autoPlayEmail,"autoPlayEmail"));
             s1.Append(splitChar);
-            s1.Append(TargetIO.Save(go,pid));
+            s1.Append(TargetIO.Save(go));
         } else if (pid.constIndex == 709) { // info_message
             TriggeredSprintMessage msg = go.GetComponent<TriggeredSprintMessage>();
             s1.Append(splitChar);
@@ -239,7 +239,7 @@ public static class SaveLoad {
             s1.Append(splitChar);
             s1.Append(Utils.SaveString(msg.messageToDisplay,"messageToDisplay"));
             s1.Append(splitChar);
-            s1.Append(TargetIO.Save(go,pid));
+            s1.Append(TargetIO.Save(go));
         } else if (pid.constIndex == 710) { // info_mission
             QuestBitRelay qbr = go.GetComponent<QuestBitRelay>();
             s1.Append(splitChar);
@@ -303,7 +303,7 @@ public static class SaveLoad {
             s1.Append(splitChar);
             s1.Append(Utils.SaveString(qbr.argvalueIfFalse,"argvalueIfFalse"));
             s1.Append(splitChar);
-            s1.Append(TargetIO.Save(go,pid));
+            s1.Append(TargetIO.Save(go));
         } else if (pid.constIndex == 711) { // info_note
             Note nt = go.GetComponent<Note>();
             s1.Append(splitChar);
@@ -327,7 +327,7 @@ public static class SaveLoad {
             s1.Append(splitChar);
             s1.Append(Utils.IntToString(snd.burstemittcnt2,"burstemittcnt2"));
             s1.Append(splitChar);
-            s1.Append(TargetIO.Save(go,pid));
+            s1.Append(TargetIO.Save(go));
             s1.Append(splitChar);
             s1.Append(Utils.SaveAudioSource(go));
         } else if (pid.constIndex == 714) { // info_screenshake
@@ -337,7 +337,7 @@ public static class SaveLoad {
             s1.Append(splitChar);
             s1.Append(Utils.FloatToString(eft.force,"force"));
         } else if (pid.constIndex == 715) { // info_spawnpoint
-            s1.Append(TargetIO.Save(go,pid));
+            s1.Append(TargetIO.Save(go));
         } else if (pid.constIndex == 716) { // fx_reverbzone
             AudioReverbZone arz = go.GetComponent<AudioReverbZone>();
             s1.Append(splitChar);
@@ -380,9 +380,8 @@ public static class SaveLoad {
                 cybacc.target = Utils.LoadString(entries[index],"target"); index++;
                 cybacc.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
             }
-            
-            PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
-            index = TargetIO.Load(go,ref entries,index,true,prefID);
+
+            index = TargetIO.Load(go,ref entries,index);
         } else if (constIndex == 574) { // prop_healingbed
             HealingBed heb = go.GetComponent<HealingBed>();
             heb.broken = Utils.GetBoolFromString(entries[index],"broken"); index++;
@@ -429,14 +428,12 @@ public static class SaveLoad {
             Email em = go.GetComponent<Email>();
             em.emailIndex = Utils.GetIntFromString(entries[index],"emailIndex"); index++;
             em.autoPlayEmail = Utils.GetBoolFromString(entries[index],"autoPlayEmail"); index++;
-            PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
-            index = TargetIO.Load(go,ref entries,index,true,prefID);
+            index = TargetIO.Load(go,ref entries,index);
         } else if (constIndex == 709) { // info_message
             TriggeredSprintMessage msg = go.GetComponent<TriggeredSprintMessage>();
             msg.messageLingdex = Utils.GetIntFromString(entries[index],"messageLingdex"); index++;
             msg.messageToDisplay = Utils.LoadString(entries[index],"messageToDisplay"); index++;
-            PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
-            index = TargetIO.Load(go,ref entries,index,true,prefID);
+            index = TargetIO.Load(go,ref entries,index);
         } else if (constIndex == 710) { // info_mission
             QuestBitRelay qbr = go.GetComponent<QuestBitRelay>();
             qbr.lev1SecCode = Utils.GetIntFromString(entries[index],"lev1SecCode"); index++;
@@ -469,8 +466,7 @@ public static class SaveLoad {
             qbr.targetIfFalse = Utils.LoadString(entries[index],"targetIfFalse"); index++;
             qbr.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
             qbr.argvalueIfFalse = Utils.LoadString(entries[index],"argvalueIfFalse"); index++;
-            PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
-            index = TargetIO.Load(go,ref entries,index,true,prefID);
+            index = TargetIO.Load(go,ref entries,index);
         } else if (constIndex == 711) { // info_note Actually unused but leaving for people making levels
             Note nt = go.GetComponent<Note>();
             nt.note = Utils.LoadString(entries[index],"note"); index++;
@@ -484,16 +480,14 @@ public static class SaveLoad {
             snd.numparticles = Utils.GetIntFromString(entries[index],"numparticles"); index++;
             snd.burstemittcnt1 = Utils.GetIntFromString(entries[index],"burstemittcnt1"); index++;
             snd.burstemittcnt2 = Utils.GetIntFromString(entries[index],"burstemittcnt2"); index++;
-            PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
-            index = TargetIO.Load(go,ref entries,index,true,prefID);
+            index = TargetIO.Load(go,ref entries,index);
             index = Utils.LoadAudioSource(go,ref entries,index);
         } else if (constIndex == 714) { // info_screenshake
             EffectScreenShake eft = go.GetComponent<EffectScreenShake>();
             eft.distance = Utils.GetFloatFromString(entries[index],"distance"); index++;
             eft.force = Utils.GetFloatFromString(entries[index],"force"); index++;
         } else if (constIndex == 715) { // info_spawnpoint
-            PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
-            index = TargetIO.Load(go,ref entries,index,true,prefID);
+            index = TargetIO.Load(go,ref entries,index);
         } else if (constIndex == 716) { // fx_reverbzone
             AudioReverbZone arz = go.GetComponent<AudioReverbZone>();
             arz.minDistance = Utils.GetFloatFromString(entries[index],"minDistance"); index++;

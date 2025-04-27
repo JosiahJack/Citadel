@@ -17,15 +17,9 @@ public class INIWorker {
         new Dictionary<string, Dictionary<string, string>>();
 
     private static bool FirstRead() {
-		if (Application.platform == RuntimePlatform.Android) {
-		    return false;
-			//Utils.ConfirmExistsInPersistentDataMakeIfNot("Config.ini");
-			//path = Utils.SafePathCombine(Application.persistentDataPath,"Config.ini");
-		} else {
-		    Utils.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
-            path = Utils.SafePathCombine(Application.streamingAssetsPath,"Config.ini");
-        }
-
+        string basePath = Utils.GetAppropriateDataPath();
+        Utils.ConfirmExistsMakeIfNot(basePath,"Config.ini");
+        path = Utils.SafePathCombine(basePath,"Config.ini");
         if (File.Exists(path)) {
             using (StreamReader sr = new StreamReader(path)) {
                 string line;
@@ -86,12 +80,9 @@ public class INIWorker {
     }
  
     private static void WriteIni() {
-		if (Application.platform == RuntimePlatform.Android) {
-            return; // Ah to heck with Google
-		}
-		
-		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
-        path = Utils.SafePathCombine(Application.streamingAssetsPath,"Config.ini");
+        string basePath = Utils.GetAppropriateDataPath();
+		Utils.ConfirmExistsMakeIfNot(basePath,"Config.ini");
+        path = Utils.SafePathCombine(basePath,"Config.ini");
         using (StreamWriter sw = new StreamWriter(path,false,Encoding.ASCII)) {
 			bool init = true;
 			sw.WriteLine("// Citadel Configuration File");

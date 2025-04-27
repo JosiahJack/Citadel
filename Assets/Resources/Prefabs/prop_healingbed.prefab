@@ -90,6 +90,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!1 &110700
@@ -102,6 +103,9 @@ GameObject:
   m_Component:
   - component: {fileID: 489310}
   - component: {fileID: -8500017418213913104}
+  - component: {fileID: 1647811619315877866}
+  - component: {fileID: 1111482695736245062}
+  - component: {fileID: 2424624280940524606}
   m_Layer: 0
   m_Name: prop_healingbed
   m_TagString: Usable
@@ -140,6 +144,141 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   constIndex: 574
+--- !u!114 &1647811619315877866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecd9cf7beb982a841a86720209e85a36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SaveID: 0
+  saveType: 5
+  instantiated: 0
+  saveableType: 
+  initialized: 0
+--- !u!114 &1111482695736245062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1179e085502cbc448b030c3f352a5552, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  searchableItem: {fileID: 0}
+  linkedOverlay: {fileID: 0}
+  securityAffected: 0
+  teleportEffect: {fileID: 0}
+  gibObjects: []
+  disableOnGib: []
+  pstatic: {fileID: 0}
+  empstatic: {fileID: 0}
+  healingFXFlash: {fileID: 0}
+  health: 9999999
+  cyberHealth: -1
+  maxhealth: 0
+  isPlayer: 0
+  isGrenade: 0
+  gibOnDeath: 1
+  dropItemsOnGib: 0
+  vaporizeCorpse: 0
+  isNPC: 0
+  isObject: 1
+  isIce: 0
+  isSecCamera: 0
+  teleportOnDeath: 0
+  actAsCorpseOnly: 0
+  gibsGetVelocity: 0
+  gibVelocityBoost: {x: 0, y: 0, z: 0}
+  deathFX: 32
+  bloodType: 4
+  targetOnDeath: 
+  argvalue: 
+  inCyberSpace: 0
+  attacker: {fileID: 0}
+  justHurtByEnemy: 0
+  deathDone: 0
+  aic: {fileID: 0}
+  god: 0
+  teleportDone: 0
+  linkedTargetID: {fileID: 0}
+  awakeInitialized: 0
+  startInitialized: 0
+--- !u!114 &2424624280940524606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 640a173b757cd744aa218a9239e8ba92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetname: 
+  tripTrigger: 0
+  doorOpen: 0
+  doorOpenIfUnlocked: 0
+  doorClose: 0
+  doorLock: 0
+  doorUnlock: 0
+  switchTrigger: 0
+  chargeStationRecharge: 0
+  enemyAlert: 0
+  forceBridgeActivate: 0
+  forceBridgeDeactivate: 0
+  forceBridgeToggle: 0
+  gravityLiftToggle: 0
+  textureChangeToggle: 0
+  lightOn: 0
+  lightOff: 0
+  lightToggle: 0
+  funcwallMove: 0
+  missionBitOn: 0
+  missionBitOff: 0
+  missionBitToggle: 0
+  sendEmail: 0
+  switchLockToggle: 0
+  lockCodeToScreenMaterialChanger: 0
+  spawnerActivate: 0
+  spawnerActivateAlerted: 0
+  cyborgConversionToggle: 0
+  GOSetActive: 0
+  GOSetDeactive: 0
+  GOToggleActive: 0
+  toggleRadiationTrigger: 0
+  disableThisGOOnAwake: 0
+  toggleRelayEnabled: 0
+  togglePuzzlePanelLocked: 0
+  testQuestBitIsOn: 0
+  testQuestBitIsOff: 0
+  playSoundOnce: 0
+  stopSound: 0
+  sendSprintMessage: 0
+  radiationTreatment: 0
+  startFlashingMaterials: 0
+  stopFlashingMaterials: 0
+  unlockElevatorPad: 0
+  unlockKeycodePad: 0
+  unlockPuzzlePad: 0
+  screenShake: 0
+  awakeSleepingEnemy: 0
+  branchFlip: 0
+  branchFlipOnly: 0
+  doorAccessCardOverrideToggle: 0
+  unlockSwitch: 0
+  lockElevatorPad: 0
+  alreadyDisabledThisGOOnceEver: 0
+  doorToggle: 0
 --- !u!1 &122438
 GameObject:
   m_ObjectHideFlags: 0
@@ -199,6 +338,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -227,6 +367,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!64 &6410782
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -454,6 +595,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!1 &155894
@@ -512,6 +654,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -536,6 +679,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &11430282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -560,4 +704,5 @@ MonoBehaviour:
   constArrayLookup: 
   constArrayLookupGlow: 
   constArrayDestroyed: 
+  tickFinished: 0
   lightContainer: {fileID: 0}

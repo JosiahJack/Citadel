@@ -58,22 +58,24 @@ public class Music : MonoBehaviour {
 
 	IEnumerator LoadHelper(string fName, MusicResourceType type, int index) {
 		tempClip = null;
-		string fPath;
-		if (type == MusicResourceType.Looped) {
-			fPath = Application.streamingAssetsPath + "/music/looped/" + fName;
-		} else {
-			fPath = Application.streamingAssetsPath + "/music/" + fName;
-		}
+		string basePath = Utils.GetAppropriateDataPath();
+		string fPath = type == MusicResourceType.Looped
+							   ? Utils.SafePathCombine(basePath,"music","looped",fName)
+							   : Utils.SafePathCombine(basePath,"music",fName);
 
 		string fPathMp3 = fPath + ".mp3";
 		string fPathWave = fPath + ".wav";
-		bool wavExists = File.Exists(fPathWave);
-		bool mp3Exists = File.Exists(fPathMp3);
-		if ((!wavExists && !mp3Exists)
-			|| Application.platform == RuntimePlatform.Android
-			|| Application.platform == RuntimePlatform.OSXEditor
-			|| Application.platform == RuntimePlatform.OSXPlayer) {
-			
+		bool isAndroidOrMacOS = (Application.platform == RuntimePlatform.Android
+								 || Application.platform == RuntimePlatform.OSXEditor
+								 || Application.platform == RuntimePlatform.OSXPlayer);
+
+		bool wavExists = false;
+		if (!isAndroidOrMacOS) wavExists = File.Exists(fPathWave); // Don't bother checking on Android or MacOS.
+
+		bool mp3Exists = false;
+		if (!isAndroidOrMacOS) mp3Exists = File.Exists(fPathMp3);
+
+		if ((!wavExists && !mp3Exists) || isAndroidOrMacOS) {
 			if (type == MusicResourceType.Looped) {
 				tempClip = (AudioClip)Resources.Load("StreamingAssetsRecovery/music/looped/" + fName);
 			} else {

@@ -866,7 +866,7 @@ public class HealthManager : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveString(hm.targetOnDeath,"targetOnDeath"));
 		s1.Append(Utils.splitChar);
-		s1.Append(TargetIO.Save(go,prefID));
+		s1.Append(TargetIO.Save(go));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(hm.gibObjects.Length,"gibObjects.Length"));
 		for (int i=0;i<hm.gibObjects.Length; i++) {
@@ -882,6 +882,13 @@ public class HealthManager : MonoBehaviour {
 			ImageSequenceTextureArray ista = child.GetComponent<ImageSequenceTextureArray>();
 			s1.Append(Utils.splitChar);
 			s1.Append(Utils.SaveString(ista.resourceFolder,"resourceFolder"));
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.SaveRelativeTimeDifferential(ista.tickFinished,"ista.tickFinished"));
+		} else if (prefID.constIndex == 574) { // prop_healingbed
+			GameObject child = go.transform.GetChild(0).gameObject;
+			ImageSequenceTextureArray ista = child.GetComponent<ImageSequenceTextureArray>();
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.SaveRelativeTimeDifferential(ista.tickFinished,"ista.tickFinished"));
 		}
 
 		s1.Append(Utils.splitChar);
@@ -904,7 +911,7 @@ public class HealthManager : MonoBehaviour {
 		hm.actAsCorpseOnly = Utils.GetBoolFromString(entries[index],"actAsCorpseOnly"); index++;
 		hm.teleportDone = Utils.GetBoolFromString(entries[index],"teleportDone"); index++;
         hm.targetOnDeath = Utils.LoadString(entries[index],"targetOnDeath"); index++;
-		index = TargetIO.Load(go,ref entries,index,true,prefID);
+		index = TargetIO.Load(go,ref entries,index);
 		hm.AwakeFromLoad(levID);
 		int numChildren = hm.gibObjects.Length;
 		int numChildrenFromSave = Utils.GetIntFromString(entries[index],"gibObjects.Length"); index++;
@@ -930,7 +937,12 @@ public class HealthManager : MonoBehaviour {
 					child.SetActive(Utils.GetBoolFromString(entries[index],"child.activeSelf")); index++;
 					ImageSequenceTextureArray ista = child.GetComponent<ImageSequenceTextureArray>();
 					ista.resourceFolder = Utils.LoadString(entries[index],"resourceFolder"); index++;
+					ista.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],"ista.tickFinished"); index++;
 				}
+			} else if (prefID.constIndex == 574) { // prop_healingbed
+				GameObject child = go.transform.GetChild(0).gameObject;
+				ImageSequenceTextureArray ista = child.GetComponent<ImageSequenceTextureArray>();
+				ista.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],"ista.tickFinished"); index++;
 			}
 		} else {
 			if (prefID == null) Debug.LogError("Missing PrefabIdentifier on " + go.name + ".");	

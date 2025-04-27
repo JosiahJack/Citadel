@@ -14,11 +14,11 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	public int[] constArrayLookup;
 	public int[] constArrayLookupGlow;
 	public int[] constArrayDestroyed;
+	public float tickFinished; // save....except handled purely through HealthManager
 	/*[DTValidator.Optional] */public GameObject lightContainer;
 
 	private AudioSource SFX;
 	private float tick;
-	private float tickFinished; // save....except handled purely through HealthManager
 	private bool screenDestroyedDone = false; // Delay ending animation for a few destroy frames.
 	private bool screenDestroyFirstFrame = true;
 	private MeshRenderer mR;

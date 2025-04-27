@@ -212,7 +212,8 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 	
 	void CheckAndPlayIntro() {
-		string indn = Utils.SafePathCombine(Application.streamingAssetsPath,"introdone.dat");
+        string basePath = Utils.GetAppropriateDataPath();
+		string indn = Utils.SafePathCombine(basePath,"introdone.dat");
 		if (System.IO.File.Exists(indn)) {
 			IntroVideo.SetActive(false);
 			ClearVideoRT();
@@ -227,12 +228,9 @@ public class MainMenuHandler : MonoBehaviour {
 
 	IEnumerator CheckDataFiles () {
 		BackGroundMusic.Stop();
-		string alogPath = Utils.SafePathCombine(Application.streamingAssetsPath,
-												"CITALOG.RES");
-
-		string barkPath = Utils.SafePathCombine(Application.streamingAssetsPath,
-												"CITBARK.RES");
-		if (File.Exists(alogPath) && File.Exists(barkPath)) {
+		string basePath = Utils.GetAppropriateDataPath();
+		string alogPath = Utils.SafePathCombine(basePath,"CITALOG.RES");
+		if (File.Exists(alogPath)) {
 			// Go right on into the game, all good here.
 			InitialDisplay.SetActive(false);
 			dataFound = true;
@@ -674,11 +672,10 @@ public class MainMenuHandler : MonoBehaviour {
 
 	string GetSaveName(int index) {
 		string savName = "sav" + index.ToString() + ".txt";
-		string sP = Utils.SafePathCombine(Application.streamingAssetsPath,
-											savName);
-
+		string basePath = Utils.GetAppropriateDataPath();
+		string sP = Utils.SafePathCombine(basePath,savName);
 		string retval = "! unknown !";
-		Utils.ConfirmExistsInStreamingAssetsMakeIfNot(savName);
+		Utils.ConfirmExistsMakeIfNot(basePath,savName);
 		StreamReader sf = new StreamReader(sP);
 		if (sf == null) {
 			Debug.Log("GetSaveName error! sf null");
@@ -820,35 +817,16 @@ public class MainMenuHandler : MonoBehaviour {
 	// Linked in Inspector to dataPathInputText.
 	public void CopyFromPath() {
 		// Copy CITALOG.RES and CITBARK.RES from data path if they exist
-		string alogPath,barkPath;
-		alogPath = Utils.SafePathCombine(dataPathInputText.text,"CITALOG.RES");
-		barkPath = Utils.SafePathCombine(dataPathInputText.text,"CITBARK.RES");
+		string basePath = Utils.GetAppropriateDataPath();
+		string fromPath = Utils.SafePathCombine(dataPathInputText.text,"CITALOG.RES");
 
 		// Must have both to get audio logs and SHODAN barks.
-		if (File.Exists(alogPath) && File.Exists(barkPath)) {
+		if (File.Exists(fromPath)) {
 			dataFound = true;
-			string alogStrmPath,barkStrmPath;
-			if (Application.platform == RuntimePlatform.Android) {
-				alogStrmPath =
-					Utils.SafePathCombine(Application.persistentDataPath,
-									      "CITALOG.RES");
-				barkStrmPath =
-					Utils.SafePathCombine(Application.persistentDataPath,
-									      "CITBARK.RES");
-			} else {
-				alogStrmPath =
-					Utils.SafePathCombine(Application.streamingAssetsPath,
-									     "CITALOG.RES");
-				barkStrmPath =
-					Utils.SafePathCombine(Application.streamingAssetsPath,
-									      "CITBARK.RES");
-			}
-
-			// Set overwrite to true in case we have 1 and not the other.
-			// from, to
-			File.Copy(alogPath,alogStrmPath,true);
-			File.Copy(barkPath,barkStrmPath,true);
+			string toPath = Utils.SafePathCombine(basePath,"CITALOG.RES");
+			File.Copy(fromPath,toPath,true); // Set overwrite to true in case we have 1 and not the other.
 		}
+
 		StartCoroutine(CopyPathCheck());
 	}
 
@@ -882,7 +860,11 @@ public class MainMenuHandler : MonoBehaviour {
 	public void PlayDeathVideo() {
 		DeathVideoContainer.SetActive(true);
 		DeathVideo.SetActive(true);
-		deathPlayer.url = Application.streamingAssetsPath + "/death.webm";
+		string basePath = Utils.GetAppropriateDataPath();
+		string fileName = "death.webm";
+		Utils.ConfirmExistsMakeIfNot(basePath,fileName);
+		string urlPath = Utils.SafePathCombine(basePath,fileName);
+		deathPlayer.url = urlPath;
 		deathPlayer.Play();
 		deathPlayer.SetDirectAudioMute(0,true);
 		deathVideoText1.text = Const.a.stringTable[628];
@@ -900,7 +882,11 @@ public class MainMenuHandler : MonoBehaviour {
 		Const.a.WriteDatForIntroPlayed(false);
 		IntroVideoContainer.SetActive(true);
 		IntroVideo.SetActive(true);
-		introPlayer.url = Application.streamingAssetsPath + "/intro.webm";
+		string basePath = Utils.GetAppropriateDataPath();
+		string fileName = "intro.webm";
+		Utils.ConfirmExistsMakeIfNot(basePath,fileName);
+		string urlPath = Utils.SafePathCombine(basePath,fileName);
+		introPlayer.url = urlPath;
 		introPlayer.Play();
 		if (!dataFound) introPlayer.SetDirectAudioMute(0,true);
 		else introPlayer.SetDirectAudioMute(0,false);
