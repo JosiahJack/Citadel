@@ -64,6 +64,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -88,6 +89,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114394775691486310
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,6 +120,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rbody: {fileID: 0}
+  previousVelocity: {x: 0, y: 0, z: 0}
+  previousUseGravity: 1
+  previousKinematic: 0
+  previouscolDetMode: 0
+  previousSet: 0
 --- !u!54 &54912583729696192
 Rigidbody:
   m_ObjectHideFlags: 0

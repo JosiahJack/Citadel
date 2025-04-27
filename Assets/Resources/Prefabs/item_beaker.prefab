@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rbody: {fileID: 0}
   previousVelocity: {x: 0, y: 0, z: 0}
-  previousUseGravity: 0
+  previousUseGravity: 1
   previousKinematic: 0
   previouscolDetMode: 0
   previousSet: 0
@@ -184,7 +184,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: af9dfd53d4d0295449fb11ec65ecff07, type: 3}
+  m_Mesh: {fileID: -6176720871007350599, guid: af9dfd53d4d0295449fb11ec65ecff07, type: 3}
 --- !u!114 &4529366001654817082
 MonoBehaviour:
   m_ObjectHideFlags: 0

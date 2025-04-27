@@ -138,7 +138,7 @@ LODGroup:
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 8428279370698129463}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!1001 &7149137643389164723
 PrefabInstance:
   m_ObjectHideFlags: 0
