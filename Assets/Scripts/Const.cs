@@ -1335,6 +1335,8 @@ CreateBlackTexture:
 		s1.Append(Utils.splitChar);
 		s1.Append(questData.Save());
 		s1.Append(Utils.splitChar);
+		s1.Append(QuestLogNotesManager.a.Save());
+		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(difficultyCombat,"difficultyCombat"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(difficultyMission,"difficultyMission"));
@@ -1648,6 +1650,7 @@ CreateBlackTexture:
 			entries = readFileList[2].Split(Utils.splitCharChar);
 			index = LevelManager.Load(LevelManager.a.gameObject,ref entries,index);
 			index = questData.Load(ref entries,index);
+			index = QuestLogNotesManager.a.Load(ref entries,index);
 			difficultyCombat = Utils.GetIntFromString(entries[index],"difficultyCombat"); index++;
 			difficultyMission = Utils.GetIntFromString(entries[index],"difficultyMission"); index++;
 			difficultyPuzzle = Utils.GetIntFromString(entries[index],"difficultyPuzzle"); index++;

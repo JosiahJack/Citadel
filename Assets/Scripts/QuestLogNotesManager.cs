@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,7 +30,7 @@ public class QuestLogNotesManager : MonoBehaviour {
 	// 15- Escape on escape pod.													DONE, STRIKE THRU DONE
 	// 16- Access the bridge.														DONE, CHECK DONE
 	// 17- Destroy SHODAN. 															DONE, N/A CAN'T SEE DURING CREDITS
-
+	
 	public static QuestLogNotesManager a;
 
 	void Awake() {
@@ -50,7 +51,7 @@ public class QuestLogNotesManager : MonoBehaviour {
 	public void NotifyDoorUnlock(Door d) {
 		if (d == neuroSurgeryDoor) {
 			checkBoxes[6].isOn = true; // Escape neurosurgery suite.
-			Inventory.a.hasNewNotes = true;
+			if (Inventory.a != null) Inventory.a.hasNewNotes = true;
 		}
 	}
 
@@ -58,14 +59,44 @@ public class QuestLogNotesManager : MonoBehaviour {
 		if (d == level6elevatorDoorTo7) {
 			notes[12].SetActive(true); // Jettison Beta Grove.
 			labels[12].text = Const.a.stringTable[565];
-			Inventory.a.hasNewNotes = true;
+			if (Inventory.a != null) Inventory.a.hasNewNotes = true;
 		}
 	}
 
 	public void NotifyLevelChange(int levelIndex) {
-		if (levelIndex == 9) {
+		if (levelIndex != 1) {
+			notes[6].SetActive(true); // Escape neurosurgery suite.
+			checkBoxes[6].isOn = true;	// Escape neurosurgery suite.
+			if (Inventory.a != null) Inventory.a.hasNewNotes = true;
+		}
+		
+		if (levelIndex == 2) {
+			notes[1].SetActive(true); // Destroy level 2 nodes.
+			if (Inventory.a != null) Inventory.a.hasNewNotes = true;
+		} else if (levelIndex == 3) {
+			notes[2].SetActive(true); // Destroy level 3 nodes.
+			if (Inventory.a != null) Inventory.a.hasNewNotes = true;
+		} else if (levelIndex == 4) {
+			notes[3].SetActive(true); // Destroy level 4 nodes.
+			if (Inventory.a != null) Inventory.a.hasNewNotes = true;
+		} else if (levelIndex == 5) {
+			notes[4].SetActive(true); // Destroy level 5 nodes.
+			if (Inventory.a != null) Inventory.a.hasNewNotes = true;
+		} else if (levelIndex == 6) {
+			notes[5].SetActive(true); // Destroy level 6 nodes.
+			if (Inventory.a != null) Inventory.a.hasNewNotes = true;
+		} else if (levelIndex == 7) {
+			notes[13].SetActive(true); // Destroy the four relay antennae.
+			notes[16].SetActive(true); // Access the bridge.
+			if (Inventory.a != null) Inventory.a.hasNewNotes = true;
+		} else if (levelIndex == 8) {
+			notes[16].SetActive(true); // Access the bridge.
+			notes[17].SetActive(true); // Destroy SHODAN. 
+			if (Inventory.a != null) Inventory.a.hasNewNotes = true;
+		} else if (levelIndex == 9) {
+			notes[16].SetActive(true); // Access the bridge.
 			checkBoxes[16].isOn = true; // Access the bridge.
-			Inventory.a.hasNewNotes = true;
+			if (Inventory.a != null) Inventory.a.hasNewNotes = true;
 		}
 	}
 
@@ -240,5 +271,45 @@ public class QuestLogNotesManager : MonoBehaviour {
 			case 2: checkBoxes[13].isOn = true; break; // Antennae destroyed
 			case 3: checkBoxes[14].isOn = true; break; // Self destruct activated.
 		}
+	}
+	
+	public string Save() {
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		for (int i=0;i<18;i++) {
+			s1.Append(Utils.BoolToString(a.notes[i].activeSelf,"notes[" + i.ToString() + "].activeSelf"));
+			s1.Append(Utils.splitChar);
+		}
+		
+		for (int i=0;i<18;i++) {
+			s1.Append(Utils.SaveString(a.labels[i].text,"labels[" + i.ToString() + "].text"));
+			s1.Append(Utils.splitChar);
+		}
+		
+		for (int i=0;i<18;i++) {
+			s1.Append(Utils.BoolToString(a.checkBoxes[i].isOn,"checkBoxes[" + i.ToString() + "].isOn"));
+			s1.Append(Utils.splitChar);
+		}
+		
+		s1.Append(Utils.BoolToString(a.label15_StrikeThru.activeSelf,"label15_StrikeThru.activeSelf"));
+
+		return s1.ToString();
+	}
+	
+	public int Load(ref string[] entries, int index) {
+		for (int i=0;i<18;i++) {
+			a.notes[i].SetActive(Utils.GetBoolFromString(entries[index],"notes[" + i.ToString() + "].activeSelf")); index++;
+		}
+		
+		for (int i=0;i<18;i++) {
+			a.labels[i].text = Utils.LoadString(entries[index],"labels[" + i.ToString() + "].text"); index++;
+		}
+		
+		for (int i=0;i<18;i++) {
+			a.checkBoxes[i].isOn = Utils.GetBoolFromString(entries[index],"checkBoxes[" + i.ToString() + "].isOn"); index++;
+		}
+		
+		a.label15_StrikeThru.SetActive(Utils.GetBoolFromString(entries[index],"label15_StrikeThru.activeSelf")); index++;
+		return index;
 	}
 }
