@@ -7,10 +7,9 @@
 [![Tests](https://github.com/JosiahJack/Citadel/actions/workflows/runtests.yml/badge.svg?branch=master)](https://github.com/JosiahJack/Citadel/actions/workflows/runtests.yml)
 
 ### News
-Fast approaching my most polished beta release yet.  Hoping to have the last known bugs addressed this week.
-Older builds here: https://github.com/JosiahJack/Citadel/tags
+In final testing and polishing.  Taking a minor break for other projects and will return shortly.  In the meantime, latest beta builds can be found here: https://github.com/JosiahJack/Citadel/tags  Your testing and feedback are greatly appreciated!  Feel free to leave feedback as issues here or on my discord: https://discord.gg/mrmkMCD.  Only known issue at this time is that grove ceilings might have misters present in non-grove areas (e.g. antenna rooms on Level 7).
 
-- Sincerely, Josiah 2/26/2025
+- Sincerely, Josiah 5/19/2025
 
 ### Information
 [![tag](https://img.shields.io/github/v/tag/JosiahJack/Citadel?label=Latest%20Release)](https://github.com/JosiahJack/Citadel/releases)
@@ -24,7 +23,7 @@ PLEASE submit bug and feature requests here on this github.
 If you would like to join and aid in any capacity, please email Josiah Jack, the main author, at josiahjackcitadel@gmail.com
 
 Special thanks to Looking Glass Studios and Origin Games for the original 1994 product. 
-Special thanks to Night Dive Studios for allowing this project to live on (unhindered).
+Special thanks to Night Dive Studios for allowing this project to live on.
 
 >DISCLAIMER: Citadel is in-progress. That means features may be broken, missing, or not in a final state of polish.
 
@@ -38,7 +37,7 @@ Special thanks to Night Dive Studios for allowing this project to live on (unhin
 - X11 on Linux systems (might work on Wayland but untested)
 
 ### Install Instructions:
-Everything needed to play should be in the zip, though at first launch the path to your original game install .RES files is needed for audio.  If installing a newer version, replace the old version.  Saves should be compatible unless noted in the tag release notes.
+Everything needed to play should be in the zip, though at first launch the path to your original game install of System Shock (1994) or System Shock: Enhanced Edition (2015) .RES file data is needed for audio.  If installing a newer version, replace the old version.  Saves should be compatible unless noted in the tag release notes.
 
 1.  Download the latest tagged release.
 2.  Extract it to a location of your choosing.  For best results, install in your user directory so that Citadel has read/write access for save files.
@@ -48,7 +47,7 @@ Everything needed to play should be in the zip, though at first launch the path 
 
 ### Developer Dependencies:
 - Must have [Blender 2.79b](https://download.blender.org/release/Blender2.79/) or later installed and on your system path (happens as a part of the install msi on Windows systems, symlink in /usr/bin/ on Linux can be manually created).  This is for Unity to be able to import .blend files as .FBX by running blender in the background when first loading the project.
-- Must have [Texture2DArray Importer v1.5.0](https://github.com/pschraut/UnityTexture2DArrayImportPipeline) in order for level geometry to display properly as they use a single material with array texture lookup for a substantial performance gain.
+- Must have [Texture2DArray Importer v1.5.0](https://github.com/pschraut/UnityTexture2DArrayImportPipeline) (MIT License) in order for level geometry to display properly as they use a single material with array texture lookup for a substantial performance gain.
 - Texture arrays require Vulkan, Direct3D11+, or OpenGL 3.0 support or higher.  To support building all api's, the dev packages for each will need installed.
 - To support launching editor as OpenGL only on older systems that do not have Vulkan by default, add `-force-glcore` comand argument when launching the editor or game.
 
@@ -72,3 +71,6 @@ Everything needed to play should be in the zip, though at first launch the path 
 - Discord: https://discord.gg/mrmkMCD
 - Docker Hub CI containers: https://hub.docker.com/repository/docker/josiahjack/citadel-ci
 - Credits: [credits.txt](https://github.com/JosiahJack/Citadel/blob/master/Assets/StreamingAssets/credits.txt)
+
+Citadel is licensed as MIT-0 for both game and all source files, including CI workflows and any helper files and all assets (e.g. textures, models, music, etc.).
+This project is not affiliated with, endorsed by, or sponsored by Night Dive Studios, the owners of the *System Shock* intellectual property. The game may be played with audio, provided users own a legal copy of System Shock (1994) or System Shock: Enhanced Edition (2015). The MIT-0 License applies only to Citadel, not to any System Shock (1994) or System Shock Enhanced content.
