@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 65170997603634584}
   - component: {fileID: 114633943046785944}
   - component: {fileID: -851662632309065245}
+  - component: {fileID: 4014218603732348924}
+  - component: {fileID: 8164096842360052977}
   m_Layer: 16
   m_Name: trigger_radiation
   m_TagString: Untagged
@@ -59,6 +61,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radiationAmount: 11
+  intervalTime: 1
+  radFinished: 0
 --- !u!114 &-851662632309065245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,3 +76,87 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   constIndex: 601
+--- !u!114 &4014218603732348924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1683365032787288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 640a173b757cd744aa218a9239e8ba92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetname: 
+  tripTrigger: 0
+  doorOpen: 0
+  doorOpenIfUnlocked: 0
+  doorClose: 0
+  doorLock: 0
+  doorUnlock: 0
+  switchTrigger: 0
+  chargeStationRecharge: 0
+  enemyAlert: 0
+  forceBridgeActivate: 0
+  forceBridgeDeactivate: 0
+  forceBridgeToggle: 0
+  gravityLiftToggle: 0
+  textureChangeToggle: 0
+  lightOn: 0
+  lightOff: 0
+  lightToggle: 0
+  funcwallMove: 0
+  missionBitOn: 0
+  missionBitOff: 0
+  missionBitToggle: 0
+  sendEmail: 0
+  switchLockToggle: 0
+  lockCodeToScreenMaterialChanger: 0
+  spawnerActivate: 0
+  spawnerActivateAlerted: 0
+  cyborgConversionToggle: 0
+  GOSetActive: 0
+  GOSetDeactive: 0
+  GOToggleActive: 0
+  toggleRadiationTrigger: 0
+  disableThisGOOnAwake: 0
+  toggleRelayEnabled: 0
+  togglePuzzlePanelLocked: 0
+  testQuestBitIsOn: 0
+  testQuestBitIsOff: 0
+  playSoundOnce: 0
+  stopSound: 0
+  sendSprintMessage: 0
+  radiationTreatment: 0
+  startFlashingMaterials: 0
+  stopFlashingMaterials: 0
+  unlockElevatorPad: 0
+  unlockKeycodePad: 0
+  unlockPuzzlePad: 0
+  screenShake: 0
+  awakeSleepingEnemy: 0
+  branchFlip: 0
+  branchFlipOnly: 0
+  doorAccessCardOverrideToggle: 0
+  unlockSwitch: 0
+  lockElevatorPad: 0
+  alreadyDisabledThisGOOnceEver: 0
+  doorToggle: 0
+--- !u!114 &8164096842360052977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1683365032787288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecd9cf7beb982a841a86720209e85a36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SaveID: 0
+  saveType: 37
+  instantiated: 0
+  saveableType: 
+  initialized: 0

@@ -66,6 +66,15 @@ public static class SaveLoad {
         PrefabIdentifier pid = GetPrefabIdentifier(go,false);
         if (pid == null) { Debug.LogError("Tried to save " + go.name + ", but had no PrefabIdentifier!"); return ""; }
 
+        bool isGeom = ConsoleEmulator.ConstIndexIsGeometry(pid.constIndex);
+        bool isDyn = ConsoleEmulator.ConstIndexIsDynamicObject(pid.constIndex);
+        bool isDor = ConsoleEmulator.ConstIndexIsDoor(pid.constIndex);
+        bool isStatSav = ConsoleEmulator.ConstIndexIsStaticObjectSaveable(pid.constIndex);
+        bool isStatImm = ConsoleEmulator.ConstIndexIsStaticObjectImmutable(pid.constIndex);
+        bool isNPC = ConsoleEmulator.ConstIndexIsNPC(pid.constIndex);
+        Light lit = go.GetComponent<Light>();
+        bool isLit = (lit != null);
+        Debug.Log("Saving " + go.name + " with constIndex " + pid.constIndex.ToString() + ", isGeom: " + isGeom.ToString() + ", isDyn: " + isDyn.ToString() + ", isDor: " + isDor.ToString() + ", isStatSav: " + isStatSav.ToString() + ", isStatImm: " + isStatImm.ToString() + ", isNPC: " + isNPC.ToString() + ", isLit: " + isLit.ToString());
         if (pid.constIndex == 717) return ""; // Not a saveable prefab, child only.
         if (pid.constIndex == 718) return ""; // Not a saveable prefab, temp ent.
         if (pid.constIndex == 719) return ""; // Not a saveable prefab, temp ent.
@@ -83,23 +92,16 @@ public static class SaveLoad {
         if (pid.constIndex == 732) return ""; // Unused? ef_sparkspits
         if (pid.constIndex == 736) return ""; // Not a saveable prefab, temp ent.
 
-        if (ConsoleEmulator.ConstIndexIsGeometry(pid.constIndex)) {
-            return SaveGeometry(go,pid);
-        } else if (ConsoleEmulator.ConstIndexIsDynamicObject(pid.constIndex)) {
-            return SaveObject.Save(go);
-        } else if (ConsoleEmulator.ConstIndexIsDoor(pid.constIndex)) {
-            return SaveObject.Save(go);
-        } else if (ConsoleEmulator.ConstIndexIsStaticObjectSaveable(pid.constIndex)) {
-            return SaveObject.Save(go);
-        } else if (ConsoleEmulator.ConstIndexIsNPC(pid.constIndex)) {
-            return SaveObject.Save(go);
-        } else if (ConsoleEmulator.ConstIndexIsStaticObjectImmutable(pid.constIndex)) {
-           return SaveStaticImmutable(go,pid);
+        if (isGeom) {           return SaveGeometry(go,pid);
+        } else if (isDyn) {     return SaveObject.Save(go);
+        } else if (isDor) {     return SaveObject.Save(go);
+        } else if (isStatSav) { return SaveObject.Save(go);
+        } else if (isNPC) {     return SaveObject.Save(go);
+        } else if (isStatImm) { return SaveStaticImmutable(go,pid);
+        } else if (isLit) { return SaveLight(go);
         } else {
-            Light lit = go.GetComponent<Light>();
-            if (lit != null) {
-                return SaveLight(go);
-            } else return "";
+            Debug.LogError("Uncategorized object " + go.name + "!");
+            return "constIndex:" + pid.constIndex.ToString();
         }
     }
     
@@ -142,6 +144,10 @@ public static class SaveLoad {
     // GameObect already null checked by originator.
     // PrefabIdentifier already null checked by originator.  
     private static string SaveStaticImmutable(GameObject go, PrefabIdentifier pid) {
+        if (!ConsoleEmulator.ConstIndexIsStaticObjectImmutable(pid.constIndex)) {
+            Debug.LogError(go.name + " is not a static object immutable, has constIndex of " + pid.constIndex.ToString());
+        }
+        
         StringBuilder s1 = new StringBuilder();
         s1.Clear();
         s1.Append(Utils.IntToString(pid.constIndex,"constIndex"));
@@ -166,13 +172,14 @@ public static class SaveLoad {
         } else if (pid.constIndex == 592 || pid.constIndex == 593) { // text_decal, text_decalStopDSS1
             TextMesh tm = go.GetComponent<TextMesh>();
             s1.Append(splitChar);
-            s1.Append(Utils.SaveString(tm.text,"text"));
+            string stripped = tm.text.Replace(System.Environment.NewLine, "#");
+            s1.Append(Utils.SaveString(stripped,"text"));
             s1.Append(splitChar);
             TextLocalization tz = go.GetComponent<TextLocalization>();
             s1.Append(Utils.UintToString(tz.lingdex,"lingdex"));
             s1.Append(splitChar);
             MeshRenderer mr = go.GetComponent<MeshRenderer>();
-            Material mat = mr.material;
+            Material mat = mr.sharedMaterial;
             if (mat.name == "text_3dwhite") s1.Append(Utils.UintToString(87,"matIndex"));
             else if (mat.name == "text_3dgold") s1.Append(Utils.UintToString(89,"matIndex"));
             else if (mat.name == "text_3dgreen") s1.Append(Utils.UintToString(90,"matIndex"));
@@ -346,7 +353,11 @@ public static class SaveLoad {
             s1.Append(Utils.FloatToString(arz.maxDistance,"maxDistance"));
             s1.Append(splitChar);
             s1.Append(Utils.UintToString(GetIntFromAudioReverbPreset(arz.reverbPreset),"reverbPreset"));
-       }
+        } else if (pid.constIndex == 750 || pid.constIndex == 752 || pid.constIndex == 753) { // Pumpkins
+            UseName un = go.GetComponent<UseName>();
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveString(un.targetname,"targetname"));
+        }
 
         return s1.ToString();
     }
@@ -493,6 +504,9 @@ public static class SaveLoad {
             arz.minDistance = Utils.GetFloatFromString(entries[index],"minDistance"); index++;
             arz.maxDistance = Utils.GetFloatFromString(entries[index],"maxDistance"); index++; 
             arz.reverbPreset = GetAudioReverbPresetFromInt(Utils.GetIntFromString(entries[index],"reverbPreset")); index++;
+        } else if (constIndex == 750 || constIndex == 752 || constIndex == 753) { // Pumpkins
+            UseName un = go.GetComponent<UseName>();
+            un.targetname = Utils.LoadString(entries[index],"targetname"); index++;
         }
         
         return go;
@@ -504,59 +518,63 @@ public static class SaveLoad {
         bool hasBoxColliderOverride = false;
         bool hasTextOverride = false;
         string materialOverride = "";
-        #if UNITY_EDITOR        
-            List<ObjectOverride> ovides = PrefabUtility.GetObjectOverrides(go,false);
-            for (int j=0; j < ovides.Count; j++) {
-    //             UnityEngine.Object ob = ovides[j].instanceObject;
-    //             SerializedObject sob = new UnityEditor.SerializedObject(ob);
-    // 
-    //             hasBoxColliderOverride = false;
-    //             // List overridden properties
-    //             SerializedProperty prop = sob.GetIterator();
-    //             while (prop.NextVisible(true)) {
-    //                 if (prop.propertyPath == "m_Name" ||
-    //                     prop.propertyPath == "m_LocalPosition" ||
-    //                     prop.propertyPath == "m_LocalPosition.x" ||
-    //                     prop.propertyPath == "m_LocalPosition.y" ||
-    //                     prop.propertyPath == "m_LocalPosition.z" ||
-    //                     prop.propertyPath == "m_LocalRotation" ||
-    //                     prop.propertyPath == "m_LocalRotation.x" ||
-    //                     prop.propertyPath == "m_LocalRotation.y" ||
-    //                     prop.propertyPath == "m_LocalRotation.z" ||
-    //                     prop.propertyPath == "m_LocalRotation.w" ||
-    //                     prop.propertyPath == "m_LocalScale" ||
-    //                     prop.propertyPath == "m_LocalScale.x" ||
-    //                     prop.propertyPath == "m_LocalScale.y" ||
-    //                     prop.propertyPath == "m_LocalScale.z")  {
-    //                     
-    //                     continue; // Skip transform overrides
-    //                 }
-    // 
-    //                 if (prop.prefabOverride) {
-    //                     if (prop.propertyPath == "m_Size" ||
-    //                         prop.propertyPath == "m_Size.x" ||
-    //                         prop.propertyPath == "m_Size.y" ||
-    //                         prop.propertyPath == "m_Size.z" ||
-    //                         prop.propertyPath == "m_Center" ||
-    //                         prop.propertyPath == "m_Center.x" ||
-    //                         prop.propertyPath == "m_Center.y" ||
-    //                         prop.propertyPath == "m_Center.z") {
-    // 
-    //                         hasBoxColliderOverride = true;
-    //                     }
-    // 
-    //                     if (prop.propertyPath == "lingdex") hasTextOverride = true;
-    //                     string value = GetPropertyValue(prop);
-    //                     if (prop.propertyPath == "m_Materials.Array.data[0]") {
-    //                         materialOverride = value;
-    //                     }
-    // 
-    //                     UnityEngine.Debug.Log(go.name + ":: Found Override: "
-    //                                           + prop.propertyPath + ", Value: "
-    //                                           + value);
-    //                 }
-    //             }
-            }
+        #if UNITY_EDITOR
+            if (PrefabUtility.IsPartOfPrefabInstance(go)) {
+                List<ObjectOverride> ovides = PrefabUtility.GetObjectOverrides(go,false);
+                for (int j=0; j < ovides.Count; j++) {
+        //             UnityEngine.Object ob = ovides[j].instanceObject;
+        //             SerializedObject sob = new UnityEditor.SerializedObject(ob);
+        // 
+        //             hasBoxColliderOverride = false;
+        //             // List overridden properties
+        //             SerializedProperty prop = sob.GetIterator();
+        //             while (prop.NextVisible(true)) {
+        //                 if (prop.propertyPath == "m_Name" ||
+        //                     prop.propertyPath == "m_LocalPosition" ||
+        //                     prop.propertyPath == "m_LocalPosition.x" ||
+        //                     prop.propertyPath == "m_LocalPosition.y" ||
+        //                     prop.propertyPath == "m_LocalPosition.z" ||
+        //                     prop.propertyPath == "m_LocalRotation" ||
+        //                     prop.propertyPath == "m_LocalRotation.x" ||
+        //                     prop.propertyPath == "m_LocalRotation.y" ||
+        //                     prop.propertyPath == "m_LocalRotation.z" ||
+        //                     prop.propertyPath == "m_LocalRotation.w" ||
+        //                     prop.propertyPath == "m_LocalScale" ||
+        //                     prop.propertyPath == "m_LocalScale.x" ||
+        //                     prop.propertyPath == "m_LocalScale.y" ||
+        //                     prop.propertyPath == "m_LocalScale.z")  {
+        //                     
+        //                     continue; // Skip transform overrides
+        //                 }
+        // 
+        //                 if (prop.prefabOverride) {
+        //                     if (prop.propertyPath == "m_Size" ||
+        //                         prop.propertyPath == "m_Size.x" ||
+        //                         prop.propertyPath == "m_Size.y" ||
+        //                         prop.propertyPath == "m_Size.z" ||
+        //                         prop.propertyPath == "m_Center" ||
+        //                         prop.propertyPath == "m_Center.x" ||
+        //                         prop.propertyPath == "m_Center.y" ||
+        //                         prop.propertyPath == "m_Center.z") {
+        // 
+        //                         hasBoxColliderOverride = true;
+        //                     }
+        // 
+        //                     if (prop.propertyPath == "lingdex") hasTextOverride = true;
+        //                     string value = GetPropertyValue(prop);
+        //                     if (prop.propertyPath == "m_Materials.Array.data[0]") {
+        //                         materialOverride = value;
+        //                     }
+        // 
+        //                     UnityEngine.Debug.Log(go.name + ":: Found Override: "
+        //                                           + prop.propertyPath + ", Value: "
+        //                                           + value);
+        //                 }
+        //             }
+                }
+            } else {
+                Debug.LogWarning("Saving geometry " + go.name + " but it wasn't a prefab!");
+            } 
         #endif
         
         StringBuilder s1 = new StringBuilder();

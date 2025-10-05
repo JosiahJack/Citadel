@@ -18,7 +18,8 @@ public class CitadelTests : MonoBehaviour {
 	public Camera probeCam;
 	public Light cookieLight;
 	public GameObject[] geometryContainters;
-	public GameObject[] staticObjectContainters;
+	public GameObject[] staticObjectsSaveableContainters;
+	public GameObject[] staticObjectImmutableContainters;
 	public GameObject[] lightContainers; // Can't use LevelManager's since
 										 // there is no instance unless in Play
 										 // mode.
@@ -156,7 +157,7 @@ public class CitadelTests : MonoBehaviour {
 				  + levelToOutputFrom.ToString() + ".txt");
 
 		List<GameObject> allStaticObjects = new List<GameObject>();
-		Transform tr = staticObjectContainters[levelToOutputFrom].transform;
+		Transform tr = staticObjectImmutableContainters[levelToOutputFrom].transform;
 		Transform child = null;
 		for (int i=0;i<tr.childCount;i++) {
 			child = tr.GetChild(i);
@@ -187,6 +188,7 @@ public class CitadelTests : MonoBehaviour {
 				sw.Write(Environment.NewLine);
 			}
 			sw.Close();
+			UnityEngine.Debug.Log("Successfully wrote static objects to StreamingAssets/CitadelScene_staticobjectsimmutable_level" + levelToOutputFrom.ToString() + ".txt");
 		}
 		#endif
 	}
@@ -532,8 +534,8 @@ public class CitadelTests : MonoBehaviour {
 // 		}
 // 	}
     
-    // Commented out, all lights already generated.
-	public void GenerateLightsDataFile() {
+    // Commented out, all lights already generated. Uncommented to generate level 13 lights file ;), fixed, then recommented.
+// 	public void GenerateLightsDataFile() {
 // 		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".dat");
 // 		StringBuilder s1 = new StringBuilder();
 // 		List<GameObject> allLights = new List<GameObject>();
@@ -553,7 +555,7 @@ public class CitadelTests : MonoBehaviour {
 // 		UnityEngine.Debug.Log("Found " + allLights.Count + " lights in level " + levelToOutputFrom.ToString());
 // 
 // 		string lName = "CitadelScene_lights_level"
-// 					   + levelToOutputFrom.ToString() + ".dat";
+// 					   + levelToOutputFrom.ToString() + ".txt";
 // 
 // 		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
 // 										  lName);
@@ -571,42 +573,40 @@ public class CitadelTests : MonoBehaviour {
 // 				s1.Append(Utils.SaveTransform(allLights[i].transform));
 // 				s1.Append(Utils.splitChar);
 // 				Light lit = allLights[i].GetComponent<Light>();
-// 				s1.Append(Utils.FloatToString(lit.intensity));
+// 				s1.Append(Utils.FloatToString(lit.intensity,"intensity"));
 // 				s1.Append(Utils.splitChar);
-// 				s1.Append(Utils.FloatToString(lit.range));
+// 				s1.Append(Utils.FloatToString(lit.range,"range"));
 // 				s1.Append(Utils.splitChar);
-// 				s1.Append(lit.type.ToString());
+// 				s1.Append("type:" + lit.type.ToString());
 // 				s1.Append(Utils.splitChar);
-// 				s1.Append(Utils.FloatToString(lit.color.r));
+// 				s1.Append(Utils.FloatToString(lit.color.r,"color.r"));
 // 				s1.Append(Utils.splitChar);
-// 				s1.Append(Utils.FloatToString(lit.color.g));
+// 				s1.Append(Utils.FloatToString(lit.color.g,"color.g"));
 // 				s1.Append(Utils.splitChar);
-// 				s1.Append(Utils.FloatToString(lit.color.b));
+// 				s1.Append(Utils.FloatToString(lit.color.b,"color.b"));
 // 				s1.Append(Utils.splitChar);
-// 				s1.Append(Utils.FloatToString(lit.color.a));
+// 				s1.Append(Utils.FloatToString(lit.color.a,"color.a"));
 // 				s1.Append(Utils.splitChar);
-// 				s1.Append(Utils.FloatToString(lit.spotAngle));
+// 				s1.Append(Utils.FloatToString(lit.spotAngle,"spotAngle"));
 // 				s1.Append(Utils.splitChar);
-// 				s1.Append(lit.shadows.ToString());
+// 				s1.Append("shadows:Soft");
 // 				s1.Append(Utils.splitChar);
-// 				s1.Append(Utils.FloatToString(lit.shadowStrength));
+// 				s1.Append(Utils.FloatToString(lit.shadowStrength,"shadowStrength"));
 // 				s1.Append(Utils.splitChar);
-// 				s1.Append(lit.shadowResolution);
+// 				s1.Append("shadowResolution:FromQualitySettings");
 // 				s1.Append(Utils.splitChar);
-// 				s1.Append(Utils.FloatToString(lit.shadowBias));
+// 				s1.Append(Utils.FloatToString(lit.shadowBias,"shadowBias"));
 // 				s1.Append(Utils.splitChar);
-// 				s1.Append(Utils.FloatToString(lit.shadowNormalBias));
+// 				s1.Append(Utils.FloatToString(lit.shadowNormalBias,"shadowNormalBias"));
 // 				s1.Append(Utils.splitChar);
-// 				s1.Append(Utils.FloatToString(lit.shadowNearPlane));
-// 				s1.Append(Utils.splitChar);
-// 				s1.Append(lit.cullingMask.ToString());
+// 				s1.Append(Utils.FloatToString(lit.shadowNearPlane,"shadowNearPlane"));
 // 				//UnityEngine.Debug.Log(s1.ToString());
 // 				sw.Write(s1.ToString());
 // 				sw.Write(Environment.NewLine);
 // 			}
 // 			sw.Close();
 // 		}
-	}
+// 	}
 /*
 	public void LoadLevelDynamicObjects() {
 		lm.LoadLevelDynamicObjects(levelToOutputFrom);

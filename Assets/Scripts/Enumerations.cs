@@ -9,7 +9,8 @@ public enum SaveableType : byte {Transform,Player,Useable,Grenade,NPC,
                                  MChanger,GravPad,TransformParentless,
                                  ChargeStation,Light,LTimer,Camera,
                                  DelayedSpawn,SecurityCamera,Trigger,
-                                 Projectile,NormalScreen,CyberSwitch,CyberItem};
+                                 Projectile,NormalScreen,CyberSwitch,CyberItem,
+                                 TriggerRadiation};
 public enum BodyState : byte {Standing,Crouch,CrouchingDown,StandingUp,Prone,
                               ProningDown,ProningUp};
 public enum Handedness : byte {Center,LH,RH};

@@ -1187,16 +1187,27 @@ Master Index
 747 decal_logo_storage
 748 light animated
 749 generic transform
+750 pumpkin1 // How ironic to be adding this as a prefab in October.
+751 grovedome
+752 pumpkin2
+753 pumpkin3
+754 prop_vending1_1
+755 prop_vending1_2
+756 prop_vending1_3
+757 prop_vending2_1
+758 prop_vending2_2
+759 flightpods_exterior
+760 chunk_maint2_2_slice45
 
 999 PlayerCapsule
 */
 
 public static bool ConstIndexInBounds(int constdex) {
-	return (constdex >= 0 && constdex <= 749);
+	return (constdex >= 0 && constdex <= 760);
 }
 
 public static bool ConstIndexIsGeometry(int constdex) {
-	return (constdex >= 0 && constdex <= 306);
+	return (constdex >= 0 && constdex <= 306 || constdex == 760);
 }
 
 public static bool ConstIndexIsDynamicObject(int constdex) {
@@ -1251,7 +1262,8 @@ public static bool ConstIndexIsStaticObjectImmutable(int constdex) {
 			|| (constdex >= 733 && constdex < 736)
 			|| (constdex >= 737 && constdex < 739)
 			|| constdex == 746
-			|| constdex == 747);
+			|| constdex == 747
+			|| (constdex >= 750 && constdex <= 759));
 }
 
 public static bool ConstIndexIsNPC(int constdex) {
