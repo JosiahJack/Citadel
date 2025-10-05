@@ -75,7 +75,7 @@ public class HealthManager : MonoBehaviour {
 			justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
 		}
 		
-		Const.a.RegisterObjectWithHealth(this);
+		if (Const.a != null) Const.a.RegisterObjectWithHealth(this);
 		awakeInitialized = true;
 		if (isNPC && !gibOnDeath ) { // Set searchable item to CorpseSearchable layer.
 			if (searchableItem != null) searchableItem.gameObject.layer = 29;

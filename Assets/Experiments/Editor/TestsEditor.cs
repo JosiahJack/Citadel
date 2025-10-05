@@ -35,14 +35,30 @@ public class TestsEditor : Editor {
 // 		if (GUILayout.Button("Check all UseHandler's to see if they use their bools at all")) {
 // 			testScript.CheckUseHandlers();
 // 		}
-		if (GUILayout.Button("Output All Static Objects Immutable to File")) {
-			testScript.GenerateStaticObjectsImmutableDataFile();
-		}
+// 		if (GUILayout.Button("Output All Static Objects Immutable to File")) {
+// 			testScript.GenerateStaticObjectsImmutableDataFile();
+// 		}
+		
+// 		if (GUILayout.Button("Output All Static Objects Saveable to File")) {
+// 			testScript.GenerateStaticObjectsSaveableDataFile();
+// 		}
 		
 		// Already output, hiding to not accidentally overwrite!!	
 // 		if (GUILayout.Button("Output All Lights to File")) {
 // 			testScript.GenerateLightsDataFile();
 // 		}
+		
+// 		if (GUILayout.Button("Output All Lights Saveable to File")) {
+// 			testScript.GenerateLightsSaveableDataFile();
+// 		}
+		
+// 		if (GUILayout.Button("Output All Doors to File")) {
+// 			testScript.GenerateDoorsDataFile();
+// 		}
+		
+		if (GUILayout.Button("Output All NPCs to File")) {
+			testScript.GenerateNPCsDataFile();
+		}
 
 // 		if (GUILayout.Button("Load Lights for\nSelected Level")) {
 // 			testScript.LoadLevelLights();

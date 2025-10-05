@@ -72,9 +72,11 @@ public static class SaveLoad {
         bool isStatSav = ConsoleEmulator.ConstIndexIsStaticObjectSaveable(pid.constIndex);
         bool isStatImm = ConsoleEmulator.ConstIndexIsStaticObjectImmutable(pid.constIndex);
         bool isNPC = ConsoleEmulator.ConstIndexIsNPC(pid.constIndex);
+        bool isLitSav = ConsoleEmulator.ConstIndexIsLightStaticSaveable(pid.constIndex);
         Light lit = go.GetComponent<Light>();
         bool isLit = (lit != null);
-        Debug.Log("Saving " + go.name + " with constIndex " + pid.constIndex.ToString() + ", isGeom: " + isGeom.ToString() + ", isDyn: " + isDyn.ToString() + ", isDor: " + isDor.ToString() + ", isStatSav: " + isStatSav.ToString() + ", isStatImm: " + isStatImm.ToString() + ", isNPC: " + isNPC.ToString() + ", isLit: " + isLit.ToString());
+        if (isLit && isLitSav) isLitSav = false;
+        Debug.Log("Saving " + go.name + " with constIndex " + pid.constIndex.ToString() + ", isGeom: " + isGeom.ToString() + ", isDyn: " + isDyn.ToString() + ", isDor: " + isDor.ToString() + ", isStatSav: " + isStatSav.ToString() + ", isStatImm: " + isStatImm.ToString() + ", isNPC: " + isNPC.ToString() + ", isLit: " + isLit.ToString() + ", isLitSav: " + isLitSav.ToString());
         if (pid.constIndex == 717) return ""; // Not a saveable prefab, child only.
         if (pid.constIndex == 718) return ""; // Not a saveable prefab, temp ent.
         if (pid.constIndex == 719) return ""; // Not a saveable prefab, temp ent.
@@ -91,14 +93,59 @@ public static class SaveLoad {
         if (pid.constIndex == 731) return ""; // Not a saveable prefab, temp ent.
         if (pid.constIndex == 732) return ""; // Unused? ef_sparkspits
         if (pid.constIndex == 736) return ""; // Not a saveable prefab, temp ent.
+        if (pid.constIndex == 739) return ""; // Not a saveable prefab, temp ent.
+        if (pid.constIndex == 740) return ""; // Not a saveable prefab, temp ent.
 
         if (isGeom) {           return SaveGeometry(go,pid);
         } else if (isDyn) {     return SaveObject.Save(go);
         } else if (isDor) {     return SaveObject.Save(go);
         } else if (isStatSav) { return SaveObject.Save(go);
         } else if (isNPC) {     return SaveObject.Save(go);
-        } else if (isStatImm) { return SaveStaticImmutable(go,pid);
+        } else if (isStatImm) { 
+            if (go.transform.childCount > 1) {
+                PrefabIdentifier pidmain = go.GetComponent<PrefabIdentifier>();
+                if (pidmain == null) { // Ok we are a saveable container object most likely
+                    SaveObject sobmain = go.GetComponent<SaveObject>();
+                    if (sobmain != null) {
+                        if (sobmain.saveType == SaveableType.Transform) { // Ok final check, most definitely a toggleable container that has nothing of its own.
+                            StringBuilder nest = new StringBuilder();
+                            nest.Clear();
+                            nest.Append("container " + go.name);
+                            nest.Append(splitChar);
+                            nest.Append(Utils.SaveTransform(go.transform));
+                            for (int i=0;i<go.transform.childCount;i++) {
+                                nest.Append(Environment.NewLine);
+                                nest.Append(SavePrefab(go.transform.GetChild(i).gameObject));
+                            }
+                            return nest.ToString(); // Or not?
+                        }
+                    }
+                }
+             }
+            return SaveStaticImmutable(go,pid);
         } else if (isLit) { return SaveLight(go);
+        } else if (isLitSav) {
+            if (go.transform.childCount >= 1) {
+                SaveObject sobmain = go.GetComponent<SaveObject>();
+                if (sobmain != null) {
+                    if (sobmain.saveType == SaveableType.Transform) { // Ok final check, most definitely a toggleable container that has nothing of its own.
+                        StringBuilder nest = new StringBuilder();
+                        nest.Clear();
+                        nest.Append("container " + go.name);
+                        nest.Append(splitChar);
+                        nest.Append(Utils.SaveTransform(go.transform));
+                        for (int i=0;i<go.transform.childCount;i++) {
+                            nest.Append(Environment.NewLine);
+                            nest.Append(SaveLight(go.transform.GetChild(i).gameObject));
+                        }
+                        return nest.ToString(); // Or not?
+                    } else Debug.LogError("Tried to save lights saveable container " + go.name + " but it didn't have a SaveObject set to Transform");
+                } else Debug.LogError("Tried to save lights saveable container " + go.name + " but it didn't have a SaveObject attached");
+                return "";
+             } else {
+                Debug.LogError("Light static saveable " + go.name + " is not a container, has no children!");
+                return "constIndex:" + pid.constIndex.ToString();
+             }
         } else {
             Debug.LogError("Uncategorized object " + go.name + "!");
             return "constIndex:" + pid.constIndex.ToString();
@@ -908,7 +955,7 @@ public static class SaveLoad {
 
     private static string SaveLight(GameObject go) {
         Light lit = go.GetComponent<Light>();
-        if (lit == null) return "";
+        if (lit == null) { Debug.LogError("Missing Light component when trying to SaveLight on " + go.name); return ""; }
 
         StringBuilder s1 = new StringBuilder();
         s1.Clear();
@@ -942,6 +989,16 @@ public static class SaveLoad {
         s1.Append(Utils.FloatToString(lit.shadowNormalBias,"shadowNormalBias"));
         s1.Append(Utils.splitChar);
         s1.Append(Utils.FloatToString(lit.shadowNearPlane,"shadowNearPlane"));
+        SaveObject sob = go.GetComponent<SaveObject>();
+        if (sob != null) {
+            if (sob.saveType == SaveableType.Light) {
+                s1.Append(Utils.splitChar);
+                s1.Append(LightAnimation.Save(go));
+                s1.Append(Utils.splitChar);
+                s1.Append(TargetIO.Save(go));
+            }
+        }
+        s1.Append(Utils.splitChar);
         return s1.ToString();
     }
 
@@ -1144,7 +1201,7 @@ public static class SaveLoad {
         bool isNotALight = true;
         bool isNotATransform = true;
 		if (sob) {
-            SaveObject so = SaveLoad.GetPrefabSaveObject(go);
+            SaveObject so = GetPrefabSaveObject(go);
             if (so != null) {
                 isNotALight = (so.saveType != SaveableType.Light);
                 isNotATransform = (so.saveType != SaveableType.Transform);

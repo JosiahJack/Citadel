@@ -18,12 +18,15 @@ public class CitadelTests : MonoBehaviour {
 	public Camera probeCam;
 	public Light cookieLight;
 	public GameObject[] geometryContainters;
+	public GameObject[] doorContainers;
 	public GameObject[] staticObjectsSaveableContainters;
 	public GameObject[] staticObjectImmutableContainters;
 	public GameObject[] lightContainers; // Can't use LevelManager's since
 										 // there is no instance unless in Play
 										 // mode.
+	public GameObject[] lightsSaveableContainers;
 	public GameObject[] dynamicObjectContainers;
+	public GameObject[] npcContainers;
 // 	public GameObject gameObjectToSave;
 	public int levelToOutputFrom = 0;
 	public Const ct;
@@ -167,7 +170,7 @@ public class CitadelTests : MonoBehaviour {
 		}
 
 		UnityEngine.Debug.Log("Found " + allStaticObjects.Count
-							  + " static objects chunks in level "
+							  + " static objects in level "
 							  + levelToOutputFrom.ToString());
 
 		string lName = "CitadelScene_staticobjects_level"
@@ -189,6 +192,49 @@ public class CitadelTests : MonoBehaviour {
 			}
 			sw.Close();
 			UnityEngine.Debug.Log("Successfully wrote static objects to StreamingAssets/CitadelScene_staticobjectsimmutable_level" + levelToOutputFrom.ToString() + ".txt");
+		}
+		#endif
+	}
+	
+	public void GenerateStaticObjectsSaveableDataFile() {
+		#if UNITY_EDITOR
+		UnityEngine.Debug.Log("Outputting all static objects to "
+				  + "StreamingAssets/CitadelScene_staticssaveable_level"
+				  + levelToOutputFrom.ToString() + ".txt");
+
+		List<GameObject> allStaticObjects = new List<GameObject>();
+		Transform tr = staticObjectsSaveableContainters[levelToOutputFrom].transform;
+		Transform child = null;
+		for (int i=0;i<tr.childCount;i++) {
+			child = tr.GetChild(i);
+			if (child == null) continue;
+			
+			allStaticObjects.Add(child.gameObject);
+		}
+
+		UnityEngine.Debug.Log("Found " + allStaticObjects.Count
+							  + " static objects saveable in level "
+							  + levelToOutputFrom.ToString());
+
+		string lName = "CitadelScene_staticssaveable_level"
+					   + levelToOutputFrom.ToString() + ".txt";
+
+		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  lName);
+
+		StreamWriter sw = new StreamWriter(lP,false,Encoding.ASCII);
+		if (sw == null) {
+			UnityEngine.Debug.Log("Static objects saveable output file path invalid");
+			return;
+		}
+
+		using (sw) {
+			for (int i=0;i<allStaticObjects.Count;i++) {				
+				sw.Write(SaveLoad.SavePrefab(allStaticObjects[i]));
+				sw.Write(Environment.NewLine);
+			}
+			sw.Close();
+			UnityEngine.Debug.Log("Successfully wrote static objects saveable to StreamingAssets/CitadelScene_staticssaveable_level" + levelToOutputFrom.ToString() + ".txt");
 		}
 		#endif
 	}
@@ -536,7 +582,7 @@ public class CitadelTests : MonoBehaviour {
     
     // Commented out, all lights already generated. Uncommented to generate level 13 lights file ;), fixed, then recommented.
 // 	public void GenerateLightsDataFile() {
-// 		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".dat");
+// 		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".txt");
 // 		StringBuilder s1 = new StringBuilder();
 // 		List<GameObject> allLights = new List<GameObject>();
 // 		Component[] compArray = lightContainers[levelToOutputFrom].GetComponentsInChildren(typeof(Light),true);
@@ -607,6 +653,82 @@ public class CitadelTests : MonoBehaviour {
 // 			sw.Close();
 // 		}
 // 	}
+
+// 	public void GenerateLightsSaveableDataFile() {
+// 		UnityEngine.Debug.Log("Outputting all lights saveable to StreamingAssets/CitadelScene_lightssaveable_level" + levelToOutputFrom.ToString() + ".txt");
+// 		StringBuilder s1 = new StringBuilder();
+// 		string lName = "CitadelScene_lightssaveable_level"
+// 					   + levelToOutputFrom.ToString() + ".txt";
+// 
+// 		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
+// 										  lName);
+// 
+// 		StreamWriter sw = new StreamWriter(lP,false,Encoding.ASCII);
+// 		if (sw == null) {
+// 			UnityEngine.Debug.Log("Lights saveable output file path invalid");
+// 			return;
+// 		}
+// 
+// 		using (sw) {
+// 			for (int i=0;i<lightsSaveableContainers[levelToOutputFrom].transform.childCount;i++) {
+// 				sw.Write(SaveLoad.SavePrefab(lightsSaveableContainers[levelToOutputFrom].transform.GetChild(i).gameObject));
+// 				sw.Write(Environment.NewLine);
+// 			}
+// 			sw.Close();
+// 			UnityEngine.Debug.Log("Lights saveable successfully written with " + lightsSaveableContainers[levelToOutputFrom].transform.childCount.ToString() + " lights or containers!");
+// 		}
+// 	}
+	
+	public void GenerateDoorsDataFile() {
+		UnityEngine.Debug.Log("Outputting all lights saveable to StreamingAssets/CitadelScene_doors_level" + levelToOutputFrom.ToString() + ".txt");
+		StringBuilder s1 = new StringBuilder();
+		string lName = "CitadelScene_doors_level"
+					   + levelToOutputFrom.ToString() + ".txt";
+
+		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  lName);
+
+		StreamWriter sw = new StreamWriter(lP,false,Encoding.ASCII);
+		if (sw == null) {
+			UnityEngine.Debug.Log("Doors output file path invalid");
+			return;
+		}
+
+		using (sw) {
+			for (int i=0;i<doorContainers[levelToOutputFrom].transform.childCount;i++) {
+				sw.Write(SaveLoad.SavePrefab(doorContainers[levelToOutputFrom].transform.GetChild(i).gameObject));
+				sw.Write(Environment.NewLine);
+			}
+			sw.Close();
+			UnityEngine.Debug.Log("Doors successfully written with " + doorContainers[levelToOutputFrom].transform.childCount.ToString() + " doors!");
+		}
+	}
+	
+	public void GenerateNPCsDataFile() {
+		UnityEngine.Debug.Log("Outputting all lights saveable to StreamingAssets/CitadelScene_npcs_level" + levelToOutputFrom.ToString() + ".txt");
+		StringBuilder s1 = new StringBuilder();
+		string lName = "CitadelScene_npcs_level"
+					   + levelToOutputFrom.ToString() + ".txt";
+
+		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  lName);
+
+		StreamWriter sw = new StreamWriter(lP,false,Encoding.ASCII);
+		if (sw == null) {
+			UnityEngine.Debug.Log("NPCs output file path invalid");
+			return;
+		}
+
+		using (sw) {
+			for (int i=0;i<npcContainers[levelToOutputFrom].transform.childCount;i++) {
+				sw.Write(SaveLoad.SavePrefab(npcContainers[levelToOutputFrom].transform.GetChild(i).gameObject));
+				sw.Write(Environment.NewLine);
+			}
+			sw.Close();
+			UnityEngine.Debug.Log("NPCs successfully written with " + npcContainers[levelToOutputFrom].transform.childCount.ToString() + " npcs!");
+		}
+	}
+
 /*
 	public void LoadLevelDynamicObjects() {
 		lm.LoadLevelDynamicObjects(levelToOutputFrom);
