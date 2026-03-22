@@ -64,7 +64,15 @@ public static class SaveLoad {
         if (go == null) { Debug.LogError("Tried to save null GameObject in SavePrefab()"); return ""; }
 
         PrefabIdentifier pid = GetPrefabIdentifier(go,false);
-        if (pid == null) { Debug.LogError("Tried to save " + go.name + ", but had no PrefabIdentifier!"); return ""; }
+        Light lit = go.GetComponent<Light>();
+        if (pid == null) {
+            if (lit) {
+                return SaveLight(go);
+            } else {
+                Debug.LogError("Tried to save " + go.name + ", but had no PrefabIdentifier!");
+                return "";
+            }
+        }
 
         bool isGeom = ConsoleEmulator.ConstIndexIsGeometry(pid.constIndex);
         bool isDyn = ConsoleEmulator.ConstIndexIsDynamicObject(pid.constIndex);
@@ -73,7 +81,6 @@ public static class SaveLoad {
         bool isStatImm = ConsoleEmulator.ConstIndexIsStaticObjectImmutable(pid.constIndex);
         bool isNPC = ConsoleEmulator.ConstIndexIsNPC(pid.constIndex);
         bool isLitSav = ConsoleEmulator.ConstIndexIsLightStaticSaveable(pid.constIndex);
-        Light lit = go.GetComponent<Light>();
         bool isLit = (lit != null);
         if (isLit && isLitSav) isLitSav = false;
         Debug.Log("Saving " + go.name + " with constIndex " + pid.constIndex.ToString() + ", isGeom: " + isGeom.ToString() + ", isDyn: " + isDyn.ToString() + ", isDor: " + isDor.ToString() + ", isStatSav: " + isStatSav.ToString() + ", isStatImm: " + isStatImm.ToString() + ", isNPC: " + isNPC.ToString() + ", isLit: " + isLit.ToString() + ", isLitSav: " + isLitSav.ToString());
@@ -101,8 +108,9 @@ public static class SaveLoad {
         } else if (isDor) {     return SaveObject.Save(go);
         } else if (isStatSav) { return SaveObject.Save(go);
         } else if (isNPC) {     return SaveObject.Save(go);
-        } else if (isStatImm) { 
-            if (go.transform.childCount > 1) {
+        } else if (isStatImm) {
+            int childCount = go.transform.childCount;
+            if (childCount > 1) {
                 PrefabIdentifier pidmain = go.GetComponent<PrefabIdentifier>();
                 if (pidmain == null) { // Ok we are a saveable container object most likely
                     SaveObject sobmain = go.GetComponent<SaveObject>();
@@ -112,8 +120,10 @@ public static class SaveLoad {
                             nest.Clear();
                             nest.Append("container " + go.name);
                             nest.Append(splitChar);
+                            nest.Append("childCount:" + childCount);
+                            nest.Append(splitChar);
                             nest.Append(Utils.SaveTransform(go.transform));
-                            for (int i=0;i<go.transform.childCount;i++) {
+                            for (int i=0;i<childCount;i++) {
                                 nest.Append(Environment.NewLine);
                                 nest.Append(SavePrefab(go.transform.GetChild(i).gameObject));
                             }
@@ -125,7 +135,8 @@ public static class SaveLoad {
             return SaveStaticImmutable(go,pid);
         } else if (isLit) { return SaveLight(go);
         } else if (isLitSav) {
-            if (go.transform.childCount >= 1) {
+            int childCount = go.transform.childCount;
+            if (childCount >= 1) {
                 SaveObject sobmain = go.GetComponent<SaveObject>();
                 if (sobmain != null) {
                     if (sobmain.saveType == SaveableType.Transform) { // Ok final check, most definitely a toggleable container that has nothing of its own.
@@ -133,8 +144,10 @@ public static class SaveLoad {
                         nest.Clear();
                         nest.Append("container " + go.name);
                         nest.Append(splitChar);
+                        nest.Append("childCount:" + childCount);
+                        nest.Append(splitChar);
                         nest.Append(Utils.SaveTransform(go.transform));
-                        for (int i=0;i<go.transform.childCount;i++) {
+                        for (int i=0;i<childCount;i++) {
                             nest.Append(Environment.NewLine);
                             nest.Append(SaveLight(go.transform.GetChild(i).gameObject));
                         }
@@ -565,64 +578,64 @@ public static class SaveLoad {
         bool hasBoxColliderOverride = false;
         bool hasTextOverride = false;
         string materialOverride = "";
-        #if UNITY_EDITOR
-            if (PrefabUtility.IsPartOfPrefabInstance(go)) {
-                List<ObjectOverride> ovides = PrefabUtility.GetObjectOverrides(go,false);
-                for (int j=0; j < ovides.Count; j++) {
-        //             UnityEngine.Object ob = ovides[j].instanceObject;
-        //             SerializedObject sob = new UnityEditor.SerializedObject(ob);
-        // 
-        //             hasBoxColliderOverride = false;
-        //             // List overridden properties
-        //             SerializedProperty prop = sob.GetIterator();
-        //             while (prop.NextVisible(true)) {
-        //                 if (prop.propertyPath == "m_Name" ||
-        //                     prop.propertyPath == "m_LocalPosition" ||
-        //                     prop.propertyPath == "m_LocalPosition.x" ||
-        //                     prop.propertyPath == "m_LocalPosition.y" ||
-        //                     prop.propertyPath == "m_LocalPosition.z" ||
-        //                     prop.propertyPath == "m_LocalRotation" ||
-        //                     prop.propertyPath == "m_LocalRotation.x" ||
-        //                     prop.propertyPath == "m_LocalRotation.y" ||
-        //                     prop.propertyPath == "m_LocalRotation.z" ||
-        //                     prop.propertyPath == "m_LocalRotation.w" ||
-        //                     prop.propertyPath == "m_LocalScale" ||
-        //                     prop.propertyPath == "m_LocalScale.x" ||
-        //                     prop.propertyPath == "m_LocalScale.y" ||
-        //                     prop.propertyPath == "m_LocalScale.z")  {
-        //                     
-        //                     continue; // Skip transform overrides
-        //                 }
-        // 
-        //                 if (prop.prefabOverride) {
-        //                     if (prop.propertyPath == "m_Size" ||
-        //                         prop.propertyPath == "m_Size.x" ||
-        //                         prop.propertyPath == "m_Size.y" ||
-        //                         prop.propertyPath == "m_Size.z" ||
-        //                         prop.propertyPath == "m_Center" ||
-        //                         prop.propertyPath == "m_Center.x" ||
-        //                         prop.propertyPath == "m_Center.y" ||
-        //                         prop.propertyPath == "m_Center.z") {
-        // 
-        //                         hasBoxColliderOverride = true;
-        //                     }
-        // 
-        //                     if (prop.propertyPath == "lingdex") hasTextOverride = true;
-        //                     string value = GetPropertyValue(prop);
-        //                     if (prop.propertyPath == "m_Materials.Array.data[0]") {
-        //                         materialOverride = value;
-        //                     }
-        // 
-        //                     UnityEngine.Debug.Log(go.name + ":: Found Override: "
-        //                                           + prop.propertyPath + ", Value: "
-        //                                           + value);
-        //                 }
-        //             }
-                }
-            } else {
-                Debug.LogWarning("Saving geometry " + go.name + " but it wasn't a prefab!");
-            } 
-        #endif
+//         #if UNITY_EDITOR
+//             if (PrefabUtility.IsPartOfPrefabInstance(go)) {
+//                 List<ObjectOverride> ovides = PrefabUtility.GetObjectOverrides(go,false);
+//                 for (int j=0; j < ovides.Count; j++) {
+//         //             UnityEngine.Object ob = ovides[j].instanceObject;
+//         //             SerializedObject sob = new UnityEditor.SerializedObject(ob);
+//         // 
+//         //             hasBoxColliderOverride = false;
+//         //             // List overridden properties
+//         //             SerializedProperty prop = sob.GetIterator();
+//         //             while (prop.NextVisible(true)) {
+//         //                 if (prop.propertyPath == "m_Name" ||
+//         //                     prop.propertyPath == "m_LocalPosition" ||
+//         //                     prop.propertyPath == "m_LocalPosition.x" ||
+//         //                     prop.propertyPath == "m_LocalPosition.y" ||
+//         //                     prop.propertyPath == "m_LocalPosition.z" ||
+//         //                     prop.propertyPath == "m_LocalRotation" ||
+//         //                     prop.propertyPath == "m_LocalRotation.x" ||
+//         //                     prop.propertyPath == "m_LocalRotation.y" ||
+//         //                     prop.propertyPath == "m_LocalRotation.z" ||
+//         //                     prop.propertyPath == "m_LocalRotation.w" ||
+//         //                     prop.propertyPath == "m_LocalScale" ||
+//         //                     prop.propertyPath == "m_LocalScale.x" ||
+//         //                     prop.propertyPath == "m_LocalScale.y" ||
+//         //                     prop.propertyPath == "m_LocalScale.z")  {
+//         //                     
+//         //                     continue; // Skip transform overrides
+//         //                 }
+//         // 
+//         //                 if (prop.prefabOverride) {
+//         //                     if (prop.propertyPath == "m_Size" ||
+//         //                         prop.propertyPath == "m_Size.x" ||
+//         //                         prop.propertyPath == "m_Size.y" ||
+//         //                         prop.propertyPath == "m_Size.z" ||
+//         //                         prop.propertyPath == "m_Center" ||
+//         //                         prop.propertyPath == "m_Center.x" ||
+//         //                         prop.propertyPath == "m_Center.y" ||
+//         //                         prop.propertyPath == "m_Center.z") {
+//         // 
+//         //                         hasBoxColliderOverride = true;
+//         //                     }
+//         // 
+//         //                     if (prop.propertyPath == "lingdex") hasTextOverride = true;
+//         //                     string value = GetPropertyValue(prop);
+//         //                     if (prop.propertyPath == "m_Materials.Array.data[0]") {
+//         //                         materialOverride = value;
+//         //                     }
+//         // 
+//         //                     UnityEngine.Debug.Log(go.name + ":: Found Override: "
+//         //                                           + prop.propertyPath + ", Value: "
+//         //                                           + value);
+//         //                 }
+//         //             }
+//                 }
+//             } else {
+//                 Debug.LogWarning("Saving geometry " + go.name + " but it wasn't a prefab!");
+//             } 
+//         #endif
         
         StringBuilder s1 = new StringBuilder();
         s1.Clear();

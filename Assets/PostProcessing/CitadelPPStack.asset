@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: CitadelPPStack
   m_EditorClassIdentifier: 
   antialiasing:
-    m_Enabled: 0
+    m_Enabled: 1
     m_Settings:
       fxaaSettings:
         preset: 0
   screenSpaceReflection:
-    m_Enabled: 0
+    m_Enabled: 1
     m_Settings:
       reflection:
         blendType: 1
@@ -49,7 +49,7 @@ MonoBehaviour:
         texture: {fileID: 2800000, guid: ffa9c02760c2b4e8eb9814ec06c4b05b, type: 3}
         intensity: 1.36
   colorGrading:
-    m_Enabled: 1
+    m_Enabled: 0
     m_Settings:
       tonemapping:
         tonemapper: 0
@@ -60,7 +60,7 @@ MonoBehaviour:
         neutralWhiteLevel: 5.3
         neutralWhiteClip: 2.94
       basic:
-        postExposure: 0
+        postExposure: 2.2
         temperature: 0
         tint: 0
         hueShift: 0

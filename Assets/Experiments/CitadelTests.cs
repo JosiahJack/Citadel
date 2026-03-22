@@ -654,30 +654,30 @@ public class CitadelTests : MonoBehaviour {
 // 		}
 // 	}
 
-// 	public void GenerateLightsSaveableDataFile() {
-// 		UnityEngine.Debug.Log("Outputting all lights saveable to StreamingAssets/CitadelScene_lightssaveable_level" + levelToOutputFrom.ToString() + ".txt");
-// 		StringBuilder s1 = new StringBuilder();
-// 		string lName = "CitadelScene_lightssaveable_level"
-// 					   + levelToOutputFrom.ToString() + ".txt";
-// 
-// 		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
-// 										  lName);
-// 
-// 		StreamWriter sw = new StreamWriter(lP,false,Encoding.ASCII);
-// 		if (sw == null) {
-// 			UnityEngine.Debug.Log("Lights saveable output file path invalid");
-// 			return;
-// 		}
-// 
-// 		using (sw) {
-// 			for (int i=0;i<lightsSaveableContainers[levelToOutputFrom].transform.childCount;i++) {
-// 				sw.Write(SaveLoad.SavePrefab(lightsSaveableContainers[levelToOutputFrom].transform.GetChild(i).gameObject));
-// 				sw.Write(Environment.NewLine);
-// 			}
-// 			sw.Close();
-// 			UnityEngine.Debug.Log("Lights saveable successfully written with " + lightsSaveableContainers[levelToOutputFrom].transform.childCount.ToString() + " lights or containers!");
-// 		}
-// 	}
+	public void GenerateLightsSaveableDataFile() {
+		UnityEngine.Debug.Log("Outputting all lights saveable to StreamingAssets/CitadelScene_lightssaveable_level" + levelToOutputFrom.ToString() + ".txt");
+		StringBuilder s1 = new StringBuilder();
+		string lName = "CitadelScene_lightssaveable_level"
+					   + levelToOutputFrom.ToString() + ".txt";
+
+		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  lName);
+
+		StreamWriter sw = new StreamWriter(lP,false,Encoding.ASCII);
+		if (sw == null) {
+			UnityEngine.Debug.Log("Lights saveable output file path invalid");
+			return;
+		}
+
+		using (sw) {
+			for (int i=0;i<lightsSaveableContainers[levelToOutputFrom].transform.childCount;i++) {
+				sw.Write(SaveLoad.SavePrefab(lightsSaveableContainers[levelToOutputFrom].transform.GetChild(i).gameObject));
+				sw.Write(Environment.NewLine);
+			}
+			sw.Close();
+			UnityEngine.Debug.Log("Lights saveable successfully written with " + lightsSaveableContainers[levelToOutputFrom].transform.childCount.ToString() + " lights or containers!");
+		}
+	}
 	
 	public void GenerateDoorsDataFile() {
 		UnityEngine.Debug.Log("Outputting all lights saveable to StreamingAssets/CitadelScene_doors_level" + levelToOutputFrom.ToString() + ".txt");
@@ -728,6 +728,39 @@ public class CitadelTests : MonoBehaviour {
 			UnityEngine.Debug.Log("NPCs successfully written with " + npcContainers[levelToOutputFrom].transform.childCount.ToString() + " npcs!");
 		}
 	}
+	
+	private void ExportChildrenOf(StreamWriter sw, GameObject container, bool isLight) {
+        if (isLight) UnityEngine.Debug.Log("Save lights now from : " + container.name);
+        foreach (Transform child in container.transform) {
+            GameObject go = child.gameObject;
+            PrefabIdentifier pid = go.GetComponent<PrefabIdentifier>();
+            if (pid == null && !isLight) continue; // Not a prefab, skip it
+
+            if (isLight) UnityEngine.Debug.Log("Attempting to save light: " + go.name);
+            sw.Write(SaveLoad.SavePrefab(go));
+            sw.Write(Environment.NewLine);
+        }
+    }
+	
+	public void ExportLevelToSingleWorldSpaceFile() {
+        StringBuilder s1 = new StringBuilder();
+		string lName = "level" + LevelManager.a.currentLevel.ToString() + ".txt";
+        UnityEngine.Debug.Log("Exporting to " + lName);
+		string lP = Utils.SafePathCombine(Application.streamingAssetsPath, lName);
+		StreamWriter sw = new StreamWriter(lP,false,Encoding.ASCII);
+        using (sw) {
+            ExportChildrenOf(sw, geometryContainters[LevelManager.a.currentLevel], false);
+            ExportChildrenOf(sw, staticObjectImmutableContainters[LevelManager.a.currentLevel], false);
+            ExportChildrenOf(sw, dynamicObjectContainers[LevelManager.a.currentLevel], false);
+            ExportChildrenOf(sw, doorContainers[LevelManager.a.currentLevel], false);
+            ExportChildrenOf(sw, npcContainers[LevelManager.a.currentLevel], false);
+            ExportChildrenOf(sw, lightContainers[LevelManager.a.currentLevel], true);
+            ExportChildrenOf(sw, lightsSaveableContainers[LevelManager.a.currentLevel], true);
+            ExportChildrenOf(sw, staticObjectsSaveableContainters[LevelManager.a.currentLevel], false);
+        }
+
+        UnityEngine.Debug.Log("Level " + LevelManager.a.currentLevel + " exported!");
+    }
 
 /*
 	public void LoadLevelDynamicObjects() {

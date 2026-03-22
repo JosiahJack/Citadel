@@ -11,7 +11,7 @@ public class TestsEditor : Editor {
 	public override void OnInspectorGUI() {
 		base.OnInspectorGUI();
 		CitadelTests testScript = (CitadelTests)target;
-		if (GUILayout.Button("Save Reflection Probe Image")) testScript.SaveReflectionProbeImage();
+// 		if (GUILayout.Button("Save Reflection Probe Image")) testScript.SaveReflectionProbeImage();
 		//if (GUILayout.Button(testScript.buttonLabel)) {
 		//	testScript.Run();
 		//}
@@ -56,9 +56,9 @@ public class TestsEditor : Editor {
 // 			testScript.GenerateDoorsDataFile();
 // 		}
 		
-		if (GUILayout.Button("Output All NPCs to File")) {
-			testScript.GenerateNPCsDataFile();
-		}
+// 		if (GUILayout.Button("Output All NPCs to File")) {
+// 			testScript.GenerateNPCsDataFile();
+// 		}
 
 // 		if (GUILayout.Button("Load Lights for\nSelected Level")) {
 // 			testScript.LoadLevelLights();
@@ -66,6 +66,8 @@ public class TestsEditor : Editor {
 // 		if (GUILayout.Button("Unload Lights for\nSelected Level")) {
 // 			testScript.UnloadLevelLights();
 // 		}
+
+		if (GUILayout.Button("Output Current Level")) testScript.ExportLevelToSingleWorldSpaceFile();
 
 // 		EditorGUILayout.BeginVertical();
 //         GUILayout.Space(8f);

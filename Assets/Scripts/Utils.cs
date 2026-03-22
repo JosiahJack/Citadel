@@ -1187,25 +1187,25 @@ public class Utils {
 			s1.Append(splitChar);
 			s1.Append(FloatToString(rectTr.localScale.z,"localScale.z"));
 		} else {
-			s1.Append(FloatToString(tr.localPosition.x,"localPosition.x"));
+			s1.Append(FloatToString(tr.position.x,"localPosition.x"));
 			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localPosition.y,"localPosition.y"));
+			s1.Append(FloatToString(tr.position.y,"localPosition.y"));
 			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localPosition.z,"localPosition.z"));
+			s1.Append(FloatToString(tr.position.z,"localPosition.z"));
 			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localRotation.x,"localRotation.x"));
+			s1.Append(FloatToString(tr.rotation.x,"localRotation.x"));
 			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localRotation.y,"localRotation.y"));
+			s1.Append(FloatToString(tr.rotation.y,"localRotation.y"));
 			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localRotation.z,"localRotation.z"));
+			s1.Append(FloatToString(tr.rotation.z,"localRotation.z"));
 			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localRotation.w,"localRotation.w"));
+			s1.Append(FloatToString(tr.rotation.w,"localRotation.w"));
 			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localScale.x,"localScale.x"));
+			s1.Append(FloatToString(tr.lossyScale.x,"localScale.x"));
 			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localScale.y,"localScale.y"));
+			s1.Append(FloatToString(tr.lossyScale.y,"localScale.y"));
 			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localScale.z,"localScale.z"));
+			s1.Append(FloatToString(tr.lossyScale.z,"localScale.z"));
 		}
         return s1.ToString();
     }

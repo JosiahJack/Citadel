@@ -208,6 +208,36 @@ public class LightAnimation : MonoBehaviour {
 		s1.Append(Utils.SaveRelativeTimeDifferential(la.lerpStartTime,"lerpStartTime"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(la.animLight.enabled,"light.enabled"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(la.intervalSteps.Length,"intervalSteps.Length"));
+		int i = 0;
+		for (;i<la.intervalSteps.Length;i++) {
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.FloatToString(la.intervalSteps[i],"intervalSteps[" + i.ToString() + "]"));
+		}
+		
+		for (;i<20;i++) {
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.FloatToString(0.0f,"intervalSteps[" + i.ToString() + "]"));
+		}
+		
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(la.intervalStepisLerping.Length,"intervalStepisLerping.Length"));
+		i = 0;
+		for (;i<la.intervalStepisLerping.Length;i++) {
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.BoolToString(la.intervalStepisLerping[i],"intervalStepisLerping[" + i.ToString() + "]"));
+		}
+		
+		for (;i<20;i++) {
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.BoolToString(false,"intervalStepisLerping[" + i.ToString() + "]"));
+		}
+		
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(la.minIntensity,"minIntensity"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(la.maxIntensity,"maxIntensity"));
 		return s1.ToString();
 	}
 

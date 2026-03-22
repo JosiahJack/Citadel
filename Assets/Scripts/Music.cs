@@ -1,56 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Diagnostics;
-using System;
-using UnityEngine;
-using UnityEngine.Networking;
-
-public class Music : MonoBehaviour {
-	public AudioSource SFXMain;
-	public AudioSource SFXMain2;
-	public bool twoPlaying;
-	public AudioSource SFXOverlay;
-	public GameObject mainMenu;
-	public float audBuffer = 0.05f;
-
-	public AudioClip titleMusic;
-	public AudioClip creditsMusic;
-	public AudioClip[] levelMusic; // Array due to many dynamically interchanged clips.
-	public AudioClip levelMusicRevive; // Singular revive, death, etc. but unique and loaded per level.
-	public AudioClip levelMusicDeath;
-	public AudioClip levelMusicElevator;
-	public AudioClip levelMusicDistortion;
-	public AudioClip levelMusicLooped;
-
-	private float clipFinished;
-	private float clipLength;
-	private float clipOverlayLength;
-	private float clipOverlayFinished;
-	private AudioClip tempClip;
-	private AudioClip curC;
-	private AudioClip curOverlayC;
-	private bool paused;
-	private bool cyberTube;
-	public bool levelEntry;
-	private int rand;
-	private bool inZone;
-	private bool distortion;
-	private bool elevator;
-	public bool inCombat;
-	private float combatImpulseFinished;
-	private string musicRPath;
-	private string musicRLoopedPath;
-
-	public static Music a;
-
+﻿public class Music : MonoBehaviour {
 	void Awake() {
-		a = this;
-		
-		clipFinished = Time.time;
-		clipOverlayFinished = Time.time;
-		tempClip = null;
-		levelEntry = true;
 		inZone = twoPlaying = cyberTube = false;
 		rand = 0;
 		combatImpulseFinished = Time.time + 5f;

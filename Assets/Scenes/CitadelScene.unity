@@ -48091,7 +48091,7 @@ PrefabInstance:
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
       propertyPath: m_Name
-      value: info_ressurection_point
+      value: info_ressurection_point_4
       objectReference: {fileID: 0}
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
@@ -121758,7 +121758,7 @@ PrefabInstance:
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
       propertyPath: m_Name
-      value: info_ressurection_point
+      value: info_ressurection_point_6
       objectReference: {fileID: 0}
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
@@ -241549,7 +241549,7 @@ PrefabInstance:
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
       propertyPath: m_Name
-      value: info_ressurection_point (1)
+      value: info_ressurection_point_R
       objectReference: {fileID: 0}
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
@@ -288461,7 +288461,7 @@ PrefabInstance:
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
       propertyPath: m_Name
-      value: info_ressurection_point (1)
+      value: info_ressurection_point_2
       objectReference: {fileID: 0}
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
@@ -315338,7 +315338,7 @@ PrefabInstance:
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
       propertyPath: m_Name
-      value: info_ressurection_point
+      value: info_ressurection_point_7
       objectReference: {fileID: 0}
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
@@ -465890,8 +465890,8 @@ Transform:
   - {fileID: 1846960141}
   - {fileID: 1588265992}
   - {fileID: 434012665}
-  - {fileID: 1239264138}
   - {fileID: 1763738172}
+  - {fileID: 1239264138}
   - {fileID: 1481452612}
   m_Father: {fileID: 657665492}
   m_RootOrder: 6
@@ -496525,7 +496525,7 @@ PrefabInstance:
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
       propertyPath: m_Name
-      value: info_ressurection_point (1)
+      value: info_ressurection_point_1
       objectReference: {fileID: 0}
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
@@ -569958,8 +569958,8 @@ Transform:
   - {fileID: 491054753}
   - {fileID: 341204994}
   - {fileID: 1111812402}
-  - {fileID: 1581589217}
   - {fileID: 1969142783}
+  - {fileID: 1581589217}
   m_Father: {fileID: 317406251}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -659480,7 +659480,7 @@ Transform:
   m_LocalScale: {x: 1.001, y: 1, z: 1.001}
   m_Children: []
   m_Father: {fileID: 1250773573}
-  m_RootOrder: 52
+  m_RootOrder: 51
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: -180}
 --- !u!114 &1763738173
 MonoBehaviour:
@@ -688016,7 +688016,7 @@ PrefabInstance:
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
       propertyPath: m_Name
-      value: info_ressurection_point
+      value: info_ressurection_point_5
       objectReference: {fileID: 0}
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
@@ -1408797,7 +1408797,7 @@ PrefabInstance:
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
       propertyPath: m_Name
-      value: info_ressurection_point
+      value: info_ressurection_point_3
       objectReference: {fileID: 0}
     - target: {fileID: 2941586816569799206, guid: b60a738594552f64b90da3d770315be5,
         type: 3}
@@ -1426669,20 +1426669,20 @@ MonoBehaviour:
   probeCam: {fileID: 0}
   cookieLight: {fileID: 0}
   geometryContainters:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 132768284}
+  - {fileID: 666192951}
+  - {fileID: 3741527535767892813}
+  - {fileID: 1537552547153353081}
+  - {fileID: 2089561213}
+  - {fileID: 374356813}
+  - {fileID: 947819008}
+  - {fileID: 444103132}
+  - {fileID: 970506723}
+  - {fileID: 611421395}
+  - {fileID: 1320658108}
+  - {fileID: 1422508961}
+  - {fileID: 1276483302}
+  - {fileID: 1879940896}
   doorContainers:
   - {fileID: 1519225590}
   - {fileID: 415189476}
@@ -1426729,19 +1426729,19 @@ MonoBehaviour:
   - {fileID: 525367230}
   - {fileID: 335825155}
   lightContainers:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 317438992}
+  - {fileID: 2143140171}
+  - {fileID: 760831372}
+  - {fileID: 1967231611}
+  - {fileID: 40528893}
+  - {fileID: 651970529}
+  - {fileID: 519303738}
+  - {fileID: 1404925265}
+  - {fileID: 1771376797}
+  - {fileID: 379760873}
+  - {fileID: 181319877}
+  - {fileID: 1755900157}
+  - {fileID: 1788932564}
   - {fileID: 937438783}
   lightsSaveableContainers:
   - {fileID: 551363673}
@@ -1426759,20 +1426759,20 @@ MonoBehaviour:
   - {fileID: 171381325}
   - {fileID: 1818791549}
   dynamicObjectContainers:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 50280116}
+  - {fileID: 1444096547}
+  - {fileID: 254489621}
+  - {fileID: 1678467466}
+  - {fileID: 1538071288}
+  - {fileID: 1495608595}
+  - {fileID: 1385052368}
+  - {fileID: 1468514554}
+  - {fileID: 741738024}
+  - {fileID: 1544289032}
+  - {fileID: 62201384}
+  - {fileID: 1137176478}
+  - {fileID: 384260097}
+  - {fileID: 834002496}
   npcContainers:
   - {fileID: 1686625619}
   - {fileID: 295552997}

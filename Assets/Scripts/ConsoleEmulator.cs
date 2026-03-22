@@ -1207,7 +1207,7 @@ public static bool ConstIndexInBounds(int constdex) {
 }
 
 public static bool ConstIndexIsGeometry(int constdex) {
-	return (constdex >= 0 && constdex <= 306 || constdex == 760);
+	return (constdex >= 0 && constdex <= 306) || constdex == 760;
 }
 
 public static bool ConstIndexIsDynamicObject(int constdex) {
